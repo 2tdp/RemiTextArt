@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/boder_dialog"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp">
+
+    <LinearLayout
+        android:layout_width="@dimen/_248sdp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/poppins_medium"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/color"
+            android:textColor="#000000"
+            android:textSize="@dimen/_13ssp" />
+
+        <com.flask.colorpicker.ColorPickerView
+            android:id="@+id/pickColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:alphaSlider="true"
+            app:alphaSliderView="@+id/alphaSlider"
+            app:density="15"
+            app:lightnessSlider="true"
+            app:lightnessSliderView="@+id/lightnessSlider"
+            app:wheelType="FLOWER" />
+
+        <com.flask.colorpicker.slider.LightnessSlider
+            android:id="@+id/lightnessSlider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_32sdp" />
+
+        <com.flask.colorpicker.slider.AlphaSlider
+            android:id="@+id/alphaSlider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_32sdp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp">
+
+            <TextView
+                android:id="@+id/tvNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_regular"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/no"
+                android:textColor="@color/text_title_dialog"
+                android:textSize="@dimen/_13ssp" />
+
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@color/black" />
+
+            <TextView
+                android:id="@+id/tvYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/yes"
+                android:textColor="@color/green"
+                android:textSize="@dimen/_13ssp" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_75sdp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/tab_indicator_uncheck"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvRecent"
+        android:layout_width="@dimen/_52sdp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ellipsize="marquee"
+        android:fontFamily="@font/poppins_regular"
+        android:gravity="center"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:padding="@dimen/_5sdp"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:text="@string/recent"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10ssp" />
+
+    <ImageView
+        android:id="@+id/ivRecent"
+        android:layout_width="@dimen/_12sdp"
+        android:layout_height="@dimen/_12sdp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_bottom" />
+</LinearLayout>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_55sdp"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@color/trans">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/ivBucket"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:riv_border_color="@color/gray_2"
+        app:riv_border_width="0.5dp"
+        app:riv_corner_radius="@dimen/_10sdp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_toStartOf="@+id/ivRight"
+        android:layout_toEndOf="@+id/ivBucket"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNameBucket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13ssp" />
+
+        <TextView
+            android:id="@+id/tvQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/_10ssp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivRight"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:padding="@dimen/_10sdp"
+        android:src="@drawable/ic_right" />
+</RelativeLayout>

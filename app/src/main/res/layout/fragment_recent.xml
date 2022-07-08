@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.create.RecentFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvPicRecent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_5sdp"
+        android:scrollbars="none" />
+
+    <View
+        android:id="@+id/viewBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_2"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/rlExpand"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/boder_layout_radius_bottom"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvBucketPic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/viewExpand"
+            android:background="@color/white"
+            android:padding="@dimen/_5sdp"
+            android:scrollbars="none" />
+
+        <View
+            android:id="@+id/viewExpand"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@color/gray" />
+    </RelativeLayout>
+</RelativeLayout>

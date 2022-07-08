@@ -1,0 +1,169 @@
+<resources>
+    <string name="app_name">RemiTextArt</string>
+
+    <string name="done">Done!</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="all">All</string>
+    <string name="del">Delete</string>
+    <string name="copy">Copy</string>
+    <string name="clear">Clear</string>
+    <string name="percent">%  </string>
+    <string name="success">Success</string>
+    <string name="write_on_photo">Write On Photo</string>
+    <string name="decorate_your_photo">Decorate Your Photo</string>
+
+    //splash
+    <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
+    <string name="splash_2">Unfold The \nBeautiful \nStories</string>
+    <string name="splash_3">Customize \nYour \nPictures</string>
+    <string name="next">Next</string>
+    <string name="start">Get Started</string>
+
+    //request permission
+    <string name="rp_1">Write Storage</string>
+    <string name="rp_2">We need you to provide this permission to perform actions inside the app</string>
+    <string name="rp_3">To work, \"TextArt\" app needs access to your audio files.</string>
+    <string name="allow_per">Allow Permission</string>
+
+    //home
+    <string name="cre_pro">Create Project</string>
+    <string name="temp">Template</string>
+    <string name="pro">Project</string>
+    <string name="pros">Projects</string>
+    <string name="des">Create Your Project</string>
+
+    //project
+    <string name="des_pro">Could Not Find Any Results!</string>
+    <string name="dialog_title_del_pro">Delete this Project?</string>
+    <string name="dialog_des_del_pro">Are you sure want to delete this Project?</string>
+    <string name="des_exit_1">Save Changes Before Closing?</string>
+
+    //settings
+    <string name="setting">Setting</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="help">Help</string>
+    <string name="policy">Policy</string>
+
+    //background
+    <string name="bg">Background</string>
+    <string name="recent">Recent</string>
+    <string name="my_app">My App</string>
+    <string name="color">Color</string>
+    <string name="color_direc">Color Direction</string>
+
+    //custom size
+    <string name="custom_size">Custom Size</string>
+    <string name="original">Original</string>
+    <string name="size1_1">1.1</string>
+    <string name="size9_16">9.16</string>
+    <string name="size4_5">4.5</string>
+    <string name="size16_9">16.9</string>
+    <string name="add_text">Add Text</string>
+    <string name="sticker">Sticker</string>
+    <string name="image">Image</string>
+    <string name="background">Background</string>
+    <string name="blend">Blend</string>
+    <string name="decor">Decor</string>
+    <string name="size">Size</string>
+
+    //addText
+    <string name="text">Text</string>
+    <string name="input_text">Input Text</string>
+    <string name="tap_to_edit">Tap to edit</string>
+    <string name="pls_pick_style">Please choose font!</string>
+    <string name="pls_enter_text">Content cannot be blank!</string>
+    <string name="quotes">Quotes</string>
+    <string name="fonts">Fonts</string>
+    <string name="style">Style</string>
+    <string name="et">Edit Text</string>
+    <string name="font_size">Font Size</string>
+    <string name="transform">Transform</string>
+    <string name="shadow">Shadow</string>
+    <string name="opacity">Opacity</string>
+    <string name="favorite">Favorite</string>
+    <string name="your_font">Your Fonts</string>
+    <string name="new_font">New Fonts</string>
+    <string name="italic">Italic</string>
+    <string name="regular">Regular</string>
+    <string name="semi_bold">SemiBold</string>
+    <string name="bold">Bold</string>
+    <string name="bold_italic">Bold Italic</string>
+    <string name="choose_sticker_text">Choose a sticker!</string>
+    <string name="px">px</string>
+    <string name="shear_x">Shear X</string>
+    <string name="shear_y">Shear Y</string>
+    <string name="stretch">Stretch</string>
+    <string name="x_pos">X-Pos</string>
+    <string name="y_pos">Y-Pos</string>
+    <string name="blur">Blur</string>
+
+    //image
+    <string name="crop">Crop</string>
+    <string name="filter">Filter</string>
+    <string name="pick_image">Choose Image</string>
+    <string name="cant_get_image">Can\'t get image!</string>
+
+    //sticker
+    <string name="replace">Replace</string>
+    <string name="flip_x">Flip-X</string>
+    <string name="flip_y">Flip-Y</string>
+
+    //background
+    <string name="adjust">Adjust</string>
+    <string name="brightness">Brightness</string>
+    <string name="contrast">Contrast</string>
+    <string name="exposure">Exposure</string>
+    <string name="highlight">HighLight</string>
+    <string name="shadows">Shadows</string>
+    <string name="blacks">Blacks</string>
+    <string name="whites">Whites</string>
+    <string name="saturation">Saturation</string>
+    <string name="hue">Hue</string>
+    <string name="warmth">Warmth</string>
+    <string name="vibrance">Vibrance</string>
+    <string name="vignette">Vignette</string>
+
+    //overlay
+    <string name="overlay">Overlay</string>
+
+    //layer
+    <string name="layer">Layer</string>
+    <string name="duplicate">Duplicate</string>
+    <string name="lock">Lock</string>
+    <string name="look">Look</string>
+
+    //cropImage
+    <string name="crop_image">Crop Image</string>
+
+    //export
+    <string name="export">Export</string>
+    <string name="save_photo">Save To Photos</string>
+    <string name="remove">Remove WaterMark</string>
+
+    //vip
+    <string name="title_vip_1">Start Like A Pro</string>
+    <string name="title_vip_2">Unlock All Feature</string>
+    <string name="str_continue">Continue</string>
+    <string name="write_on_photo_pro">Write On Photo Pro</string>
+    <string name="full_features">Full Features</string>
+    <string name="remove_all">Remove All Ads</string>
+    <string name="lifetime_support">Lifetime Support</string>
+    <string name="unlock_all_feature_and_content">Unlock All Feature And Content</string>
+    <string name="month">Monthly</string>
+    <string name="year">Yearly</string>
+    <string name="lifetime">Lifetime</string>
+    <string name="des_month">9$/month</string>
+    <string name="des_year">39$/year</string>
+    <string name="des_lifetime">100$</string>
+    <string name="des_vip_1">Restore Purchases</string>
+    <string name="des_vip_2">Subscription will auto-renew. Cancel anytime</string>
+    <string name="basic">Basic</string>
+    <string name="premium">Premium</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
