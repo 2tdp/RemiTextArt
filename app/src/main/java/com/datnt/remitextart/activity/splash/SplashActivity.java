@@ -1,4 +1,4 @@
-package com.datnt.remitextart.activity;
+package com.datnt.remitextart.activity.splash;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.activity.permission.RequestPermissionActivity;
 import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.remitextart.fragment.SplashFragment;
 import com.datnt.remitextart.sharepref.DataLocalManager;

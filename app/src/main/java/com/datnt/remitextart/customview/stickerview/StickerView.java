@@ -18,6 +18,7 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -43,8 +44,8 @@ import java.util.List;
  */
 public class StickerView extends FrameLayout {
 
-    private final boolean showIcons;
-    private final boolean showBorder;
+    private boolean showIcons;
+    private boolean showBorder;
     private final boolean bringToFrontCurrentSticker;
     private boolean isChange;
 
@@ -153,11 +154,16 @@ public class StickerView extends FrameLayout {
     }
 
     public void configDefaultIcons() {
-        BitmapStickerIcon rotate = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_rotate), BitmapStickerIcon.LEFT_TOP);
+        BitmapStickerIcon rotate = new BitmapStickerIcon(getContext(),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_rotate), BitmapStickerIcon.LEFT_TOP);
         rotate.setIconEvent(new RotateIconEvent());
-        BitmapStickerIcon zoom = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_resize), BitmapStickerIcon.RIGHT_BOTTOM);
+
+        BitmapStickerIcon zoom = new BitmapStickerIcon(getContext(),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_resize), BitmapStickerIcon.RIGHT_BOTTOM);
         zoom.setIconEvent(new ZoomIconEvent());
-        BitmapStickerIcon flip = new BitmapStickerIcon(getContext(), ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_flip), BitmapStickerIcon.RIGHT_TOP);
+
+        BitmapStickerIcon flip = new BitmapStickerIcon(getContext(),
+                ContextCompat.getDrawable(getContext(), R.drawable.ic_sticker_flip), BitmapStickerIcon.RIGHT_TOP);
         flip.setIconEvent(new FlipHorizontallyEvent());
 
         icons.clear();
@@ -346,6 +352,7 @@ public class StickerView extends FrameLayout {
      * @return true if has touch something
      */
     protected boolean onTouchDown(@NonNull MotionEvent event) {
+        hideBorderAndIcon(0);
         currentMode = ActionMode.DRAG;
 
         downX = event.getX();
@@ -412,6 +419,7 @@ public class StickerView extends FrameLayout {
 
         currentMode = ActionMode.NONE;
         lastClickTime = currentTime;
+        hideBorderAndIcon(1);
     }
 
     protected void handleCurrentMode(@NonNull MotionEvent event) {
@@ -911,13 +919,14 @@ public class StickerView extends FrameLayout {
         sticker.getMappedPoints(dst, bounds);
     }
 
-    public void saveImage(Context context) {
+    public Bitmap saveImage(Context context) {
         handlingSticker = null;
 
         Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         this.draw(canvas);
-        Utils.saveImage(context, bitmap, "");
+
+        return bitmap;
     }
 
     public Bitmap getThumb() {
@@ -1004,6 +1013,19 @@ public class StickerView extends FrameLayout {
     @Nullable
     public Sticker getCurrentSticker() {
         return handlingSticker;
+    }
+
+    public void hideBorderAndIcon(@IntRange(from = 0, to = 1) int position) {
+        switch (position) {
+            case 0:
+                showBorder = false;
+                showIcons = false;
+                break;
+            case 1:
+                showBorder = true;
+                showIcons = true;
+                break;
+        }
     }
 
     @NonNull

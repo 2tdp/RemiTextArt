@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -158,6 +159,27 @@ public class Utils {
             e.printStackTrace();
         }
         return image;
+    }
+
+    public static String saveBitmapToApp(Context context, Bitmap bitmap) {
+
+        ContextWrapper cw = new ContextWrapper(context);
+        File directory = cw.getDir("RemiTextArt", Context.MODE_PRIVATE);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+        File myPath = new File(directory, "remiTextArt.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(myPath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+            return myPath.getPath();
+        } catch (Exception e) {
+            Log.e("SAVE_IMAGE", e.getMessage(), e);
+        }
+        return "";
     }
 
     public static Bitmap getBitmapFromAsset(Context context, String nameFolder, String name, boolean isEmoji, boolean isDecor) {

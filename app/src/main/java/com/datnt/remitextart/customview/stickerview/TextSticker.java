@@ -82,9 +82,13 @@ public class TextSticker extends Sticker {
         this.id = id;
         this.textModel = textModel;
         init();
+        setText(textModel.getContent());
     }
 
     private void init() {
+        if (drawable == null)
+            this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
+
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         realBounds = new Rect(0, 0, getWidth(), getHeight());
         textRect = new Rect(0, 0, getWidth(), getHeight());

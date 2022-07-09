@@ -5,14 +5,18 @@ import android.graphics.Matrix;
 import android.text.Layout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.datnt.remitextart.custom.EditSticker;
 import com.datnt.remitextart.custom.TextStickerCustom;
+import com.datnt.remitextart.customview.stickerview.DrawableSticker;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.customview.stickerview.TextSticker;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.utils.Utils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -134,40 +138,10 @@ public class TextModel extends EditSticker implements Serializable {
     }
 
     @Override
-    public Sticker replace(Context context, @NonNull Sticker sticker) {
+    public Sticker replace(Context context, @NonNull Sticker sticker, @NotNull TextModel textModel) {
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            textSticker.setText(content);
-
-            for (TypeFontModel f : fontModel.getLstType()) {
-                if (f.isSelected()) {
-                    textSticker.setTypeface(Utils.getTypeFace(fontModel.getNameFont(), f.getName(), context));
-                    break;
-                }
-            }
-            if (colorModel != null) textSticker.setTextColor(colorModel);
-
-            textSticker.setAlpha(opacity);
-
-            if (shadowModel != null) {
-                textSticker.setShadow(shadowModel.getBlur(), shadowModel.getXPos(),
-                        shadowModel.getYPos(), shadowModel.getColorBlur());
-            }
-
-            switch (typeAlign) {
-                case 0:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_NORMAL);
-                    break;
-                case 1:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_CENTER);
-                    break;
-                case 2:
-                    textSticker.setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
-                    break;
-            }
-            textSticker.resizeText();
-
-
+            textSticker.setData(textModel);
             return textSticker;
         }
         return null;
@@ -182,16 +156,33 @@ public class TextModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
-        return sticker;
+        if (sticker instanceof TextStickerCustom) {
+            TextStickerCustom textSticker = (TextStickerCustom) sticker;
+            textSticker.setShadow(shadowModel.getBlur(), shadowModel.getXPos(), shadowModel.getYPos()
+                    , shadowModel.getColorBlur());
+            return sticker;
+        }
+        return null;
     }
 
     @Override
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
-        return sticker;
+        if (sticker instanceof TextStickerCustom) {
+            TextStickerCustom textSticker = (TextStickerCustom) sticker;
+            textSticker.setAlpha(opacity);
+            return sticker;
+        }
+        return null;
     }
 
     @Override
     public Sticker flip(Context context, @NonNull Sticker sticker) {
-        return sticker;
+        if (sticker instanceof TextStickerCustom) {
+            TextStickerCustom textSticker = (TextStickerCustom) sticker;
+            if (flipX) textSticker.setFlippedHorizontally(true);
+            if (flipY) textSticker.setFlippedVertically(true);
+            return sticker;
+        }
+        return null;
     }
 }

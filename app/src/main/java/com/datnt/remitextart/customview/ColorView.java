@@ -83,6 +83,10 @@ public class ColorView extends View {
         invalidate();
     }
 
+    public int getSize() {
+        return size;
+    }
+
     private void setSizeColor(int pos) {
         path.reset();
         switch (pos) {

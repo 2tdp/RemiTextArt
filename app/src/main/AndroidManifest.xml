@@ -22,13 +22,16 @@
         android:theme="@style/Theme.RemiTextArt"
         tools:targetApi="31">
         <activity
-            android:name=".activity.EditActivity"
+            android:name=".activity.edit.AddTextActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.Settings"
+            android:name=".activity.edit.EditActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.TemplateActivity"
+            android:name=".activity.setting.Settings"
+            android:exported="false" />
+        <activity
+            android:name=".activity.template.TemplateActivity"
             android:exported="false" />
         <activity
             android:name=".activity.project.ProjectsActivity"
@@ -37,13 +40,13 @@
             android:name=".activity.project.CreateProjectActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.RequestPermissionActivity"
+            android:name=".activity.permission.RequestPermissionActivity"
             android:exported="false" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SplashActivity"
+            android:name=".activity.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

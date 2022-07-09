@@ -1,17 +1,14 @@
 package com.datnt.remitextart.activity.project;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
-import com.datnt.remitextart.activity.Settings;
+import com.datnt.remitextart.activity.setting.Settings;
 import com.datnt.remitextart.activity.base.BaseActivity;
-import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
 public class ProjectsActivity extends BaseActivity {

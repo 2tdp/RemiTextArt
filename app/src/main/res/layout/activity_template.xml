@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="@dimen/_5sdp"
-    tools:context=".activity.TemplateActivity">
+    tools:context=".activity.template.TemplateActivity">
 
     <RelativeLayout
         android:id="@+id/rlToolbar"

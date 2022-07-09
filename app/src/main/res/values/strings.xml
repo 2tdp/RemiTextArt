@@ -15,6 +15,7 @@
     <string name="success">Success</string>
     <string name="write_on_photo">Write On Photo</string>
     <string name="decorate_your_photo">Decorate Your Photo</string>
+    <string name="del_sticker">Are you sure want to delete Sticker?</string>
 
     //splash
     <string name="splash_1">Make \nAmazing \nPhoto \nAnytime</string>
@@ -66,7 +67,7 @@
     <string name="sticker">Sticker</string>
     <string name="image">Image</string>
     <string name="background">Background</string>
-    <string name="blend">Blend</string>
+    <string name="overlay">Overlay</string>
     <string name="decor">Decor</string>
     <string name="size">Size</string>
 
@@ -128,7 +129,7 @@
     <string name="vignette">Vignette</string>
 
     //overlay
-    <string name="overlay">Overlay</string>
+
 
     //layer
     <string name="layer">Layer</string>

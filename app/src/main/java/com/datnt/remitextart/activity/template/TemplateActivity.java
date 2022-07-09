@@ -1,4 +1,4 @@
-package com.datnt.remitextart.activity;
+package com.datnt.remitextart.activity.template;
 
 import android.os.Bundle;
 import android.widget.ImageView;

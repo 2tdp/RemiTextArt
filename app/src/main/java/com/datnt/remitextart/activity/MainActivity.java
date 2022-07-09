@@ -11,6 +11,7 @@ import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
 import com.datnt.remitextart.activity.project.CreateProjectActivity;
 import com.datnt.remitextart.activity.project.ProjectsActivity;
+import com.datnt.remitextart.activity.template.TemplateActivity;
 import com.datnt.remitextart.fragment.vip.VipOneFragment;
 import com.datnt.remitextart.utils.Utils;
 

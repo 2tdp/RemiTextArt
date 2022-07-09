@@ -19,7 +19,9 @@ import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
+import com.datnt.remitextart.R;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.customview.stickerview.TextSticker;
 import com.datnt.remitextart.model.ColorModel;
@@ -74,6 +76,8 @@ public class TextStickerCustom extends Sticker {
     }
 
     private void init() {
+        if (drawable == null)
+            this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         realBounds = new Rect(0, 0, getWidth(), getHeight());
         textRect = new Rect(0, 0, getWidth(), getHeight());
@@ -84,8 +88,8 @@ public class TextStickerCustom extends Sticker {
         textPaint.setTextSize(maxTextSizePixels);
     }
 
-    private void setData(TextModel textModel) {
-        setTextModel(textModel);
+    public void setData(TextModel textModel) {
+        setText(textModel.getContent());
 
         for (TypeFontModel f : textModel.getFontModel().getLstType()) {
             if (f.isSelected()) {
@@ -144,8 +148,8 @@ public class TextStickerCustom extends Sticker {
         canvas.restore();
     }
 
-    public TextStickerCustom setTextModel(TextModel textModel) {
-        this.textModel = textModel;
+    public TextStickerCustom setText(String text) {
+        this.textModel.setContent(text);
         createDrawableText();
         return this;
     }
@@ -374,8 +378,10 @@ public class TextStickerCustom extends Sticker {
         textPaint.getTextBounds(text, 0, text.length(), textRect);
 
         GradientDrawable drawable = new GradientDrawable();
-
-        drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
+        if (text.length() < 20)
+            drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
+        else
+            drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
         drawable.setColor(Color.TRANSPARENT);
         setDrawable(drawable);
         staticLayout = new StaticLayout(text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,

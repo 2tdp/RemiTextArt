@@ -1,4 +1,4 @@
-package com.datnt.remitextart.activity;
+package com.datnt.remitextart.activity.edit;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -80,15 +80,17 @@ public class AddTextActivity extends BaseActivity {
         if (text.equals("")) {
             Utils.showToast(this, getResources().getString(R.string.pls_enter_text));
         } else {
-            if (!isEditText)
+            Intent returnIntent = new Intent();
+            if (!isEditText) {
                 textModel = new TextModel(text, null, font, null, null,
-                        null, posGravity, false, false, 100, null);
-            else {
+                        null, posGravity, false, false, 255, null);
+                returnIntent.putExtra("isAdd", true);
+            } else {
                 textModel.setContent(text);
                 textModel.setFontModel(font);
                 textModel.setTypeAlign(posGravity);
+                returnIntent.putExtra("isAdd", false);
             }
-            Intent returnIntent = new Intent();
             returnIntent.putExtra("text", textModel);
             setResult(Activity.RESULT_OK, returnIntent);
             Utils.hideKeyboard(this, ivTick);
