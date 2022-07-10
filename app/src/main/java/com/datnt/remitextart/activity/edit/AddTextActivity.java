@@ -357,7 +357,6 @@ public class AddTextActivity extends BaseActivity {
             if (f.isSelected()) {
                 positionStyleFont = i + 2;
                 etText.setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), this));
-                Log.d("2tdp", "font: " + textModel.getFontModel().getNameFont() + "......" + f.getName());
                 break;
             }
         }

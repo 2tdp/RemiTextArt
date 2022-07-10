@@ -26,6 +26,9 @@ import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.customview.stickerview.TextSticker;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.ShadowModel;
+import com.datnt.remitextart.model.text.FontModel;
+import com.datnt.remitextart.model.text.QuoteModel;
+import com.datnt.remitextart.model.text.ShearTextModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.model.text.TypeFontModel;
 import com.datnt.remitextart.utils.Utils;
@@ -120,6 +123,40 @@ public class TextStickerCustom extends Sticker {
         resizeText();
     }
 
+    public void setData(String content, QuoteModel quoteModel, FontModel fontModel, ColorModel colorModel,
+                        ShadowModel shadowModel, ShearTextModel shearTextModel,
+                        int typeAlign, boolean flipX, boolean flipY, int opacity, Matrix matrix) {
+        setText(textModel.getContent());
+
+        for (TypeFontModel f : textModel.getFontModel().getLstType()) {
+            if (f.isSelected()) {
+                setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), context));
+                break;
+            }
+        }
+        if (textModel.getColorModel() != null) setTextColor(textModel.getColorModel());
+
+        setAlpha(textModel.getOpacity());
+
+        if (textModel.getShadowModel() != null) {
+            setShadow(textModel.getShadowModel().getBlur(), textModel.getShadowModel().getXPos(),
+                    textModel.getShadowModel().getYPos(), textModel.getShadowModel().getColorBlur());
+        }
+
+        switch (textModel.getTypeAlign()) {
+            case 0:
+                setTextAlign(Layout.Alignment.ALIGN_NORMAL);
+                break;
+            case 1:
+                setTextAlign(Layout.Alignment.ALIGN_CENTER);
+                break;
+            case 2:
+                setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                break;
+        }
+        resizeText();
+    }
+
     @Override
     public void draw(@NonNull Canvas canvas) {
         if (staticLayout == null) return;
@@ -152,6 +189,12 @@ public class TextStickerCustom extends Sticker {
         this.textModel.setContent(text);
         createDrawableText();
         return this;
+    }
+
+    public void setTextModel(TextModel textModel) {
+        this.textModel = textModel;
+        setData(textModel);
+        createDrawableText();
     }
 
     public TextModel getTextModel() {
@@ -372,7 +415,7 @@ public class TextStickerCustom extends Sticker {
         return scaledPixels / context.getResources().getDisplayMetrics().scaledDensity;
     }
 
-    private void createDrawableText() {
+    public void createDrawableText() {
         String text = getText();
 
         textPaint.getTextBounds(text, 0, text.length(), textRect);

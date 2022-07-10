@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class DataColor {
 
-    public static ArrayList<ColorModel> setListColor(Context context) {
+    public static ArrayList<ColorModel> getListColor(Context context) {
         ArrayList<ColorModel> lstColor = new ArrayList<>();
 
         int[] arrColor = context.getResources().getIntArray(R.array.lstColor);

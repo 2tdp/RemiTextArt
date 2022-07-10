@@ -169,7 +169,7 @@
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
-                android:id="@+id/tvCancelEditText"
+                android:id="@+id/tvResetEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -178,10 +178,10 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:fontFamily="@font/poppins_medium"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/cancel"
+                android:text="@string/reset"
                 android:textColor="@color/red"
                 android:textSize="@dimen/_10ssp"
-                android:visibility="gone" />
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tvTitleEditText"

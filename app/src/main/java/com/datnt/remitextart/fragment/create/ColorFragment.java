@@ -62,7 +62,7 @@ public class ColorFragment extends Fragment {
     }
 
     private void setUpLayout() {
-        ArrayList<ColorModel> lstColor = new ArrayList<>(DataColor.setListColor(requireContext()));
+        ArrayList<ColorModel> lstColor = new ArrayList<>(DataColor.getListColor(requireContext()));
 
         ColorAdapter colorAdapter = new ColorAdapter(requireContext(), R.layout.item_color, (o, pos) -> {
             if (pos == 0) DataColor.pickColor(requireContext(), this::sendColor);

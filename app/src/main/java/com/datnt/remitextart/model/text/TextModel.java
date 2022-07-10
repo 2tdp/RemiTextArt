@@ -138,16 +138,6 @@ public class TextModel extends EditSticker implements Serializable {
     }
 
     @Override
-    public Sticker replace(Context context, @NonNull Sticker sticker, @NotNull TextModel textModel) {
-        if (sticker instanceof TextStickerCustom) {
-            TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            textSticker.setData(textModel);
-            return textSticker;
-        }
-        return null;
-    }
-
-    @Override
     public Sticker duplicate(Context context, int id) {
         TextModel textModel = new TextModel(content, quoteModel, fontModel, colorModel, shadowModel,
                 shearTextModel, typeAlign, flipX, flipY, opacity, matrix);
