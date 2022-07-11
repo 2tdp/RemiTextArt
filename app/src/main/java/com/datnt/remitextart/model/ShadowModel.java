@@ -9,6 +9,13 @@ public class ShadowModel implements Serializable {
     private float blur;
     private int colorBlur;
 
+    public ShadowModel(ShadowModel shadowModel) {
+        this.xPos = shadowModel.getXPos();
+        this.yPos = shadowModel.getYPos();
+        this.blur = shadowModel.getBlur();
+        this.colorBlur = shadowModel.getColorBlur();
+    }
+
     public ShadowModel(float xPos, float yPos, float blur, int colorBlur) {
         this.xPos = xPos;
         this.yPos = yPos;

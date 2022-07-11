@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -26,8 +27,11 @@ import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.remitextart.R;
+import com.datnt.remitextart.custom.TextStickerCustom;
 import com.datnt.remitextart.model.LayerModel;
 import com.datnt.remitextart.utils.Utils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -709,8 +713,8 @@ public class StickerView extends FrameLayout {
         this.stretchValue = value;
         if (value > 0) {
             if (value > 0.5f) stretch = 0.5f;
-            else
-                stretch = 1 - value;
+            else stretch = 1 - value;
+
         } else {
             if (value < -0.5f) stretch = -0.5f;
             else
@@ -751,6 +755,23 @@ public class StickerView extends FrameLayout {
 
     public float getStretch() {
         return stretchValue;
+    }
+
+    public void duplicateShearModel(@NotNull Sticker sticker) {
+        TextStickerCustom textSticker = (TextStickerCustom) sticker;
+        this.shearX = textSticker.getTextModel().getShearTextModel().getShearX();
+        this.shearY = textSticker.getTextModel().getShearTextModel().getShearY();
+        this.stretch = textSticker.getTextModel().getShearTextModel().getStretch();
+
+
+        shear(sticker);
+        stretch(sticker);
+    }
+
+    public void resetShear(float shearX, float shearY, float stretch) {
+        this.shearX = shearX;
+        this.shearY = shearY;
+        this.stretch = stretch;
     }
 
     public void flipCurrentSticker(int direction) {

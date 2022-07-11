@@ -50,8 +50,8 @@ public class DataColor {
         dialog.setCancelable(false);
         dialog.show();
 
-        tvNo.setOnClickListener(v -> dialog.cancel());
-        tvYes.setOnClickListener(view1 -> {
+        tvNo.setOnClickListener(vNO -> dialog.cancel());
+        tvYes.setOnClickListener(vYes -> {
             ColorModel color = new ColorModel(colorPicker.getSelectedColor(), colorPicker.getSelectedColor(), 0, false);
 
             callback.callbackColor(color);
@@ -88,26 +88,32 @@ public class DataColor {
         checkPickDirec(color.getDirec(), iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
 
         iv_TB.setOnClickListener(v -> {
+            color.setDirec(0);
             ivShow.setBackground(clickDirec(0, color));
             checkPickDirec(0, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });
         ivTL_BR.setOnClickListener(v -> {
+            color.setDirec(1);
             ivShow.setBackground(clickDirec(1, color));
             checkPickDirec(1, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });
         ivLR.setOnClickListener(v -> {
+            color.setDirec(2);
             ivShow.setBackground(clickDirec(2, color));
             checkPickDirec(2, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });
         ivBL_TR.setOnClickListener(v -> {
+            color.setDirec(3);
             ivShow.setBackground(clickDirec(3, color));
             checkPickDirec(3, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });
         ivBT.setOnClickListener(v -> {
+            color.setDirec(4);
             ivShow.setBackground(clickDirec(4, color));
             checkPickDirec(4, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });
         ivRL.setOnClickListener(v -> {
+            color.setDirec(5);
             ivShow.setBackground(clickDirec(5, color));
             checkPickDirec(5, iv_TB, ivTL_BR, ivLR, ivBL_TR, ivBT, ivRL);
         });

@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
 
 import androidx.annotation.ContentView;
 import androidx.annotation.Dimension;
@@ -102,41 +103,7 @@ public class TextStickerCustom extends Sticker {
         }
         if (textModel.getColorModel() != null) setTextColor(textModel.getColorModel());
 
-        setAlpha(textModel.getOpacity());
-
-        if (textModel.getShadowModel() != null) {
-            setShadow(textModel.getShadowModel().getBlur(), textModel.getShadowModel().getXPos(),
-                    textModel.getShadowModel().getYPos(), textModel.getShadowModel().getColorBlur());
-        }
-
-        switch (textModel.getTypeAlign()) {
-            case 0:
-                setTextAlign(Layout.Alignment.ALIGN_NORMAL);
-                break;
-            case 1:
-                setTextAlign(Layout.Alignment.ALIGN_CENTER);
-                break;
-            case 2:
-                setTextAlign(Layout.Alignment.ALIGN_OPPOSITE);
-                break;
-        }
-        resizeText();
-    }
-
-    public void setData(String content, QuoteModel quoteModel, FontModel fontModel, ColorModel colorModel,
-                        ShadowModel shadowModel, ShearTextModel shearTextModel,
-                        int typeAlign, boolean flipX, boolean flipY, int opacity, Matrix matrix) {
-        setText(textModel.getContent());
-
-        for (TypeFontModel f : textModel.getFontModel().getLstType()) {
-            if (f.isSelected()) {
-                setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), context));
-                break;
-            }
-        }
-        if (textModel.getColorModel() != null) setTextColor(textModel.getColorModel());
-
-        setAlpha(textModel.getOpacity());
+        setAlpha((int) (textModel.getOpacity() * 255 / 100f));
 
         if (textModel.getShadowModel() != null) {
             setShadow(textModel.getShadowModel().getBlur(), textModel.getShadowModel().getXPos(),
@@ -236,6 +203,8 @@ public class TextStickerCustom extends Sticker {
 
     @NonNull
     public TextStickerCustom setTextColor(@NonNull ColorModel color) {
+        this.textModel.setColorModel(color);
+
         if (color.getColorStart() == color.getColorEnd()) {
             textPaint.setShader(null);
             textPaint.setColor(color.getColorStart());
@@ -376,6 +345,10 @@ public class TextStickerCustom extends Sticker {
         return staticLayout.getHeight();
     }
 
+    public Rect getTextRect() {
+        return textRect;
+    }
+
     @Override
     public int getWidth() {
         return drawable.getIntrinsicWidth();
@@ -418,17 +391,39 @@ public class TextStickerCustom extends Sticker {
     public void createDrawableText() {
         String text = getText();
 
-        textPaint.getTextBounds(text, 0, text.length(), textRect);
+        if (text != null) {
+            int line = 1, max = 0;
 
-        GradientDrawable drawable = new GradientDrawable();
-        if (text.length() < 20)
-            drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
-        else
-            drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
-        drawable.setColor(Color.TRANSPARENT);
-        setDrawable(drawable);
-        staticLayout = new StaticLayout(text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
-                lineSpacingExtra, true);
+            String[] temp = text.split("\n");
+            line = temp.length;
+
+            if (temp.length == 1) max = text.length();
+            Log.d("2tdp", "createDrawableText: " + line);
+            for (String s : temp) {
+                if (s.length() > max) max = s.length();
+            }
+
+            textPaint.getTextBounds(text, 0, text.length(), textRect);
+
+            GradientDrawable drawable = new GradientDrawable();
+//            if (text.length() > 20 && line != 1)
+//                drawable.setSize((int) (textRect.width() * 1.1f * max / text.length()), (int) (textRect.height() * 1.2f * line));
+//            else if (text.length() > 20)
+//                drawable.setSize((int) (textRect.width() * 1.2f),
+//                        (int) (textRect.height() * Math.sqrt(textRect.width() * textRect.width() + textRect.height() * textRect.height())));
+//            else
+//                drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
+
+            if (text.length() < 20)
+                drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
+            else
+                drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
+            
+            drawable.setColor(Color.TRANSPARENT);
+            setDrawable(drawable);
+            staticLayout = new StaticLayout(text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                    lineSpacingExtra, true);
+        }
     }
 
     @Override

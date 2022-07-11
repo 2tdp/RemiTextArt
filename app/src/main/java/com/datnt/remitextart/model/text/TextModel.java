@@ -139,8 +139,13 @@ public class TextModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker duplicate(Context context, int id) {
-        TextModel textModel = new TextModel(content, quoteModel, fontModel, colorModel, shadowModel,
+        ShadowModel shadow = null;
+        if (shadowModel != null)
+            shadow = new ShadowModel(shadowModel);
+
+        TextModel textModel = new TextModel(content, quoteModel, fontModel, colorModel, shadow,
                 shearTextModel, typeAlign, flipX, flipY, opacity, matrix);
+
         return new TextStickerCustom(context, textModel, id);
     }
 
@@ -159,7 +164,7 @@ public class TextModel extends EditSticker implements Serializable {
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            textSticker.setAlpha(opacity);
+            textSticker.setAlpha((int) (opacity * 255 / 100f));
             return sticker;
         }
         return null;

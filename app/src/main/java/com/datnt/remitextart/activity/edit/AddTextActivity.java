@@ -22,7 +22,9 @@ import com.datnt.remitextart.activity.base.BaseActivity;
 import com.datnt.remitextart.adapter.textadapter.FontsAdapter;
 import com.datnt.remitextart.adapter.textadapter.TypeFontAdapter;
 import com.datnt.remitextart.data.DataFont;
+import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.model.text.FontModel;
+import com.datnt.remitextart.model.text.ShearTextModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.model.text.TypeFontModel;
 import com.datnt.remitextart.utils.Utils;
@@ -83,7 +85,7 @@ public class AddTextActivity extends BaseActivity {
             Intent returnIntent = new Intent();
             if (!isEditText) {
                 textModel = new TextModel(text, null, font, null, null,
-                        null, posGravity, false, false, 255, null);
+                        null, posGravity, false, false, 100, null);
                 returnIntent.putExtra("isAdd", true);
             } else {
                 textModel.setContent(text);
