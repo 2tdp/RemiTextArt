@@ -331,6 +331,7 @@ public class AddTextActivity extends BaseActivity {
             }
             changeStateText(0);
             changeStateAlignText(0);
+            Utils.showSoftKeyboard(this, etText);
         }
     }
 

@@ -3,6 +3,7 @@ package com.datnt.remitextart.data;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,6 +42,7 @@ public class DataColor {
 
     public static void pickColor(Context context, ICallbackColor callback) {
         View view = LayoutInflater.from(context).inflate(R.layout.dialog_pick_color, null);
+
         ColorPickerView colorPicker = view.findViewById(R.id.pickColor);
         TextView tvNo = view.findViewById(R.id.tvNo);
         TextView tvYes = view.findViewById(R.id.tvYes);

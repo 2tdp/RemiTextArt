@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,11 +30,15 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
 import com.datnt.remitextart.activity.edit.AddTextActivity;
 import com.datnt.remitextart.adapter.ColorAdapter;
+import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.remitextart.adapter.emoji.TitleEmojiAdapter;
+import com.datnt.remitextart.custom.DrawableStickerCustom;
 import com.datnt.remitextart.custom.TextStickerCustom;
 import com.datnt.remitextart.customview.ColorView;
 import com.datnt.remitextart.customview.CropRatioView;
@@ -42,7 +48,10 @@ import com.datnt.remitextart.customview.OnSeekbarResult;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.customview.stickerview.StickerView;
 import com.datnt.remitextart.data.DataColor;
+import com.datnt.remitextart.data.DataEmoji;
+import com.datnt.remitextart.fragment.EmojiFragment;
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.EmojiModel;
 import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.model.background.BackgroundModel;
 import com.datnt.remitextart.model.text.ShearTextModel;
@@ -69,6 +78,16 @@ public class EditActivity extends BaseActivity {
     private RelativeLayout rlMain, rlAddText, rlEmoji, rlImage, rlBackground, rlOverlay, rlDecor, rlCrop,
             rlExpandEditText;
 
+    //emoji
+    private RelativeLayout rlExpandEmoji, rlExpandEditEmoji, rlCancelPickEmoji, rlCancelEditEmoji,
+            rlDelEmoji, rlReplaceEmoji, rlOpacityEmoji, rlFlipYEmoji, rlFlipXEmoji, rlEditOpacityEmoji;
+    private LinearLayout llEditEmoji;
+    private RecyclerView rcvTypeEmoji;
+    private CustomSeekbarRunText sbOpacityEmoji;
+    private TitleEmojiAdapter titleEmojiAdapter;
+    private TextView tvTitleEditEmoji, tvResetEditEmoji;
+    private boolean isFirstEmoji, isReplaceEmoji;
+
     //addText
     private RelativeLayout rlEditText, rlDelText, rlET, rlDuplicateText, rlFontSize, rlColorText, rlTransformText,
             rlShadowText, rlOpacityText, rlEditFontSize, rlEditColorText, rlEditOpacityText;
@@ -82,6 +101,7 @@ public class EditActivity extends BaseActivity {
     private RecyclerView rcvColorText;
     private float blur = 0f;
 
+    //Main
     private ImageView ivBack, vMain, ivTick, ivExport, ivLayer, ivOriginal, iv1_1, iv9_16, iv4_5,
             iv16_9;
     private TextView tvToolBar, tvOriginal, tv1_1, tv9_16, tv4_5, tv16_9;
@@ -89,6 +109,8 @@ public class EditActivity extends BaseActivity {
     private ColorView vColor;
     private StickerView vSticker;
 
+    private ViewPager2 vpEmoji;
+    private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
     private Animation animation;
     private Bitmap bmMain, bmRoot;
     private BackgroundModel backgroundModel;
@@ -118,7 +140,7 @@ public class EditActivity extends BaseActivity {
                 vSticker.hideBorderAndIcon(1);
                 vSticker.invalidate();
 
-                if (sticker instanceof TextStickerCustom) seekAndHideOperation(positionAddText);
+                checkTypeSticker(sticker);
             }
 
             @Override
@@ -131,7 +153,7 @@ public class EditActivity extends BaseActivity {
                 vSticker.hideBorderAndIcon(1);
                 vSticker.invalidate();
 
-                if (sticker instanceof TextStickerCustom) seekAndHideOperation(positionAddText);
+                checkTypeSticker(sticker);
             }
 
             @Override
@@ -157,6 +179,28 @@ public class EditActivity extends BaseActivity {
         });
     }
 
+    private void checkTypeSticker(Sticker sticker) {
+        if (sticker instanceof TextStickerCustom) seekAndHideOperation(positionAddText);
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    seekAndHideOperation(positionEmoji);
+                    break;
+                case Utils.IMAGE:
+                    break;
+                case Utils.OVERLAY:
+                    break;
+                case Utils.DECOR:
+                    break;
+                case Utils.TEMPLATE:
+                    break;
+
+            }
+        }
+    }
+
     private void evenClick() {
         //toolbar
         ivTick.setOnClickListener(v -> clickTick());
@@ -173,6 +217,13 @@ public class EditActivity extends BaseActivity {
                 seekAndHideOperation(-1);
             } else seekAndHideOperation(positionAddText);
         });
+        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(-1));
+        rlCancelEditEmoji.setOnClickListener(v -> {
+            if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                vSticker.setCurrentSticker(null);
+                seekAndHideOperation(-1);
+            } else seeAndHideViewEmoji(-1);
+        });
 
         //addSticker
         rlAddText.setOnClickListener(v -> {
@@ -187,6 +238,23 @@ public class EditActivity extends BaseActivity {
 //        rlTransformText.setOnClickListener(v -> transformText(vSticker.getCurrentSticker()));
         rlShadowText.setOnClickListener(v -> shadowText(vSticker.getCurrentSticker()));
         rlOpacityText.setOnClickListener(v -> opacityText(vSticker.getCurrentSticker()));
+
+        //emoji
+        rlEmoji.setOnClickListener(v -> {
+            addEmoji();
+            isReplaceEmoji = false;
+        });
+        rlDelEmoji.setOnClickListener(v -> delStick());
+        rlReplaceEmoji.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
+        rlOpacityEmoji.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlFlipXEmoji.setOnClickListener(v -> {
+            vSticker.flipCurrentSticker(0);
+            flip(vSticker.getCurrentSticker(), true, false);
+        });
+        rlFlipYEmoji.setOnClickListener(v -> {
+            vSticker.flipCurrentSticker(1);
+            flip(vSticker.getCurrentSticker(), false, true);
+        });
 
         //size
         rlCrop.setOnClickListener(v -> {
@@ -253,6 +321,194 @@ public class EditActivity extends BaseActivity {
             vSticker.getLayoutParams().height = (int) vColor.getH();
             vSticker.getLayoutParams().width = (int) vColor.getW();
             backgroundModel.setSizeViewColor(vColor.getSize());
+        }
+    }
+
+    //Flip
+    private void flip(Sticker sticker, boolean flipX, boolean flipY) {
+        if (!checkCurrentSticker()) return;
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    if (flipX)
+                        drawableSticker.getEmojiModel().setFlipX(!drawableSticker.getEmojiModel().isFlipX());
+
+                    if (flipY)
+                        drawableSticker.getEmojiModel().setFlipY(!drawableSticker.getEmojiModel().isFlipY());
+                    break;
+            }
+        }
+    }
+
+    //Opacity
+    private void opacity(Sticker sticker) {
+        if (!checkCurrentSticker()) return;
+
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    opacityEmoji(drawableSticker);
+                    break;
+            }
+        }
+    }
+
+    //replace
+    private void replace(Sticker sticker) {
+        if (!checkCurrentSticker()) return;
+
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    isReplaceEmoji = true;
+                    addEmoji();
+                    break;
+            }
+        }
+    }
+
+    //Emoji
+    private void addEmoji() {
+        rlExpandEmoji.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
+        seeAndHideViewEmoji(-1);
+        setUpTitleEmoji();
+        setUpDataEmoji();
+    }
+
+    private void addNewEmoji(EmojiModel emoji) {
+        DrawableStickerCustom emojiSticker = new DrawableStickerCustom(this, emoji, getId(), Utils.EMOJI);
+        vSticker.addSticker(emojiSticker);
+    }
+
+    private void setUpDataEmoji() {
+        addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+
+        String[] arrNameEmoji = new String[]{"bear", "cat", "chicken", "face", "fox", "frankenstein",
+                "ghost", "heart", "icon", "pillow", "pumpkin", "santa", "tiger"};
+        for (String s : arrNameEmoji) {
+            EmojiFragment emojiFragment = EmojiFragment.newInstance(s, (o, pos) -> {
+                EmojiModel emoji = (EmojiModel) o;
+                if (!isReplaceEmoji) addNewEmoji(emoji);
+                else replaceEmoji(emoji);
+                seekAndHideOperation(positionEmoji);
+            });
+            addFragmentsAdapter.addFrag(emojiFragment);
+        }
+
+        vpEmoji.setAdapter(addFragmentsAdapter);
+        vpEmoji.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                titleEmojiAdapter.setCurrent(position);
+                rcvTypeEmoji.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    private void setUpTitleEmoji() {
+
+        titleEmojiAdapter = new TitleEmojiAdapter(this, (o, pos) -> {
+            titleEmojiAdapter.setCurrent(pos);
+            vpEmoji.setCurrentItem(pos, true);
+        });
+
+        titleEmojiAdapter.setData(DataEmoji.getTitleEmoji(this, "title"));
+        if (!isFirstEmoji) {
+            titleEmojiAdapter.setCurrent(0);
+            isFirstEmoji = true;
+        }
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvTypeEmoji.setLayoutManager(manager);
+        rcvTypeEmoji.setAdapter(titleEmojiAdapter);
+    }
+
+    //Opacity Emoji
+    private void opacityEmoji(DrawableStickerCustom drawableSticker) {
+        seeAndHideViewEmoji(0);
+
+        int opacityOld = drawableSticker.getEmojiModel().getOpacity();
+        sbOpacityEmoji.setProgress(opacityOld);
+
+        sbOpacityEmoji.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                drawableSticker.getEmojiModel().setOpacity(value);
+                vSticker.replace(drawableSticker.getEmojiModel().opacity(EditActivity.this, drawableSticker), true);
+            }
+
+            @Override
+            public void onUp(View v, int value) {
+
+            }
+        });
+    }
+
+    //Replace Emoji
+    private void replaceEmoji(EmojiModel emoji) {
+        if (!checkCurrentSticker()) return;
+
+        DrawableStickerCustom drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
+        if (drawableSticker != null && drawableSticker.getTypeSticker().equals(Utils.EMOJI))
+            drawableSticker.setEmojiModel(emoji);
+
+        vSticker.invalidate();
+    }
+
+    private void seeAndHideViewEmoji(int position) {
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+        if (vOperation.getVisibility() == View.VISIBLE) {
+            vOperation.setAnimation(animation);
+            vOperation.setVisibility(View.GONE);
+        }
+
+        switch (position) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (llEditEmoji.getVisibility() == View.VISIBLE) {
+                    llEditEmoji.setAnimation(animation);
+                    llEditEmoji.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditOpacityEmoji.getVisibility() == View.GONE) {
+                    rlEditOpacityEmoji.setAnimation(animation);
+                    rlEditOpacityEmoji.setVisibility(View.VISIBLE);
+                    sbOpacityEmoji.setColorText(getResources().getColor(R.color.green));
+                    sbOpacityEmoji.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                    sbOpacityEmoji.setProgress(100);
+                    sbOpacityEmoji.setMax(100);
+                }
+
+                if (tvResetEditEmoji.getVisibility() == View.GONE)
+                    tvResetEditEmoji.setVisibility(View.VISIBLE);
+
+                tvTitleEditEmoji.setText(R.string.shadow);
+                break;
+            default:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandEmoji.getVisibility() == View.GONE) {
+                    rlExpandEmoji.setAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.VISIBLE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE)
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+
+                if (tvResetEditEmoji.getVisibility() == View.VISIBLE)
+                    tvResetEditEmoji.setVisibility(View.GONE);
+
+                tvTitleEditEmoji.setText(R.string.sticker);
+                break;
         }
     }
 
@@ -332,6 +588,7 @@ public class EditActivity extends BaseActivity {
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     vSticker.hideBorderAndIcon(0);
                     textSticker.setTextSize(i);
+                    tvFontText.setText(String.valueOf(i));
                     vSticker.invalidate();
 
                 }
@@ -352,33 +609,41 @@ public class EditActivity extends BaseActivity {
 
     //Color Text
     private void colorText(Sticker sticker) {
+        if (!checkCurrentSticker()) return;
         seeAndHideViewText(1);
         ArrayList<ColorModel> lstColor = DataColor.getListColor(this);
 
-        ColorAdapter colorAdapter = new ColorAdapter(this, R.layout.item_color_edit, (o, pos) -> {
-            ColorModel color = (ColorModel) o;
-            if (pos == 0) DataColor.pickColor(this, coloModel -> setTextColor(sticker, color));
-            else if (color.getColorStart() == color.getColorEnd()) setTextColor(sticker, color);
-            else DataColor.pickDirection(this, color, coloModel -> setTextColor(sticker, color));
-        });
-        if (!lstColor.isEmpty())
-            colorAdapter.setData(lstColor);
-
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        rcvColorText.setLayoutManager(manager);
-        rcvColorText.setAdapter(colorAdapter);
-    }
-
-    private void setTextColor(Sticker sticker, ColorModel color) {
-        if (!checkCurrentSticker()) return;
-
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            if (textSticker.getTextModel().getColorModel() != null) {
-                ColorModel colorModel = textSticker.getTextModel().getColorModel();
-                tvResetText.setOnClickListener(v -> resetText(1, textSticker, -1, colorModel, null, null, -1));
-            } else
-                tvResetText.setOnClickListener(v -> resetText(1, textSticker, -1, null, null, null, -1));
+
+            ColorModel colorModelOld = textSticker.getTextModel().getColorModel();
+            tvResetText.setOnClickListener(v -> resetText(1, textSticker, -1,
+                    colorModelOld, null, null, -1));
+
+            ColorAdapter colorAdapter = new ColorAdapter(this, R.layout.item_color_edit, (o, pos) -> {
+
+
+                ColorModel color = (ColorModel) o;
+                if (pos == 0)
+                    DataColor.pickColor(this, coloModel -> setTextColor(textSticker, coloModel));
+                else if (color.getColorStart() == color.getColorEnd())
+                    setTextColor(textSticker, color);
+                else
+                    DataColor.pickDirection(this, color, coloModel -> setTextColor(textSticker, color));
+            });
+            if (!lstColor.isEmpty()) colorAdapter.setData(lstColor);
+
+            LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            rcvColorText.setLayoutManager(manager);
+            rcvColorText.setAdapter(colorAdapter);
+        }
+    }
+
+    private void setTextColor(TextStickerCustom textSticker, ColorModel color) {
+        if (!checkCurrentSticker()) return;
+
+        if (color != null) {
+            textSticker.getTextModel().setColorModel(color);
             textSticker.setTextColor(color);
             vSticker.invalidate();
         }
@@ -568,8 +833,7 @@ public class EditActivity extends BaseActivity {
             yPos = (shadowModel.getYPos());
             blur = (shadowModel.getBlur());
             color = shadowModel.getColorBlur();
-        } else
-            textSticker.getTextModel().setShadowModel(new ShadowModel(xPos, yPos, blur, color));
+        } else textSticker.getTextModel().setShadowModel(new ShadowModel(xPos, yPos, blur, color));
 
         ShadowModel shadowModelOld = new ShadowModel(xPos, yPos, blur, color);
 
@@ -635,7 +899,7 @@ public class EditActivity extends BaseActivity {
                 tvFontText.setText(String.valueOf(sizeText));
                 break;
             case 1:
-                if (colorModel != null) textSticker.setTextColor(colorModel);
+                if (colorModel != null) textSticker.getTextModel().setColorModel(colorModel);
                 else
                     textSticker.setTextColor(new ColorModel(Color.BLACK, Color.BLACK, 0, false));
 
@@ -677,9 +941,8 @@ public class EditActivity extends BaseActivity {
                 if (blurOld == 0f) tvBlurText.setText(String.valueOf(0));
                 else tvBlurText.setText(String.valueOf((int) ((blurOld - 5) * 10f)));
                 if (blurOld > 5) sbBlurText.setProgress((int) ((blurOld - 5) * 10f));
-                else if (blurOld == 0f) {
-                    sbBlurText.setProgress(0);
-                } else sbBlurText.setProgress((int) ((5 - blurOld) * 10f));
+                else if (blurOld == 0f) sbBlurText.setProgress(0);
+                else sbBlurText.setProgress((int) ((5 - blurOld) * 10f));
 
                 textSticker.getTextModel().getShadowModel().setXPos(xPos);
                 textSticker.getTextModel().getShadowModel().setYPos(yPos);
@@ -832,6 +1095,84 @@ public class EditActivity extends BaseActivity {
         else ivLayer.setImageResource(R.drawable.ic_layer);
 
         switch (position) {
+            case positionEmoji:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.setAnimation(animation);
+                    vSize.setVisibility(View.GONE);
+                    llLayerExport.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.VISIBLE);
+                    ivTick.setVisibility(View.VISIBLE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.setAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (rlEditFontSize.getVisibility() == View.VISIBLE) {
+                    rlEditFontSize.setAnimation(animation);
+                    rlEditFontSize.setVisibility(View.GONE);
+                }
+
+                if (rlEditColorText.getVisibility() == View.VISIBLE) {
+                    rlEditColorText.setAnimation(animation);
+                    rlEditColorText.setVisibility(View.GONE);
+                }
+
+                if (llEditTransformText.getVisibility() == View.VISIBLE) {
+                    llEditTransformText.setAnimation(animation);
+                    llEditTransformText.setVisibility(View.GONE);
+                }
+
+                if (llEditShadowText.getVisibility() == View.VISIBLE) {
+                    llEditShadowText.setAnimation(animation);
+                    llEditShadowText.setVisibility(View.GONE);
+                }
+
+                if (rlEditOpacityText.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityText.setAnimation(animation);
+                    rlEditOpacityText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.setAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (vEditText.getVisibility() == View.VISIBLE) {
+                    vEditText.setAnimation(animation);
+                    vEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.setAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlEditOpacityEmoji.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityEmoji.setAnimation(animation);
+                    rlEditOpacityEmoji.setVisibility(View.GONE);
+                }
+
+                if (tvResetEditEmoji.getVisibility() == View.VISIBLE)
+                    tvResetEditEmoji.setVisibility(View.GONE);
+
+                tvTitleEditEmoji.setText(R.string.sticker);
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandEditEmoji.getVisibility() == View.GONE) {
+                    rlExpandEditEmoji.setAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.VISIBLE);
+                }
+
+                if (llEditEmoji.getVisibility() == View.GONE){
+                    llEditEmoji.setAnimation(animation);
+                    llEditEmoji.setVisibility(View.VISIBLE);
+                }
+                break;
             case positionAddText:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
                 if (vSize.getVisibility() == View.VISIBLE) {
@@ -874,6 +1215,13 @@ public class EditActivity extends BaseActivity {
                     rlEditOpacityText.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.setAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                tvTitleEditText.setText(R.string.text);
+
                 if (tvResetText.getVisibility() == View.VISIBLE)
                     tvResetText.setVisibility(View.GONE);
 
@@ -911,6 +1259,16 @@ public class EditActivity extends BaseActivity {
                     rlExpandEditText.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEmoji.setAnimation(animation);
+                    rlExpandEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.setAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vOperation.getVisibility() == View.GONE) {
                     vOperation.setAnimation(animation);
@@ -932,9 +1290,13 @@ public class EditActivity extends BaseActivity {
             public void onAnimationEnd(Animation animation) {
                 vSize.clearAnimation();
                 vOperation.clearAnimation();
+
                 rlExpandEditText.clearAnimation();
                 llEditTransformText.clearAnimation();
                 llEditShadowText.clearAnimation();
+
+                rlExpandEmoji.clearAnimation();
+                rlExpandEditEmoji.clearAnimation();
             }
 
             @Override
@@ -1202,6 +1564,24 @@ public class EditActivity extends BaseActivity {
         rlOpacityText = findViewById(R.id.rlOpacity);
         rlEditOpacityText = findViewById(R.id.rlEditOpacityText);
         sbOpacityText = findViewById(R.id.sbOpacityText);
+
+        //Emoji
+        tvTitleEditEmoji = findViewById(R.id.tvTitleEmoji);
+        rlExpandEmoji = findViewById(R.id.rlExpandEmoji);
+        rlExpandEditEmoji = findViewById(R.id.rlExpandEditEmoji);
+        rlCancelPickEmoji = findViewById(R.id.rlCancelPickEmoji);
+        rcvTypeEmoji = findViewById(R.id.rcvTitleEmoji);
+        vpEmoji = findViewById(R.id.vpEmoji);
+        rlCancelEditEmoji = findViewById(R.id.rlCancelEditEmoji);
+        llEditEmoji = findViewById(R.id.llEditEmoji);
+        rlDelEmoji = findViewById(R.id.rlDelEmoji);
+        rlReplaceEmoji = findViewById(R.id.rlReplaceEmoji);
+        rlOpacityEmoji = findViewById(R.id.rlOpacityEmoji);
+        rlFlipYEmoji = findViewById(R.id.rlFlipY);
+        rlFlipXEmoji = findViewById(R.id.rlFlipX);
+        rlEditOpacityEmoji = findViewById(R.id.rlEditOpacityEmoji);
+        sbOpacityEmoji = findViewById(R.id.sbOpacityEmoji);
+        tvResetEditEmoji = findViewById(R.id.tvResetEditEmoji);
 
         backgroundModel = new BackgroundModel();
 

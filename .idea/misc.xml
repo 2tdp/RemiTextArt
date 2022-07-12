@@ -19,16 +19,19 @@
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/dialog_export.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/dialog_pick_direction.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_color.xml" value="0.3546875" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_emoji.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_recent.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_splash.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_vip_one.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_vip_two.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_bucket_pic.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_color.xml" value="0.3546875" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_emoji.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_font.xml" value="0.17734375" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_picture.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_template.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_template_text.xml" value="0.4142335766423358" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/item_title.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/request_permission_layout.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/splash_activity.xml" value="0.3546875" />
       </map>

@@ -53,6 +53,14 @@ import java.io.RandomAccessFile;
 
 public class Utils {
 
+    //Model Check
+    public static final String EMOJI = "emoji";
+    public static final String IMAGE = "image";
+    public static final String OVERLAY = "overlay";
+    public static final String DECOR = "decor";
+    public static final String TEMPLATE = "template";
+
+    //animation
     public static final int res = android.R.id.content;
     public static final int enter = R.anim.slide_in_right;
     public static final int exit = R.anim.slide_out_left;

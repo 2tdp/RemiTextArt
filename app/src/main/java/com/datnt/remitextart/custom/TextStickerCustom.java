@@ -45,9 +45,9 @@ public class TextStickerCustom extends Sticker {
 
     private Rect realBounds;
     private Rect textRect;
-    private TextPaint textPaint;
+    private TextPaint textPaint, shadowPaint;
     private Drawable drawable;
-    private StaticLayout staticLayout;
+    private StaticLayout staticLayout, staticLayoutShadow;
     private Layout.Alignment alignment;
 
     /**
@@ -83,6 +83,7 @@ public class TextStickerCustom extends Sticker {
         if (drawable == null)
             this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
         textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+        shadowPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         realBounds = new Rect(0, 0, getWidth(), getHeight());
         textRect = new Rect(0, 0, getWidth(), getHeight());
         minTextSizePixels = convertSpToPx(6);
@@ -90,6 +91,7 @@ public class TextStickerCustom extends Sticker {
 
         alignment = Layout.Alignment.ALIGN_CENTER;
         textPaint.setTextSize(maxTextSizePixels);
+        shadowPaint.setTextSize(maxTextSizePixels);
     }
 
     public void setData(TextModel textModel) {
@@ -105,10 +107,7 @@ public class TextStickerCustom extends Sticker {
 
         setAlpha((int) (textModel.getOpacity() * 255 / 100f));
 
-        if (textModel.getShadowModel() != null) {
-            setShadow(textModel.getShadowModel().getBlur(), textModel.getShadowModel().getXPos(),
-                    textModel.getShadowModel().getYPos(), textModel.getShadowModel().getColorBlur());
-        }
+        if (textModel.getShadowModel() != null) setShadow(textModel.getShadowModel());
 
         switch (textModel.getTypeAlign()) {
             case 0:
@@ -135,6 +134,20 @@ public class TextStickerCustom extends Sticker {
             drawable.setBounds(realBounds);
             drawable.draw(canvas);
         }
+        canvas.restore();
+
+        canvas.save();
+        canvas.concat(matrix);
+        if (textRect.width() == getWidth()) {
+            int dy = getHeight() / 2 - staticLayoutShadow.getHeight() / 2;
+            // center vertical
+            canvas.translate(0, dy);
+        } else {
+            int dx = textRect.left;
+            int dy = textRect.top + textRect.height() / 2 - staticLayoutShadow.getHeight() / 2;
+            canvas.translate(dx, dy);
+        }
+        staticLayoutShadow.draw(canvas);
         canvas.restore();
 
         canvas.save();
@@ -182,6 +195,7 @@ public class TextStickerCustom extends Sticker {
     public TextStickerCustom setTextSize(@Dimension(unit = Dimension.SP) float size) {
         createDrawableText();
         textPaint.setTextSize(convertSpToPx(size));
+        shadowPaint.setTextSize(convertSpToPx(size));
         maxTextSizePixels = textPaint.getTextSize();
         return this;
     }
@@ -194,6 +208,7 @@ public class TextStickerCustom extends Sticker {
     @NonNull
     public TextStickerCustom setTypeface(@Nullable Typeface typeface) {
         textPaint.setTypeface(typeface);
+        shadowPaint.setTypeface(typeface);
         return this;
     }
 
@@ -208,29 +223,28 @@ public class TextStickerCustom extends Sticker {
         if (color.getColorStart() == color.getColorEnd()) {
             textPaint.setShader(null);
             textPaint.setColor(color.getColorStart());
-        } else {
-            if (color.getDirec() == 4) {
-                int c = color.getColorStart();
-                color.setColorStart(color.getColorEnd());
-                color.setColorEnd(c);
+        } else if (color.getDirec() == 4) {
+            int c = color.getColorStart();
+            color.setColorStart(color.getColorEnd());
+            color.setColorEnd(c);
 
-                color.setDirec(0);
-            } else if (color.getDirec() == 5) {
-                int c = color.getColorStart();
-                color.setColorStart(color.getColorEnd());
-                color.setColorEnd(c);
+            color.setDirec(0);
+        } else if (color.getDirec() == 5) {
+            int c = color.getColorStart();
+            color.setColorStart(color.getColorEnd());
+            color.setColorEnd(c);
 
-                color.setDirec(2);
-            }
-
-            Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
-                    setDirection(color.getDirec())[1],
-                    setDirection(color.getDirec())[2],
-                    setDirection(color.getDirec())[3],
-                    new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
-                    new float[]{0, 1}, Shader.TileMode.MIRROR);
-            textPaint.setShader(shader);
+            color.setDirec(2);
         }
+
+        Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
+                setDirection(color.getDirec())[1],
+                setDirection(color.getDirec())[2],
+                setDirection(color.getDirec())[3],
+                new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
+                new float[]{0, 1}, Shader.TileMode.MIRROR);
+
+        textPaint.setShader(shader);
         return this;
     }
 
@@ -250,17 +264,20 @@ public class TextStickerCustom extends Sticker {
         return new int[]{};
     }
 
-    public TextStickerCustom setShadow(float radiusBlur, float dx, float dy, int color) {
-        textModel.getShadowModel().setBlur(radiusBlur);
-        textModel.getShadowModel().setXPos(dx);
-        textModel.getShadowModel().setYPos(dy);
-        textModel.getShadowModel().setColorBlur(color);
-
-        if (color != 0)
-            textPaint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
-        else textPaint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
-
-        return this;
+    public void setShadow(ShadowModel shadow) {
+        shadowPaint.setColor(Color.TRANSPARENT);
+        if (shadow != null){
+            if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
+                    && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
+                shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.TRANSPARENT);
+            }
+            if (shadow.getColorBlur() != 0f) {
+                shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
+                        shadow.getColorBlur());
+            }
+            else
+                shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.BLACK);
+        }
     }
 
     public ShadowModel getShadowModel() {
@@ -330,7 +347,10 @@ public class TextStickerCustom extends Sticker {
             }
         }
         textPaint.setTextSize(targetTextSizePixels);
+        shadowPaint.setTextSize(targetTextSizePixels);
         staticLayout = new StaticLayout(this.textModel.getContent(), textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                lineSpacingExtra, true);
+        staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
                 lineSpacingExtra, true);
         return this;
     }
@@ -398,7 +418,6 @@ public class TextStickerCustom extends Sticker {
             line = temp.length;
 
             if (temp.length == 1) max = text.length();
-            Log.d("2tdp", "createDrawableText: " + line);
             for (String s : temp) {
                 if (s.length() > max) max = s.length();
             }
@@ -406,22 +425,26 @@ public class TextStickerCustom extends Sticker {
             textPaint.getTextBounds(text, 0, text.length(), textRect);
 
             GradientDrawable drawable = new GradientDrawable();
-//            if (text.length() > 20 && line != 1)
-//                drawable.setSize((int) (textRect.width() * 1.1f * max / text.length()), (int) (textRect.height() * 1.2f * line));
-//            else if (text.length() > 20)
-//                drawable.setSize((int) (textRect.width() * 1.2f),
-//                        (int) (textRect.height() * Math.sqrt(textRect.width() * textRect.width() + textRect.height() * textRect.height())));
+//            if (text.length() < 20)
+//                drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
 //            else
 //                drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
 
-            if (text.length() < 20)
-                drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
-            else
-                drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
-            
+
+            if (text.length() > 20 && line != 1)
+                drawable.setSize((int) (textRect.width() * 1.1f * max / text.length()), (int) (textRect.height() * 1.2f * line));
+            else if (text.length() < 20)
+                drawable.setSize(((int) (textRect.width() * 1.2f)), (int) (textRect.height() * 2f));
+            else {
+                drawable.setSize((int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp) + convertSpToPx(textPaint.getTextSize())),
+                        (int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._150sdp) + convertSpToPx(textPaint.getTextSize())));
+            }
+
             drawable.setColor(Color.TRANSPARENT);
             setDrawable(drawable);
             staticLayout = new StaticLayout(text, textPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                    lineSpacingExtra, true);
+            staticLayoutShadow = new StaticLayout(text, shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
                     lineSpacingExtra, true);
         }
     }

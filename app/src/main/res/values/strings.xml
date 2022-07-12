@@ -75,7 +75,7 @@
     //addText
     <string name="text">Text</string>
     <string name="input_text">Input Text</string>
-    <string name="tap_to_edit">Tap to edit</string>
+    <string name="enter_text">Enter Text</string>
     <string name="pls_pick_style">Please choose font!</string>
     <string name="pls_enter_text">Content cannot be blank!</string>
     <string name="quotes">Quotes</string>
