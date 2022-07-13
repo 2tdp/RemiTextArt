@@ -12,10 +12,12 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -153,6 +155,24 @@ public class Utils {
                 + font.toLowerCase() + "/"
                 + font.toLowerCase() + "_"
                 + style.toLowerCase().trim().replaceAll(" ", "_") + ".ttf");
+    }
+
+    public static Bitmap makeHighlightImage(Bitmap src, int alpha, int radius, int color) {
+        Bitmap bmOut = Bitmap.createBitmap(src.getWidth() + radius  * 4, src.getHeight() + radius * 4, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmOut);
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        Paint ptBlur = new Paint();
+        ptBlur.setMaskFilter(new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL));
+        int[] offsetXY = new int[2];
+        Bitmap bmAlpha = src.extractAlpha(ptBlur, offsetXY);
+        Paint ptAlphaColor = new Paint();
+        ptAlphaColor.setColor(color);
+        ptAlphaColor.setAlpha(20 + alpha);
+        canvas.drawBitmap(bmAlpha, null, new RectF(0, 0, bmOut.getWidth(), bmOut.getHeight()), ptAlphaColor);
+        bmAlpha.recycle();
+        canvas.drawBitmap(src, radius * 2, radius * 2, null);
+        src.recycle();
+        return bmOut;
     }
 
     public static Bitmap getBitmapFromUri(Context context, Uri selectedFileUri) {
