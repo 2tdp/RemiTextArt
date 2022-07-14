@@ -53,7 +53,7 @@ public class TitleEmojiAdapter extends RecyclerView.Adapter<TitleEmojiAdapter.Ti
 
     class TitleEmojiHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivTitleEmoji;
+        private final ImageView ivTitleEmoji;
 
         public TitleEmojiHolder(@NonNull View itemView) {
             super(itemView);

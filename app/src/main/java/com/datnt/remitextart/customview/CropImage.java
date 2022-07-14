@@ -3,6 +3,7 @@ package com.datnt.remitextart.customview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -15,6 +16,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.graphics.PathParser;
+
+import com.datnt.remitextart.data.FilterBlendImage;
+import com.datnt.remitextart.model.image.ImageModel;
+import com.datnt.remitextart.utils.Utils;
+
+import org.wysaid.nativePort.CGENativeLibrary;
 
 public class CropImage extends View implements MatrixGestureDetector.OnMatrixChangeListener {
 
@@ -84,7 +91,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         }
     }
 
-    public Bitmap getBitmapCreate() {
+    public String getBitmapCreate(Context context) {
 
         Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);
@@ -100,7 +107,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
             canvas.drawBitmap(bitmap, maskMatrix, paintBitmap);
         }
 
-        return bm;
+        return Utils.saveBitmapToApp(context, Utils.trim(bm), Utils.IMAGE);
     }
 
     @Override
@@ -116,8 +123,15 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         }
     }
 
-    public void setBitmap(Bitmap bitmap) {
-        this.bitmap = bitmap;
+    public void setBitmap(ImageModel imageModel) {
+
+        this.bitmap = BitmapFactory.decodeFile(imageModel.getUriRoot());
+
+        if (imageModel.getPosFilter() != 0)
+            this.bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                    FilterBlendImage.EFFECT_CONFIGS[imageModel.getPosFilter()], 0.8f);
+
+        paintBitmap.setAlpha(imageModel.getOpacity());
         invalidate();
     }
 
@@ -146,8 +160,9 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         path.addPath(PathParser.createPathFromPathData(o));
 
         path.computeBounds(rectF, true);
-        scale =  3 * getWidth() / (rectF.width() * 5f);
+        scale = 3 * getWidth() / (rectF.width() * 5f);
         y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
+
         invalidate();
     }
 }

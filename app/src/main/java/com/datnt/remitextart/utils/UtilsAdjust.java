@@ -28,11 +28,9 @@ public class UtilsAdjust {
         RectF rectF = new RectF();
         path.computeBounds(rectF, true);
         float scale = size / rectF.width();
-        canvas.save();
         canvas.translate(x, y);
         canvas.scale(scale, scale);
         canvas.drawPath(path, paint);
-        canvas.restore();
     }
 
     public static Bitmap createFlippedBitmap(Bitmap source, boolean xFlip, boolean yFlip) {

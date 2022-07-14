@@ -656,7 +656,7 @@
                 android:src="@drawable/ic_tick" />
         </RelativeLayout>
 
-        <com.datnt.remitextart.customview.cropimage.CropImageCustomView
+        <com.datnt.remitextart.customview.CropImage
             android:id="@+id/pathCrop"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_234sdp"

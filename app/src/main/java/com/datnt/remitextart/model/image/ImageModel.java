@@ -1,15 +1,14 @@
-package com.datnt.remitextart.model;
+package com.datnt.remitextart.model.image;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-import com.datnt.remitextart.custom.DrawableStickerCustom;
-import com.datnt.remitextart.custom.EditSticker;
+import com.datnt.remitextart.customsticker.DrawableStickerCustom;
+import com.datnt.remitextart.customsticker.EditSticker;
 import com.datnt.remitextart.customview.stickerview.Sticker;
+import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
@@ -18,7 +17,7 @@ public class ImageModel extends EditSticker implements Serializable {
 
     private String uri;
     private String uriRoot;
-    private String uriCrop;
+    private String pathShape;
     private int posFilter;
     private ShadowModel shadowModel;
     private int opacity;
@@ -28,7 +27,7 @@ public class ImageModel extends EditSticker implements Serializable {
     public ImageModel(ImageModel imageModel) {
         this.uri = imageModel.getUri();
         this.uriRoot = imageModel.getUriRoot();
-        this.uriCrop = imageModel.getUriCrop();
+        this.pathShape = imageModel.getPathShape();
         this.posFilter = imageModel.getPosFilter();
         this.shadowModel = imageModel.getShadowModel();
         this.opacity = imageModel.getOpacity();
@@ -36,10 +35,10 @@ public class ImageModel extends EditSticker implements Serializable {
         this.matrix = imageModel.getMatrix();
     }
 
-    public ImageModel(String uri, String uriRoot, String uriCrop, int posFilter, ShadowModel shadowModel, int opacity, int posBlend, Matrix matrix) {
+    public ImageModel(String uri, String uriRoot, String pathShape, int posFilter, ShadowModel shadowModel, int opacity, int posBlend, Matrix matrix) {
         this.uri = uri;
         this.uriRoot = uriRoot;
-        this.uriCrop = uriCrop;
+        this.pathShape = pathShape;
         this.posFilter = posFilter;
         this.shadowModel = shadowModel;
         this.opacity = opacity;
@@ -63,12 +62,12 @@ public class ImageModel extends EditSticker implements Serializable {
         this.uriRoot = uriRoot;
     }
 
-    public String getUriCrop() {
-        return uriCrop;
+    public String getPathShape() {
+        return pathShape;
     }
 
-    public void setUriCrop(String uriCrop) {
-        this.uriCrop = uriCrop;
+    public void setPathShape(String pathShape) {
+        this.pathShape = pathShape;
     }
 
     public int getPosFilter() {
@@ -116,7 +115,7 @@ public class ImageModel extends EditSticker implements Serializable {
         ShadowModel shadow = null;
         if (shadowModel != null)
             shadow = new ShadowModel(shadowModel);
-        ImageModel imageModel = new ImageModel(uri, uriRoot, uriCrop, posFilter, shadow, opacity,
+        ImageModel imageModel = new ImageModel(uri, uriRoot, pathShape, posFilter, shadow, opacity,
                 posBlend, matrix);
 
         return new DrawableStickerCustom(context, imageModel, id, Utils.IMAGE);
@@ -124,6 +123,12 @@ public class ImageModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            drawableSticker.setShadowPathShapeImage(drawableSticker.getImageModel().getPathShape());
+            drawableSticker.setShadowImage(shadowModel);
+            return sticker;
+        }
         return null;
     }
 

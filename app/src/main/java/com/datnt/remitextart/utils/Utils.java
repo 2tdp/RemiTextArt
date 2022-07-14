@@ -62,6 +62,11 @@ public class Utils {
     public static final String DECOR = "decor";
     public static final String TEMPLATE = "template";
 
+    //cache save
+    public static final String BACKGROUND_ROOT = "background_root";
+    public static final String BACKGROUND = "background";
+    public static final String IMAGE_ROOT = "image_root";
+
     //animation
     public static final int res = android.R.id.content;
     public static final int enter = R.anim.slide_in_right;
@@ -126,6 +131,51 @@ public class Utils {
         }
     }
 
+    public static Bitmap trim(Bitmap source) {
+        int firstX = 0, firstY = 0;
+        int lastX = source.getWidth();
+        int lastY = source.getHeight();
+        int[] pixels = new int[source.getWidth() * source.getHeight()];
+        source.getPixels(pixels, 0, source.getWidth(), 0, 0, source.getWidth(), source.getHeight());
+        loop:
+        for (int x = 0; x < source.getWidth(); x++) {
+            for (int y = 0; y < source.getHeight(); y++) {
+                if (pixels[x + (y * source.getWidth())] != Color.TRANSPARENT) {
+                    firstX = x;
+                    break loop;
+                }
+            }
+        }
+        loop:
+        for (int y = 0; y < source.getHeight(); y++) {
+            for (int x = firstX; x < source.getWidth(); x++) {
+                if (pixels[x + (y * source.getWidth())] != Color.TRANSPARENT) {
+                    firstY = y;
+                    break loop;
+                }
+            }
+        }
+        loop:
+        for (int x = source.getWidth() - 1; x >= firstX; x--) {
+            for (int y = source.getHeight() - 1; y >= firstY; y--) {
+                if (pixels[x + (y * source.getWidth())] != Color.TRANSPARENT) {
+                    lastX = x;
+                    break loop;
+                }
+            }
+        }
+        loop:
+        for (int y = source.getHeight() - 1; y >= firstY; y--) {
+            for (int x = source.getWidth() - 1; x >= firstX; x--) {
+                if (pixels[x + (y * source.getWidth())] != Color.TRANSPARENT) {
+                    lastY = y;
+                    break loop;
+                }
+            }
+        }
+        return Bitmap.createBitmap(source, firstX, firstY, lastX - firstX, lastY - firstY);
+    }
+
     public static void clearBackStack(FragmentManager manager) {
         int count = manager.getBackStackEntryCount();
         for (int i = 0; i < count; ++i) {
@@ -158,7 +208,7 @@ public class Utils {
     }
 
     public static Bitmap makeHighlightImage(Bitmap src, int alpha, int radius, int color) {
-        Bitmap bmOut = Bitmap.createBitmap(src.getWidth() + radius  * 4, src.getHeight() + radius * 4, Bitmap.Config.ARGB_8888);
+        Bitmap bmOut = Bitmap.createBitmap(src.getWidth() + radius * 4, src.getHeight() + radius * 4, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmOut);
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         Paint ptBlur = new Paint();
@@ -189,14 +239,14 @@ public class Utils {
         return image;
     }
 
-    public static String saveBitmapToApp(Context context, Bitmap bitmap) {
+    public static String saveBitmapToApp(Context context, Bitmap bitmap, String name) {
 
         ContextWrapper cw = new ContextWrapper(context);
-        File directory = cw.getDir("RemiTextArt", Context.MODE_PRIVATE);
+        File directory = cw.getDir("remiTextArt", Context.MODE_PRIVATE);
         if (!directory.exists()) {
             directory.mkdir();
         }
-        File myPath = new File(directory, "remiTextArt.png");
+        File myPath = new File(directory, name + ".png");
 
         FileOutputStream fos = null;
         try {

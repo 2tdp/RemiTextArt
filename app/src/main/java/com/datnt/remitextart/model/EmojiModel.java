@@ -5,9 +5,8 @@ import android.graphics.Matrix;
 
 import androidx.annotation.NonNull;
 
-import com.datnt.remitextart.custom.DrawableStickerCustom;
-import com.datnt.remitextart.custom.EditSticker;
-import com.datnt.remitextart.custom.TextStickerCustom;
+import com.datnt.remitextart.customsticker.DrawableStickerCustom;
+import com.datnt.remitextart.customsticker.EditSticker;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 
 import java.io.Serializable;

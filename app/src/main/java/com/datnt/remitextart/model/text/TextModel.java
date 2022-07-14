@@ -2,21 +2,14 @@ package com.datnt.remitextart.model.text;
 
 import android.content.Context;
 import android.graphics.Matrix;
-import android.text.Layout;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.datnt.remitextart.custom.EditSticker;
-import com.datnt.remitextart.custom.TextStickerCustom;
-import com.datnt.remitextart.customview.stickerview.DrawableSticker;
+import com.datnt.remitextart.customsticker.EditSticker;
+import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.customview.stickerview.Sticker;
-import com.datnt.remitextart.customview.stickerview.TextSticker;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.ShadowModel;
-import com.datnt.remitextart.utils.Utils;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 

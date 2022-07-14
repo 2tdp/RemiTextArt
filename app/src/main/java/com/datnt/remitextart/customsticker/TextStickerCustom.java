@@ -1,4 +1,4 @@
-package com.datnt.remitextart.custom;
+package com.datnt.remitextart.customsticker;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,9 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.util.Log;
 
-import androidx.annotation.ContentView;
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -24,12 +22,8 @@ import androidx.core.content.ContextCompat;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.customview.stickerview.Sticker;
-import com.datnt.remitextart.customview.stickerview.TextSticker;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.ShadowModel;
-import com.datnt.remitextart.model.text.FontModel;
-import com.datnt.remitextart.model.text.QuoteModel;
-import com.datnt.remitextart.model.text.ShearTextModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.model.text.TypeFontModel;
 import com.datnt.remitextart.utils.Utils;
@@ -265,8 +259,7 @@ public class TextStickerCustom extends Sticker {
     }
 
     public void setShadow(ShadowModel shadow) {
-        shadowPaint.setColor(Color.TRANSPARENT);
-        if (shadow != null){
+        if (shadow != null) {
             if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.TRANSPARENT);
@@ -274,10 +267,12 @@ public class TextStickerCustom extends Sticker {
             if (shadow.getColorBlur() != 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         shadow.getColorBlur());
-            }
-            else
+            } else
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.BLACK);
         }
+
+        staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
+                lineSpacingExtra, true);
     }
 
     public ShadowModel getShadowModel() {
@@ -397,6 +392,7 @@ public class TextStickerCustom extends Sticker {
     @Override
     public Sticker setAlpha(@IntRange(from = 0, to = 255) int alpha) {
         textPaint.setAlpha(alpha);
+        shadowPaint.setAlpha(alpha);
         return this;
     }
 

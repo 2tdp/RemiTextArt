@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.AttributeSet;
@@ -27,9 +26,8 @@ import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.remitextart.R;
-import com.datnt.remitextart.custom.TextStickerCustom;
+import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.model.LayerModel;
-import com.datnt.remitextart.utils.Utils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -265,9 +263,9 @@ public class StickerView extends FrameLayout {
                             configIconMatrix(icon, x6, y6 + icon.getHeight(), rotation);
                             break;
 
-                        case BitmapStickerIcon.LEFT_BOTTOM:
-                            configIconMatrix(icon, x3, y3, rotation);
-                            break;
+//                        case BitmapStickerIcon.LEFT_BOTTOM:
+//                            configIconMatrix(icon, x3, y3, rotation);
+//                            break;
 
                         case BitmapStickerIcon.RIGHT_BOTTOM:
                             configIconMatrix(icon, x7, y7 + icon.getHeight(), rotation);
