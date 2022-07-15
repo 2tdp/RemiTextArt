@@ -1,6 +1,7 @@
 package com.datnt.remitextart.data;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.datnt.remitextart.model.FilterBlendModel;
 
@@ -10,15 +11,16 @@ import java.util.ArrayList;
 
 public class FilterBlendImage {
 
-    public static ArrayList<FilterBlendModel> getDataBlend(Bitmap bitmap) {
+    public static ArrayList<FilterBlendModel> getDataBlend(Bitmap bitmap, String name) {
         ArrayList<FilterBlendModel> lstBlend = new ArrayList<>();
 
         int i = 0;
         Bitmap bm;
         for (String s : EFFECT_CONFIGS_BLEND) {
-            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
+            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s.replace("image", name), 0.8f);
+            Log.d("2tdp", "getDataBlend: " + s.replace("image", name));
             if (bm != null) {
-                lstBlend.add(new FilterBlendModel(bm, "blend" + i, s, false));
+                lstBlend.add(new FilterBlendModel(bm, "blend" + i, s.replace("image", name), false));
                 i++;
             }
         }
@@ -42,40 +44,12 @@ public class FilterBlendImage {
 
     public static final String[] EFFECT_CONFIGS_BLEND = {
             "",
-            "#unpack @krblend sr hehe.jpg 100 ",
-            "#unpack @krblend ol hehe.jpg 100",
-            "#unpack @krblend add hehe.jpg 100",
-            "#unpack @krblend darken hehe.jpg 100",
-            "@vigblend overlay 255 0 0 255 100 0.12 0.54 0.5 0.5 3 ",
-            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//415
-            "@curve G(0, 0)(144, 166)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//416
-            "@curve B(0, 0)(68, 72)(149, 184)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//417
-            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//418
-            "@curve R(0, 0)(96, 61)(154, 177)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//419
-            "@curve R(0, 0)(152, 183)(255, 255)G(0, 0)(161, 133)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//420
-            "@curve R(0, 0)(149, 145)(255, 255)G(0, 0)(149, 145)(255, 255)B(0, 0)(149, 145)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//421
-            "@curve G(0, 0)(101, 127)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//422
-            "@curve B(0, 0)(70, 87)(140, 191)(255, 255) @pixblend pinlight 0.247 0.49 0.894 1 20",//423
-            "@adjust saturation 0.7 @pixblend screen 0.8112 0.243 1 1 40",//425
-            "@adjust saturation 0.7 @pixblend screen 1 0.243 0.69 1 30",//426
-
-            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//415
-            "@curve G(0, 0)(144, 166)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//416
-            "@curve B(0, 0)(68, 72)(149, 184)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//417
-            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//418
-            "@curve R(0, 0)(96, 61)(154, 177)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//419
-            "@curve R(0, 0)(152, 183)(255, 255)G(0, 0)(161, 133)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//420
-            "@curve R(0, 0)(149, 145)(255, 255)G(0, 0)(149, 145)(255, 255)B(0, 0)(149, 145)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//421
-            "@curve G(0, 0)(101, 127)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//422
-            "@curve B(0, 0)(70, 87)(140, 191)(255, 255) @pixblend pinlight 0.247 0.49 0.894 1 20",//423
-            "@adjust saturation 0.7 @pixblend screen 0.8112 0.243 1 1 40",//425
-            "@adjust saturation 0.7 @pixblend screen 1 0.243 0.69 1 30",//426
-
-            "@adjust hsv -0.7 -0.7 0.5 -0.7 -0.7 0.5 @pixblend ol 0.243 0.07059 0.59215 1 25",//17
-            "@adjust hsv -0.7 0.5 -0.7 -0.7 -0.7 0.5 @pixblend ol 0.07059 0.60391 0.57254 1 25",//18
-            "@adjust hsv -0.7 0.5 -0.7 -0.7 0 0 @pixblend ol 0.2941 0.55292 0.06665 1 25",//19
-            "@adjust hsv -0.8 0 -0.8 -0.8 0.5 -0.8 @pixblend ol 0.78036 0.70978 0.09018 1 28",//20
-            "@vigblend mix 10 10 30 255 91 0 1.0 0.5 0.5 3 @curve R(0, 31)(35, 75)(81, 139)(109, 174)(148, 207)(255, 255)G(0, 24)(59, 88)(105, 146)(130, 171)(145, 187)(180, 214)(255, 255)B(0, 96)(63, 130)(103, 157)(169, 194)(255, 255)"
+            "@blend overlay image 80",
+            "@blend multiply image 80",
+            "@blend lighten image 80",
+            "@blend screen image 80",
+            "@blend softlight image 80",
+            "@blend lineardodge image 80"
     };
 
     public static final String[] EFFECT_CONFIGS = {
@@ -110,6 +84,41 @@ public class FilterBlendImage {
             "@style min",
             "@style max",
             "@style haze 0.5 -0.14 1 0.8 1 ",
+
+            "#unpack @krblend sr hehe.jpg 100 ",
+            "#unpack @krblend ol hehe.jpg 100",
+            "#unpack @krblend add hehe.jpg 100",
+            "#unpack @krblend darken hehe.jpg 100",
+            "@vigblend overlay 255 0 0 255 100 0.12 0.54 0.5 0.5 3 ",
+            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//415
+            "@curve G(0, 0)(144, 166)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//416
+            "@curve B(0, 0)(68, 72)(149, 184)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//417
+            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//418
+            "@curve R(0, 0)(96, 61)(154, 177)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//419
+            "@curve R(0, 0)(152, 183)(255, 255)G(0, 0)(161, 133)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//420
+            "@curve R(0, 0)(149, 145)(255, 255)G(0, 0)(149, 145)(255, 255)B(0, 0)(149, 145)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//421
+            "@curve G(0, 0)(101, 127)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//422
+            "@curve B(0, 0)(70, 87)(140, 191)(255, 255) @pixblend pinlight 0.247 0.49 0.894 1 20",//423
+            "@adjust saturation 0.7 @pixblend screen 0.8112 0.243 1 1 40",//425
+            "@adjust saturation 0.7 @pixblend screen 1 0.243 0.69 1 30",//426
+
+            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//415
+            "@curve G(0, 0)(144, 166)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//416
+            "@curve B(0, 0)(68, 72)(149, 184)(255, 255) @pixblend screen 0.94118 0.29 0.29 1 20",//417
+            "@curve R(0, 0)(71, 74)(164, 165)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//418
+            "@curve R(0, 0)(96, 61)(154, 177)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//419
+            "@curve R(0, 0)(152, 183)(255, 255)G(0, 0)(161, 133)(255, 255) @pixblend overlay 0.357 0.863 0.882 1 40",//420
+            "@curve R(0, 0)(149, 145)(255, 255)G(0, 0)(149, 145)(255, 255)B(0, 0)(149, 145)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//421
+            "@curve G(0, 0)(101, 127)(255, 255) @pixblend colordodge 0.937 0.482 0.835 1 20",//422
+            "@curve B(0, 0)(70, 87)(140, 191)(255, 255) @pixblend pinlight 0.247 0.49 0.894 1 20",//423
+            "@adjust saturation 0.7 @pixblend screen 0.8112 0.243 1 1 40",//425
+            "@adjust saturation 0.7 @pixblend screen 1 0.243 0.69 1 30",//426
+
+            "@adjust hsv -0.7 -0.7 0.5 -0.7 -0.7 0.5 @pixblend ol 0.243 0.07059 0.59215 1 25",//17
+            "@adjust hsv -0.7 0.5 -0.7 -0.7 -0.7 0.5 @pixblend ol 0.07059 0.60391 0.57254 1 25",//18
+            "@adjust hsv -0.7 0.5 -0.7 -0.7 0 0 @pixblend ol 0.2941 0.55292 0.06665 1 25",//19
+            "@adjust hsv -0.8 0 -0.8 -0.8 0.5 -0.8 @pixblend ol 0.78036 0.70978 0.09018 1 28",//20
+            "@vigblend mix 10 10 30 255 91 0 1.0 0.5 0.5 3 @curve R(0, 31)(35, 75)(81, 139)(109, 174)(148, 207)(255, 255)G(0, 24)(59, 88)(105, 146)(130, 171)(145, 187)(180, 214)(255, 255)B(0, 96)(63, 130)(103, 157)(169, 194)(255, 255)",
 
             "@curve R(0, 0)(117, 95)(155, 171)(179, 225)(255, 255)G(0, 0)(94, 66)(155, 176)(255, 255)B(0, 0)(48, 59)(141, 130)(255, 224)",//5
             "@curve R(0, 0)(69, 63)(105, 138)(151, 222)(255, 255)G(0, 0)(67, 51)(135, 191)(255, 255)B(0, 0)(86, 76)(150, 212)(255, 255)",//6

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.EditSticker;
+import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.utils.Utils;
@@ -134,6 +135,11 @@ public class ImageModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            drawableSticker.setAlpha((int) (opacity * 255 / 100f));
+            return sticker;
+        }
         return null;
     }
 

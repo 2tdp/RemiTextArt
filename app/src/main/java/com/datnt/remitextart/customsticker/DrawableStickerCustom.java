@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ public class DrawableStickerCustom extends Sticker {
     private RectF realBounds, rectFShadow;
     private Path shadowImagePath;
     private Paint shadowImagePaint;
-    private boolean isShadowImage;
+    private boolean isShadowImage, isShadowCrop;
     private int id;
     private final String typeSticker;
 
@@ -95,14 +96,20 @@ public class DrawableStickerCustom extends Sticker {
     public void draw(@NonNull Canvas canvas) {
 
         if (isShadowImage && this.typeSticker.equals(Utils.IMAGE)) {
-            canvas.save();
-            canvas.concat(getMatrix());
-            canvas.translate(10, 10);
-            canvas.scale(scale, scale);
-            canvas.drawPath(shadowImagePath, shadowImagePaint);
-            canvas.restore();
+            if (isShadowCrop) {
+                canvas.save();
+                canvas.concat(getMatrix());
+                canvas.translate(2 * realBounds.left, 2 * realBounds.top);
+                canvas.scale(scale, scale);
+                canvas.drawPath(shadowImagePath, shadowImagePaint);
+                canvas.restore();
+            } else {
+                canvas.save();
+                canvas.concat(getMatrix());
+                canvas.drawRect(realBounds, shadowImagePaint);
+                canvas.restore();
+            }
         }
-
 
         canvas.save();
         canvas.concat(getMatrix());
@@ -157,11 +164,13 @@ public class DrawableStickerCustom extends Sticker {
         this.shadowImagePath.addPath(PathParser.createPathFromPathData(pathShape));
 
         shadowImagePath.computeBounds(rectFShadow, true);
-        scale = drawable.getIntrinsicWidth() / rectFShadow.width();
+        scale = (drawable.getIntrinsicWidth() - realBounds.left) / rectFShadow.width();
     }
 
     public void setShadowImage(ShadowModel shadow) {
         setShadowImage(true);
+        isShadowCrop = !imageModel.getPathShape().equals("");
+
         if (shadow != null) {
             if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
@@ -177,6 +186,10 @@ public class DrawableStickerCustom extends Sticker {
 
     public void replaceImage() {
         initImage();
+    }
+
+    public boolean isShadowImage() {
+        return isShadowImage;
     }
 
     public void setShadowImage(boolean shadowImage) {

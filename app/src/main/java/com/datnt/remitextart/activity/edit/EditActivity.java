@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -88,7 +89,7 @@ public class EditActivity extends BaseActivity {
     //image
     private RelativeLayout rlExpandEditImage, rlDelImage, rlReplaceImage, rlDuplicateImage, rlCropImage,
             rlFilterImage, rlShadowImage, rlOpacityImage, rlBlendImage, rlCancelEditImage, rlEditCrop,
-            rlEditFilterImage;
+            rlEditFilterImage, rlEditOpacityImage, rlEditBlendImage;
     private LinearLayout llEditShadowImage;
     private HorizontalScrollView vEditImage;
     private TextView tvResetImage, tvTitleEditImage, tvCancelCropImage, tvXPosImage, tvYPosImage,
@@ -96,7 +97,8 @@ public class EditActivity extends BaseActivity {
     private ImageView ivTickCropImage, ivColorBlurImage;
     private CropImage pathCrop;
     private CustomSeekbarTwoWay sbXPosImage, sbYPosImage, sbBlurImage;
-    private RecyclerView rcvCropImage, rcvEditFilterImage;
+    private CustomSeekbarRunText sbOpacityImage;
+    private RecyclerView rcvCropImage, rcvEditFilterImage, rcvEditBlendImage;
     private FilterBlendImageAdapter filterBlendImageAdapter;
     private boolean isReplaceImage;
 
@@ -135,12 +137,13 @@ public class EditActivity extends BaseActivity {
     private ColorView vColor;
     private StickerView vSticker;
 
+    private Sticker stickerOld = null;
     private ViewPager2 vpEmoji;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
     private Animation animation;
     private Bitmap bmMain, bmRoot;
     private BackgroundModel backgroundModel;
-    private ArrayList<FilterBlendModel> lstFilterBlend;
+    private ArrayList<FilterBlendModel> lstFilter, lstBlend;
     private boolean isColor;
 
     @Override
@@ -185,7 +188,6 @@ public class EditActivity extends BaseActivity {
 
             @Override
             public void onStickerTouchedDown(@NonNull Sticker sticker) {
-
             }
 
             @Override
@@ -207,25 +209,28 @@ public class EditActivity extends BaseActivity {
     }
 
     private void checkTypeSticker(Sticker sticker) {
-        if (sticker instanceof TextStickerCustom) seekAndHideOperation(positionAddText);
-        if (sticker instanceof DrawableStickerCustom) {
-            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+        if (sticker != stickerOld || vOperation.getVisibility() == View.VISIBLE) {
+            if (sticker instanceof TextStickerCustom) seekAndHideOperation(positionAddText);
+            if (sticker instanceof DrawableStickerCustom) {
+                DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
 
-            switch (drawableSticker.getTypeSticker()) {
-                case Utils.EMOJI:
-                    seekAndHideOperation(positionEmoji);
-                    break;
-                case Utils.IMAGE:
-                    seekAndHideOperation(positionImage);
-                    break;
-                case Utils.OVERLAY:
-                    break;
-                case Utils.DECOR:
-                    break;
-                case Utils.TEMPLATE:
-                    break;
+                switch (drawableSticker.getTypeSticker()) {
+                    case Utils.EMOJI:
+                        seekAndHideOperation(positionEmoji);
+                        break;
+                    case Utils.IMAGE:
+                        seekAndHideOperation(positionImage);
+                        break;
+                    case Utils.OVERLAY:
+                        break;
+                    case Utils.DECOR:
+                        break;
+                    case Utils.TEMPLATE:
+                        break;
 
+                }
             }
+            stickerOld = sticker;
         }
     }
 
@@ -301,6 +306,8 @@ public class EditActivity extends BaseActivity {
         rlCropImage.setOnClickListener(v -> cropImage(vSticker.getCurrentSticker()));
         rlFilterImage.setOnClickListener(v -> filterImage(vSticker.getCurrentSticker()));
         rlShadowImage.setOnClickListener(v -> shadowImage(vSticker.getCurrentSticker()));
+        rlOpacityImage.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlBlendImage.setOnClickListener(v -> blendImage(vSticker.getCurrentSticker()));
 
         //size
         rlCrop.setOnClickListener(v -> {
@@ -396,6 +403,9 @@ public class EditActivity extends BaseActivity {
             case Utils.EMOJI:
                 opacityEmoji(drawableSticker);
                 break;
+            case Utils.IMAGE:
+                opacityImage(drawableSticker);
+                break;
         }
     }
 
@@ -435,40 +445,63 @@ public class EditActivity extends BaseActivity {
     Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message message) {
+            Sticker sticker = vSticker.getCurrentSticker();
             switch (message.what) {
                 case 0:
-                    Bitmap bitmap = (Bitmap) message.obj;
-                    if (bitmap != null) {
-                        String path = Utils.saveBitmapToApp(EditActivity.this, bitmap, Utils.IMAGE_ROOT);
-                        setUpDataFilter(bitmap);
-                        if (!isReplaceImage) {
-                            ImageModel imageModel = new ImageModel(path, path, "", 0,
-                                    null, 255, 0, null);
-                            DrawableStickerCustom drawableSticker =
-                                    new DrawableStickerCustom(EditActivity.this, imageModel, getId(), Utils.IMAGE);
-                            vSticker.addSticker(drawableSticker);
-                            seekAndHideOperation(positionImage);
-                        } else replaceImage(path);
+                    PicModel picModel = (PicModel) message.obj;
+                    try {
+                        Uri uri = Uri.parse(picModel.getUri());
+                        Bitmap bitmap = Utils.getBitmapFromUri(EditActivity.this, uri);
+                        if (bitmap != null) {
+                            bitmap = Bitmap.createBitmap(Utils.modifyOrientation(EditActivity.this,
+                                    Bitmap.createScaledBitmap(bitmap, 512,
+                                            512 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
+
+                            Utils.makePathImage(EditActivity.this);
+//                            String path = "";
+                            String path = Utils.saveBitmapToApp(EditActivity.this, bitmap,
+                                    Utils.IMAGE_ROOT + "_" + picModel.getId());
+
+                            setUpDataFilter(bitmap);
+                            setUpDataBlend(bitmap, Utils.getStore(EditActivity.this) + "/selfie/" + Utils.IMAGE_ROOT + "_" + picModel.getId() + ".png");
+
+                            if (!isReplaceImage) {
+                                ImageModel imageModel = new ImageModel(path, path, "", 0,
+                                        null, 255, 0, null);
+
+                                DrawableStickerCustom drawableSticker =
+                                        new DrawableStickerCustom(EditActivity.this, imageModel, getId(), Utils.IMAGE);
+
+                                vSticker.addSticker(drawableSticker);
+                                seekAndHideOperation(positionImage);
+                            } else replaceImage(path);
+                        } else
+                            Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                     break;
                 case 1:
-                    Sticker sticker = vSticker.getCurrentSticker();
                     if (checkCurrentSticker(sticker)) {
                         if (sticker instanceof DrawableStickerCustom) {
                             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-
                             if (filterBlendImageAdapter != null) {
-                                filterBlendImageAdapter.setData(lstFilterBlend);
+                                filterBlendImageAdapter.setData(lstFilter);
                                 rcvEditFilterImage.smoothScrollToPosition(drawableSticker.getImageModel().getPosFilter());
                                 filterBlendImageAdapter.setCurrent(drawableSticker.getImageModel().getPosFilter());
-
-//                        else if (isReplaceBackground) {
-//                            rcvEditFilterBackground.smoothScrollToPosition(backgroundModel.getPositionFilterBackground());
-//                            filterBlendImageAdapter.setCurrent(backgroundModel.getPositionFilterBackground());
-//                        } else {
-//                            rcvEditBlend.smoothScrollToPosition(positionBlend);
-//                            filterBlendImageAdapter.setCurrent(positionBlend);
-//                        }
+                                filterBlendImageAdapter.changeNotify();
+                            }
+                        }
+                    }
+                    break;
+                case 2:
+                    if (checkCurrentSticker(sticker)) {
+                        if (sticker instanceof DrawableStickerCustom) {
+                            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+                            if (filterBlendImageAdapter != null) {
+                                filterBlendImageAdapter.setData(lstBlend);
+                                rcvEditFilterImage.smoothScrollToPosition(drawableSticker.getImageModel().getPosBlend());
+                                filterBlendImageAdapter.setCurrent(drawableSticker.getImageModel().getPosBlend());
                                 filterBlendImageAdapter.changeNotify();
                             }
                         }
@@ -481,12 +514,24 @@ public class EditActivity extends BaseActivity {
 
     private void setUpDataFilter(Bitmap bitmap) {
         if (bitmap == null) return;
-        lstFilterBlend = new ArrayList<>();
+        lstFilter = new ArrayList<>();
         new Thread(() -> {
-            lstFilterBlend = FilterBlendImage.getDataFilter(
+            lstFilter = FilterBlendImage.getDataFilter(
                     Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false));
 
             handler.sendEmptyMessage(1);
+        }).start();
+    }
+
+    private void setUpDataBlend(Bitmap bitmap, String name) {
+        if (bitmap == null) return;
+        lstBlend = new ArrayList<>();
+        Log.d("2tdp", "setUpDataBlend: " + name);
+        new Thread(() -> {
+            lstBlend = FilterBlendImage.getDataBlend(
+                    Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false), name);
+
+            handler.sendEmptyMessage(2);
         }).start();
     }
 
@@ -494,26 +539,10 @@ public class EditActivity extends BaseActivity {
     private void pickImage() {
         ImageFragment imageFragment = ImageFragment.newInstance((o, pos) -> {
             PicModel picModel = (PicModel) o;
-            if (!picModel.getUri().equals("")) {
-
-                Uri uri = Uri.parse(picModel.getUri());
-                new Thread(() -> {
-                    try {
-                        Bitmap bitmap = Utils.getBitmapFromUri(EditActivity.this, uri);
-                        if (bitmap != null) {
-                            bitmap = Bitmap.createBitmap(Utils.modifyOrientation(EditActivity.this,
-                                    Bitmap.createScaledBitmap(bitmap, 512, 512 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
-                            Message message = new Message();
-                            message.what = 0;
-                            message.obj = bitmap;
-                            handler.sendMessage(message);
-                        } else
-                            Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
-            }
+            Message message = new Message();
+            message.what = 0;
+            message.obj = picModel;
+            handler.sendMessage(message);
         });
         Utils.replaceFragment(getSupportFragmentManager(), imageFragment, false, true);
     }
@@ -588,7 +617,7 @@ public class EditActivity extends BaseActivity {
                     vSticker.invalidate();
                 });
 
-                if (!lstFilterBlend.isEmpty()) filterBlendImageAdapter.setData(lstFilterBlend);
+                if (!lstFilter.isEmpty()) filterBlendImageAdapter.setData(lstFilter);
 
                 LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
                 rcvEditFilterImage.setLayoutManager(manager);
@@ -675,6 +704,11 @@ public class EditActivity extends BaseActivity {
 
                     }
                 });
+
+                ivColorBlurImage.setOnClickListener(v -> DataColor.pickColor(this, (color -> {
+                    drawableSticker.getImageModel().getShadowModel().setColorBlur(color.getColorStart());
+                    vSticker.replace(drawableSticker.getImageModel().shadow(EditActivity.this, drawableSticker), true);
+                })));
             }
         }
 
@@ -694,26 +728,132 @@ public class EditActivity extends BaseActivity {
 
         ShadowModel shadowModelOld = new ShadowModel(xPos, yPos, blur, color);
 
-        tvResetText.setOnClickListener(v -> resetImage(3, drawableSticker, shadowModelOld));
+        tvResetImage.setOnClickListener(v -> resetImage(0, drawableSticker, shadowModelOld, -1));
 
-        tvXPosText.setText(String.valueOf((int) xPos));
-        sbXPosText.setProgress((int) xPos);
-        tvYPosText.setText(String.valueOf((int) yPos));
-        sbYPosText.setProgress((int) yPos);
-        if (blur == 0) tvBlurText.setText(String.valueOf(0));
-        else tvBlurText.setText(String.valueOf((int) ((blur - 5) * 10f)));
+        tvXPosImage.setText(String.valueOf((int) xPos));
+        sbXPosImage.setProgress((int) xPos);
+        tvYPosImage.setText(String.valueOf((int) yPos));
+        sbYPosImage.setProgress((int) yPos);
+        if (blur == 0) tvBlurImage.setText(String.valueOf(0));
+        else tvBlurImage.setText(String.valueOf((int) ((blur - 5) * 10f)));
 
-        if (blur > 5) sbBlurText.setProgress((int) ((blur - 5) * 10f));
+        if (blur > 5) sbBlurImage.setProgress((int) ((blur - 5) * 10f));
         else if (blur == 0f) {
-            sbBlurText.setProgress(0);
+            sbBlurImage.setProgress(0);
             blur = 5f;
-        } else sbBlurText.setProgress((int) ((5 - blur) * 10f));
+        } else sbBlurImage.setProgress((int) ((5 - blur) * 10f));
 
         drawableSticker.getImageModel().getShadowModel().setBlur(blur);
     }
 
-    private void resetImage(int position, DrawableStickerCustom drawableSticker, ShadowModel shadowModel) {
+    //Opacity Image
+    private void opacityImage(DrawableStickerCustom drawableSticker) {
+        seekAndHideViewImage(3);
 
+        int opacityOld = drawableSticker.getImageModel().getOpacity();
+        sbOpacityImage.setProgress(opacityOld);
+        tvResetImage.setOnClickListener(v -> resetImage(1, drawableSticker, null, opacityOld));
+
+        sbOpacityImage.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                drawableSticker.getImageModel().setOpacity(value);
+                if (!drawableSticker.isShadowImage()) {
+                    drawableSticker.getImageModel().setOpacity(value);
+                    vSticker.replace(drawableSticker.getImageModel().opacity(EditActivity.this, drawableSticker), true);
+                } else {
+                    drawableSticker.setAlpha(value * 255 / 100);
+                    vSticker.invalidate();
+                }
+            }
+
+            @Override
+            public void onUp(View v, int value) {
+
+            }
+        });
+    }
+
+    //Blend Image
+    private void blendImage(Sticker sticker) {
+        if (!checkCurrentSticker(sticker)) return;
+        seekAndHideViewImage(4);
+
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            if (drawableSticker.getTypeSticker().equals(Utils.IMAGE)) {
+                Bitmap bitmap = BitmapFactory.decodeFile(drawableSticker.getImageModel().getUri());
+
+                filterBlendImageAdapter = new FilterBlendImageAdapter(this, (o, pos) -> {
+                    FilterBlendModel filter = (FilterBlendModel) o;
+                    filter.setCheck(true);
+                    filterBlendImageAdapter.setCurrent(pos);
+                    filterBlendImageAdapter.changeNotify();
+
+                    Log.d("2tdp", "blendImage: " + filter.getParameterFilter());
+
+                    Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
+
+                    drawableSticker.getImageModel().setPosBlend(pos);
+                    drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this, bm, Utils.IMAGE));
+                    drawableSticker.replaceImage();
+                    vSticker.invalidate();
+                });
+
+                if (!lstBlend.isEmpty()) filterBlendImageAdapter.setData(lstBlend);
+
+                LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+                rcvEditBlendImage.setLayoutManager(manager);
+                rcvEditBlendImage.setAdapter(filterBlendImageAdapter);
+
+                rcvEditBlendImage.smoothScrollToPosition(drawableSticker.getImageModel().getPosBlend());
+                filterBlendImageAdapter.setCurrent(drawableSticker.getImageModel().getPosBlend());
+                filterBlendImageAdapter.changeNotify();
+            }
+        }
+    }
+
+    private void resetImage(int position, DrawableStickerCustom drawableSticker, ShadowModel shadowModel,
+                            int opacity) {
+        switch (position) {
+            case 0:
+                float xPos = shadowModel.getXPos();
+                float yPos = shadowModel.getYPos();
+                float blurOld = shadowModel.getBlur();
+                int color = shadowModel.getColorBlur();
+
+                tvXPosImage.setText(String.valueOf((int) xPos));
+                sbXPosImage.setProgress((int) xPos);
+
+                tvYPosImage.setText(String.valueOf((int) yPos));
+                sbYPosImage.setProgress((int) yPos);
+
+                if (blurOld == 0f) tvBlurImage.setText(String.valueOf(0));
+                else tvBlurImage.setText(String.valueOf((int) ((blurOld - 5) * 10f)));
+                if (blurOld > 5) sbBlurImage.setProgress((int) ((blurOld - 5) * 10f));
+                else if (blurOld == 0f) sbBlurImage.setProgress(0);
+                else sbBlurImage.setProgress((int) ((5 - blurOld) * 10f));
+
+                drawableSticker.getImageModel().getShadowModel().setXPos(xPos);
+                drawableSticker.getImageModel().getShadowModel().setYPos(yPos);
+                drawableSticker.getImageModel().getShadowModel().setBlur(blurOld);
+                drawableSticker.getImageModel().getShadowModel().setColorBlur(color);
+
+                vSticker.replace(drawableSticker.getImageModel().shadow(EditActivity.this, drawableSticker), true);
+                break;
+            case 1:
+                drawableSticker.getImageModel().setOpacity(opacity);
+                drawableSticker.setAlpha((int) (opacity * 255 / 100f));
+                sbOpacityImage.setProgress(opacity);
+
+                vSticker.invalidate();
+                break;
+        }
     }
 
     private void seekAndHideViewImage(int position) {
@@ -765,6 +905,35 @@ public class EditActivity extends BaseActivity {
 
                 tvTitleEditImage.setText(R.string.shadow);
                 break;
+            case 3:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditOpacityImage.getVisibility() == View.GONE) {
+                    rlEditOpacityImage.setAnimation(animation);
+                    rlEditOpacityImage.setVisibility(View.VISIBLE);
+                }
+
+                if (tvResetImage.getVisibility() == View.GONE)
+                    tvResetImage.setVisibility(View.VISIBLE);
+
+                sbOpacityImage.setColorText(getResources().getColor(R.color.green));
+                sbOpacityImage.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                sbOpacityImage.setProgress(100);
+                sbOpacityImage.setMax(100);
+
+                tvTitleEditImage.setText(R.string.opacity);
+                break;
+            case 4:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditBlendImage.getVisibility() == View.GONE) {
+                    rlEditBlendImage.setAnimation(animation);
+                    rlEditBlendImage.setVisibility(View.VISIBLE);
+                }
+
+                if (tvResetImage.getVisibility() == View.VISIBLE)
+                    tvResetImage.setVisibility(View.GONE);
+
+                tvTitleEditImage.setText(R.string.blend);
+                break;
         }
 
         animation.setAnimationListener(new Animation.AnimationListener() {
@@ -778,6 +947,7 @@ public class EditActivity extends BaseActivity {
                 vEditImage.clearAnimation();
                 rlEditCrop.clearAnimation();
                 rlEditFilterImage.clearAnimation();
+                rlEditOpacityImage.clearAnimation();
             }
 
             @Override
@@ -1509,7 +1679,11 @@ public class EditActivity extends BaseActivity {
         String strPicApp = DataLocalManager.getOption("bitmap_myapp");
         ColorModel colorModel = DataLocalManager.getColor("color");
         if (!strPicUser.equals("")) {
-            bmRoot = Utils.getBitmapFromUri(this, Uri.parse(strPicUser));
+            try {
+                bmRoot = Utils.modifyOrientation(this, Utils.getBitmapFromUri(this, Uri.parse(strPicUser)), Uri.parse(strPicUser));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             seekAndHideViewMain(positionCrop, bmRoot, null);
             return;
         }
@@ -1570,6 +1744,16 @@ public class EditActivity extends BaseActivity {
                 if (llEditShadowImage.getVisibility() == View.VISIBLE) {
                     llEditShadowImage.setAnimation(animation);
                     llEditShadowImage.setVisibility(View.GONE);
+                }
+
+                if (rlEditOpacityImage.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityImage.setAnimation(animation);
+                    rlEditOpacityImage.setVisibility(View.GONE);
+                }
+
+                if (rlEditBlendImage.getVisibility() == View.VISIBLE) {
+                    rlEditBlendImage.setAnimation(animation);
+                    rlEditBlendImage.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -1780,6 +1964,8 @@ public class EditActivity extends BaseActivity {
                 vEditImage.clearAnimation();
                 rlEditCrop.clearAnimation();
                 rlEditFilterImage.clearAnimation();
+                rlEditOpacityImage.clearAnimation();
+                rlEditBlendImage.clearAnimation();
             }
 
             @Override
@@ -2093,6 +2279,12 @@ public class EditActivity extends BaseActivity {
         sbYPosImage = findViewById(R.id.sbYPosImage);
         sbBlurImage = findViewById(R.id.sbBlurImage);
         ivColorBlurImage = findViewById(R.id.ivColorBlurImage);
+        rlOpacityImage = findViewById(R.id.rlOpacityImage);
+        rlEditOpacityImage = findViewById(R.id.rlEditOpacityImage);
+        sbOpacityImage = findViewById(R.id.sbOpacityImage);
+        rlBlendImage = findViewById(R.id.rlBlendImage);
+        rlEditBlendImage = findViewById(R.id.rlEditBlend);
+        rcvEditBlendImage = findViewById(R.id.rcvEditBlend);
 
         backgroundModel = new BackgroundModel();
 

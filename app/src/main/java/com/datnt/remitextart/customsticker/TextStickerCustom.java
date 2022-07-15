@@ -130,6 +130,7 @@ public class TextStickerCustom extends Sticker {
         }
         canvas.restore();
 
+        //shadow
         canvas.save();
         canvas.concat(matrix);
         if (textRect.width() == getWidth()) {
@@ -144,6 +145,7 @@ public class TextStickerCustom extends Sticker {
         staticLayoutShadow.draw(canvas);
         canvas.restore();
 
+        //text
         canvas.save();
         canvas.concat(matrix);
         if (textRect.width() == getWidth()) {

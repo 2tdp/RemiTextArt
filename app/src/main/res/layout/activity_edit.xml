@@ -609,6 +609,8 @@
         android:layout_height="0dp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/boder_layout_radius_top"
+        android:clickable="true"
+        android:focusable="true"
         android:padding="@dimen/_5sdp"
         android:visibility="gone">
 

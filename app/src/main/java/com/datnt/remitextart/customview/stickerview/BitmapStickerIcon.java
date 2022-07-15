@@ -8,6 +8,9 @@ import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
 
+import com.datnt.remitextart.customsticker.DrawableStickerCustom;
+import com.datnt.remitextart.utils.Utils;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 /**
  * @author wupanjie
  */
-public class BitmapStickerIcon extends DrawableSticker implements StickerIconEvent {
+public class BitmapStickerIcon extends DrawableStickerCustom implements StickerIconEvent {
     public static final float DEFAULT_ICON_RADIUS = 20f;
     public static final float DEFAULT_ICON_EXTRA_RADIUS = 25f;
 
@@ -40,8 +43,9 @@ public class BitmapStickerIcon extends DrawableSticker implements StickerIconEve
     private StickerIconEvent iconEvent;
 
     public BitmapStickerIcon(Context context, Drawable drawable, @Gravity int gravity) {
-        super(context, drawable, new ArrayList<>(), gravity, false, false, false, false);
+        super(context, null, -1, Utils.STICKER_ICON);
         this.position = gravity;
+        setDrawable(drawable);
     }
 
     public void draw(Canvas canvas, Paint paint) {
