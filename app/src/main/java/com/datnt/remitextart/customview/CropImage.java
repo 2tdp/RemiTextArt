@@ -91,7 +91,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         }
     }
 
-    public String getBitmapCreate(Context context) {
+    public String getBitmapCreate(Context context, String nameFolderImage) {
 
         Bitmap bm = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);
@@ -107,7 +107,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
             canvas.drawBitmap(bitmap, maskMatrix, paintBitmap);
         }
 
-        return Utils.saveBitmapToApp(context, Utils.trim(bm), Utils.IMAGE);
+        return Utils.saveBitmapToApp(context, Utils.trim(bm), nameFolderImage, Utils.IMAGE);
     }
 
     @Override

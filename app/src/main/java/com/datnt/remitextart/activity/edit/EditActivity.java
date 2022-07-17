@@ -80,6 +80,9 @@ import java.util.Arrays;
 
 public class EditActivity extends BaseActivity {
 
+    private String nameFolder = "";
+    private String nameFolderBackground = "";
+    private String nameFolderImage = "";
     private final int positionCrop = 0, positionMain = 1, positionColor = 2;
     private final int positionOriginal = 0, position1_1 = 1, position9_16 = 2, position4_5 = 3,
             position16_9 = 4;
@@ -152,6 +155,22 @@ public class EditActivity extends BaseActivity {
         setContentView(R.layout.activity_edit);
 
         init();
+        createProject();
+    }
+
+    private void createProject() {
+        if (DataLocalManager.getInt(Utils.PROJECT) == -1)
+            DataLocalManager.setInt(1, Utils.PROJECT);
+        else {
+            int count = DataLocalManager.getInt(Utils.PROJECT) + 1;
+            DataLocalManager.setInt(count, Utils.PROJECT);
+        }
+        nameFolder = Utils.PROJECT + "_" +  DataLocalManager.getInt(Utils.PROJECT);
+        Utils.makeFolder(this, nameFolder);
+        nameFolderBackground = nameFolder + "/" + Utils.BACKGROUND;
+        Utils.makeFolder(this, nameFolderBackground);
+        nameFolderImage = nameFolder + "/" + Utils.IMAGE;
+        Utils.makeFolder(this, nameFolderImage);
     }
 
     private void init() {
@@ -337,7 +356,8 @@ public class EditActivity extends BaseActivity {
 
         rlExport.setOnClickListener(vCancel -> dialog.cancel());
         llSavePhoto.setOnClickListener(vSave -> {
-            Utils.saveImage(this, Utils.overlay(Utils.loadBitmapFromView(vMain), vSticker.saveImage(this)), "");
+            Utils.saveImage(this, Utils.overlay(Utils.loadBitmapFromView(vMain),
+                    vSticker.saveImage(this)), "remiTextArt");
             dialog.cancel();
         });
         llRemove.setOnClickListener(vRemove -> {
@@ -359,8 +379,10 @@ public class EditActivity extends BaseActivity {
             else
                 bmMain = Bitmap.createScaledBitmap(bm, hMain * bm.getWidth() / bm.getHeight(), hMain, false);
 
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bmMain, Utils.BACKGROUND_ROOT));
-            backgroundModel.setUriRoot(Utils.saveBitmapToApp(this, bmMain, Utils.BACKGROUND));
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bmMain,
+                    nameFolderBackground, Utils.BACKGROUND_ROOT));
+            backgroundModel.setUriRoot(Utils.saveBitmapToApp(this, bmMain,
+                    nameFolderBackground, Utils.BACKGROUND));
 
             //setSize
             vSticker.getLayoutParams().width = bmMain.getWidth();
@@ -441,7 +463,6 @@ public class EditActivity extends BaseActivity {
         }
     }
 
-
     Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message message) {
@@ -457,13 +478,13 @@ public class EditActivity extends BaseActivity {
                                     Bitmap.createScaledBitmap(bitmap, 512,
                                             512 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
 
-                            Utils.makePathImage(EditActivity.this);
-//                            String path = "";
+                            Utils.saveBitmapToApp(EditActivity.this, bitmap,
+                                    nameFolderImage, Utils.IMAGE_ROOT + "_" + picModel.getId());
                             String path = Utils.saveBitmapToApp(EditActivity.this, bitmap,
-                                    Utils.IMAGE_ROOT + "_" + picModel.getId());
+                                    nameFolderImage, Utils.IMAGE + "_" + picModel.getId());
 
                             setUpDataFilter(bitmap);
-                            setUpDataBlend(bitmap, Utils.getStore(EditActivity.this) + "/selfie/" + Utils.IMAGE_ROOT + "_" + picModel.getId() + ".png");
+                            setUpDataBlend(bitmap, path);
 
                             if (!isReplaceImage) {
                                 ImageModel imageModel = new ImageModel(path, path, "", 0,
@@ -588,7 +609,7 @@ public class EditActivity extends BaseActivity {
     private void afterCropImage(DrawableStickerCustom drawableSticker) {
         seekAndHideOperation(positionImage);
 
-        drawableSticker.getImageModel().setUri(pathCrop.getBitmapCreate(this));
+        drawableSticker.getImageModel().setUri(pathCrop.getBitmapCreate(this, nameFolderImage));
         drawableSticker.replaceImage();
         vSticker.invalidate();
     }
@@ -612,7 +633,8 @@ public class EditActivity extends BaseActivity {
                     Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
 
                     drawableSticker.getImageModel().setPosFilter(pos);
-                    drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this, bm, Utils.IMAGE));
+                    drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this,
+                            bm, nameFolderImage, Utils.IMAGE));
                     drawableSticker.replaceImage();
                     vSticker.invalidate();
                 });
@@ -800,7 +822,8 @@ public class EditActivity extends BaseActivity {
                     Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
 
                     drawableSticker.getImageModel().setPosBlend(pos);
-                    drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this, bm, Utils.IMAGE));
+                    drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this,
+                            bm, nameFolderImage, Utils.IMAGE));
                     drawableSticker.replaceImage();
                     vSticker.invalidate();
                 });

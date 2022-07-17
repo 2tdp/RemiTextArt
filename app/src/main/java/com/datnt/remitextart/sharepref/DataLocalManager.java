@@ -58,6 +58,14 @@ public class DataLocalManager {
         return DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
     }
 
+    public static void setInt(int count, String key){
+        DataLocalManager.getInstance().mySharedPreferences.putIntWithKey(key, count);
+    }
+
+    public static int getInt(String key){
+        return DataLocalManager.getInstance().mySharedPreferences.getIntWithKey(key, -1);
+    }
+
     public static void setListFont(ArrayList<FontModel> lstFont, String key) {
         Gson gson = new Gson();
         JsonArray jsonArray = gson.toJsonTree(lstFont).getAsJsonArray();

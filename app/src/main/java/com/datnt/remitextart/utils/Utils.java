@@ -55,6 +55,8 @@ import java.io.RandomAccessFile;
 
 public class Utils {
 
+    public static final String PROJECT = "project";
+
     //Model Check
     public static final String STICKER_ICON = "sticker_icon";
     public static final String EMOJI = "emoji";
@@ -240,15 +242,14 @@ public class Utils {
         return image;
     }
 
-    public static String saveBitmapToApp(Context context, Bitmap bitmap, String name) {
-
-        ContextWrapper cw = new ContextWrapper(context);
+    public static String saveBitmapToApp(Context context, Bitmap bitmap, String nameFolder, String nameFile) {
+//        ContextWrapper cw = new ContextWrapper(context);
 //        File directory = cw.getDir("remiTextArt", Context.MODE_APPEND);
 //        if (!directory.exists()) {
 //            directory.mkdir();
 //        }
-        String directory = getStore(context) + "/selfie" + "/remi.png";
-        File myPath = new File(directory, name + ".png");
+        String directory = getStore(context) + "/" + nameFolder + "/";
+        File myPath = new File(directory, nameFile + ".png");
 
         FileOutputStream fos = null;
         try {
@@ -362,7 +363,7 @@ public class Utils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (bitmap != null) {
 
-                String fileName = getStore(context) + "/selfie" + "/remi.png";
+                String fileName = makeFilename(context, namePic);
 
                 File outFile = new File(fileName);
 
@@ -392,7 +393,7 @@ public class Utils {
         } else {
             if (bitmap != null) {
                 try {
-                    String fileName = getStore(context) + "/selfie" + "/remi.png";
+                    String fileName = makeFilename(context, namePic);
 
                     File outFile = new File(fileName);
 
@@ -423,88 +424,65 @@ public class Utils {
         }
     }
 
-    public static String makePathImage(Context c) {
-        String path = getStore(c) + "/selfie";
+    public static String makeFolder(Context c, String nameFolder) {
+        String path = getStore(c) + "/" + nameFolder;
         File f = new File(path);
-        if (!f.exists())
-            f.mkdirs();
+        if (!f.exists()) f.mkdirs();
+        return path;
+    }
+
+    public static String makeFilename(Context activity, String namePic) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            return getStore(activity) + namePic + ".png";
+
+        String subdir;
+        String externalRootDir = Environment.getExternalStorageDirectory().getPath();
+        if (!externalRootDir.endsWith("/")) externalRootDir += "/";
+
+        subdir = "media/image/";
+        String parentDir = externalRootDir + subdir;
+
+        // Create the parent directory
+        File parentDirFile = new File(parentDir);
+        parentDirFile.mkdirs();
+
+        // If we can't write to that special path, try just writing directly to the sdcard
+        if (!parentDirFile.isDirectory()) parentDir = externalRootDir;
+
+        // Turn the title into a filename
+        StringBuilder filename = new StringBuilder();
+        for (int i = 0; i < "remi-text-art".length(); i++) {
+            if (Character.isLetterOrDigit("remi-text-art".charAt(i)))
+                filename.append("remi-text-art".charAt(i));
+        }
+
+        // Try to make the filename unique
+        String path = null;
+        for (int i = 0; i < 100; i++) {
+            String testPath;
+            if (i > 0) testPath = parentDir + filename + i + ".png";
+            else testPath = parentDir + filename + ".png";
+
+            try {
+                RandomAccessFile f = new RandomAccessFile(new File(testPath), "r");
+                f.close();
+            } catch (Exception e) {
+                // Good, the file didn't exist
+                path = testPath;
+                break;
+            }
+        }
         return path;
     }
 
     public static String getStore(Context c) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             File f = c.getExternalFilesDir(null);
-            if (f != null)
-                return f.getAbsolutePath();
-            else
-                return "/storage/emulated/0/Android/data/" + c.getPackageName();
-        } else {
-            return Environment.getExternalStorageDirectory()
-                    + "/Android/data/" + c.getPackageName();
-        }
+            if (f != null) return f.getAbsolutePath();
+            else return "/storage/emulated/0/Android/data/" + c.getPackageName();
+        } else
+            return Environment.getExternalStorageDirectory() + "/Android/data/" + c.getPackageName();
     }
-
-//    public static String makeFilename(Context activity, String namePic) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            return getStore(activity, namePic + ".png");
-//        }
-//        String subdir;
-//        String externalRootDir = Environment.getExternalStorageDirectory().getPath();
-//        if (!externalRootDir.endsWith("/")) {
-//            externalRootDir += "/";
-//        }
-//        subdir = "media/image/";
-//        String parentdir = externalRootDir + subdir;
-//
-//        // Create the parent directory
-//        File parentDirFile = new File(parentdir);
-//        parentDirFile.mkdirs();
-//
-//        // If we can't write to that special path, try just writing directly to the sdcard
-//        if (!parentDirFile.isDirectory()) {
-//            parentdir = externalRootDir;
-//        }
-//
-//        // Turn the title into a filename
-//        StringBuilder filename = new StringBuilder();
-//        for (int i = 0; i < "remi-text-art".length(); i++) {
-//            if (Character.isLetterOrDigit("remi-text-art".charAt(i))) {
-//                filename.append("remi-text-art".charAt(i));
-//            }
-//        }
-//
-//        // Try to make the filename unique
-//        String path = null;
-//        for (int i = 0; i < 100; i++) {
-//            String testPath;
-//            if (i > 0)
-//                testPath = parentdir + filename + i + ".png";
-//            else
-//                testPath = parentdir + filename + ".png";
-//
-//            try {
-//                RandomAccessFile f = new RandomAccessFile(new File(testPath), "r");
-//                f.close();
-//            } catch (Exception e) {
-//                // Good, the file didn't exist
-//                path = testPath;
-//                break;
-//            }
-//        }
-//        return path;
-//    }
-//
-//    public static String getStore(Context c, String name) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            File f = c.getExternalFilesDir(null);
-//            if (f != null)
-//                return f.getAbsolutePath() + name;
-//            else
-//                return "/storage/emulated/0/Android/data/" + c.getPackageName() + name;
-//        } else {
-//            return Environment.getExternalStorageDirectory() + "/Android/data/" + c.getPackageName() + name;
-//        }
-//    }
 
     public static String getMIMEType(String url) {
         String mType = null;
