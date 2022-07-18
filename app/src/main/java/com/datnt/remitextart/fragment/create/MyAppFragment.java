@@ -67,6 +67,7 @@ public class MyAppFragment extends Fragment {
             String picAsset = (String) o;
             DataLocalManager.setOption(picAsset, "bitmap_myapp");
             DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setColor(null, "color");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);

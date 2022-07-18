@@ -58,11 +58,11 @@ public class DataLocalManager {
         return DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
     }
 
-    public static void setInt(int count, String key){
+    public static void setInt(int count, String key) {
         DataLocalManager.getInstance().mySharedPreferences.putIntWithKey(key, count);
     }
 
-    public static int getInt(String key){
+    public static int getInt(String key) {
         return DataLocalManager.getInstance().mySharedPreferences.getIntWithKey(key, -1);
     }
 
@@ -95,8 +95,12 @@ public class DataLocalManager {
 
     public static void setColor(ColorModel color, String key) {
         Gson gson = new Gson();
-        JsonObject jsonObject = gson.toJsonTree(color).getAsJsonObject();
-        String json = jsonObject.toString();
+        JsonObject jsonObject = null;
+        String json = "";
+        if (color != null) {
+            jsonObject = gson.toJsonTree(color).getAsJsonObject();
+            json = jsonObject.toString();
+        }
 
         DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
     }

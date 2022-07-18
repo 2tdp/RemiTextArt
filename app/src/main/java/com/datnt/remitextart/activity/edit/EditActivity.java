@@ -2,7 +2,9 @@ package com.datnt.remitextart.activity.edit;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,6 +38,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.activity.project.CreateProjectActivity;
 import com.datnt.remitextart.adapter.ColorAdapter;
 import com.datnt.remitextart.adapter.FilterBlendImageAdapter;
 import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
@@ -60,6 +63,7 @@ import com.datnt.remitextart.fragment.ImageFragment;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.EmojiModel;
 import com.datnt.remitextart.model.FilterBlendModel;
+import com.datnt.remitextart.model.background.AdjustModel;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.model.background.BackgroundModel;
@@ -68,6 +72,7 @@ import com.datnt.remitextart.model.text.ShearTextModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
+import com.datnt.remitextart.utils.UtilsAdjust;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +93,21 @@ public class EditActivity extends BaseActivity {
             position16_9 = 4;
     private final int positionAddText = 0, positionEmoji = 1, positionImage = 2, positionBackground = 3,
             positionOverlay = 4, positionDecor = 5, positionSize = 6;
+
+    //background
+    private RelativeLayout rlExpandEditBackground, rlDelBackground, rlReplaceBackground, rlAdjustBackground,
+            rlFilterBackground, rlOpacityBackground, rlFlipYBackground, rlFlipXBackground, rlEditBackground,
+            rlEditAdjust, rlVignette, rlVibrance, rlWarmth, rlHue, rlSaturation, rlWhites, rlBlacks,
+            rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness;
+    private TextView tvTitleEditBackground, tvResetBackground, tvVignette, tvVibrance, tvWarmth,
+            tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure, tvContrast,
+            tvBrightness, tvAdjustBackground;
+    private ImageView ivVignette, ivVibrance, ivWarmth, ivHue, ivSaturation, ivWhites, ivBlacks,
+            ivShadows, ivHighLight, ivExposure, ivContrast, ivBrightness;
+    private CustomSeekbarTwoWay sbAdjust;
+
+    private Bitmap bmAdjust, bitmap;
+    private HorizontalScrollView vEditBackground;
 
     //image
     private RelativeLayout rlExpandEditImage, rlDelImage, rlReplaceImage, rlDuplicateImage, rlCropImage,
@@ -147,7 +167,9 @@ public class EditActivity extends BaseActivity {
     private Bitmap bmMain, bmRoot;
     private BackgroundModel backgroundModel;
     private ArrayList<FilterBlendModel> lstFilter, lstBlend;
-    private boolean isColor;
+    private boolean isColor, isReplaceBackground;
+    private String strPicUserOld = "old", strPicAppOld = "old";
+    private ColorModel colorModelOld = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +187,7 @@ public class EditActivity extends BaseActivity {
             int count = DataLocalManager.getInt(Utils.PROJECT) + 1;
             DataLocalManager.setInt(count, Utils.PROJECT);
         }
-        nameFolder = Utils.PROJECT + "_" +  DataLocalManager.getInt(Utils.PROJECT);
+        nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
         Utils.makeFolder(this, nameFolder);
         nameFolderBackground = nameFolder + "/" + Utils.BACKGROUND;
         Utils.makeFolder(this, nameFolderBackground);
@@ -328,6 +350,19 @@ public class EditActivity extends BaseActivity {
         rlOpacityImage.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
         rlBlendImage.setOnClickListener(v -> blendImage(vSticker.getCurrentSticker()));
 
+        //background
+        rlBackground.setOnClickListener(v -> seekAndHideOperation(positionBackground));
+        rlDelBackground.setOnClickListener(v -> {
+            DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
+            DataLocalManager.setColor(new ColorModel(Color.WHITE, Color.WHITE, 0, false), "color");
+
+            getData();
+            Utils.showToast(this, getResources().getString(R.string.del));
+        });
+        rlReplaceBackground.setOnClickListener(v -> replaceBackground());
+        rlAdjustBackground.setOnClickListener(v -> adjustBackground());
+
         //size
         rlCrop.setOnClickListener(v -> {
             seekAndHideOperation(positionSize);
@@ -392,7 +427,7 @@ public class EditActivity extends BaseActivity {
 
             vMain.setAlpha(backgroundModel.getOpacity());
 
-            seekAndHideViewMain(positionMain, bmMain, null);
+            seekAndHideViewMain(positionMain, bmMain, null, false);
         } else {
             vSticker.getLayoutParams().height = (int) vColor.getH();
             vSticker.getLayoutParams().width = (int) vColor.getW();
@@ -459,6 +494,584 @@ public class EditActivity extends BaseActivity {
             case Utils.IMAGE:
                 isReplaceImage = true;
                 pickImage();
+                break;
+        }
+    }
+
+    //Background
+    private void replaceBackground() {
+        isReplaceBackground = true;
+        Intent intent = new Intent();
+        intent.putExtra("pickBG", isReplaceBackground);
+        intent.setComponent(new ComponentName(getPackageName(), CreateProjectActivity.class.getName()));
+        startActivity(intent, ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
+    }
+
+    private void adjustBackground() {
+        seekAndHideViewBackground(0);
+        setUpOptionAdjustBackground(0);
+
+        rlBrightness.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap,
+                    nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(0);
+        });
+        rlContrast.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap,
+                    nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(1);
+        });
+        rlExposure.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(2);
+        });
+        rlHighLight.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(3);
+        });
+        rlShadows.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(4);
+        });
+        rlBlacks.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(5);
+        });
+        rlWhites.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(6);
+        });
+        rlSaturation.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(7);
+        });
+        rlHue.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(8);
+        });
+        rlWarmth.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(9);
+        });
+        rlVibrance.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(10);
+        });
+        rlVignette.setOnClickListener(v -> {
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            setUpOptionAdjustBackground(11);
+        });
+    }
+
+    private void setUpOptionAdjustBackground(int pos) {
+        switch (pos) {
+            case 0:
+                ivBrightness.setImageResource(R.drawable.ic_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.pink));
+
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(0);
+                break;
+            case 1:
+                ivContrast.setImageResource(R.drawable.ic_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.pink));
+
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(1);
+                break;
+            case 2:
+                ivExposure.setImageResource(R.drawable.ic_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.pink));
+
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(2);
+                break;
+            case 3:
+                ivHighLight.setImageResource(R.drawable.ic_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.pink));
+
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(3);
+                break;
+            case 4:
+                ivShadows.setImageResource(R.drawable.ic_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.pink));
+
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(4);
+                break;
+            case 5:
+                ivBlacks.setImageResource(R.drawable.ic_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.pink));
+
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(5);
+                break;
+            case 6:
+                ivWhites.setImageResource(R.drawable.ic_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.pink));
+
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(6);
+                break;
+            case 7:
+                ivSaturation.setImageResource(R.drawable.ic_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.pink));
+
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(7);
+                break;
+            case 8:
+                ivHue.setImageResource(R.drawable.ic_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.pink));
+
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(8);
+                break;
+            case 9:
+                ivWarmth.setImageResource(R.drawable.ic_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.pink));
+
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(9);
+                break;
+            case 10:
+                ivVibrance.setImageResource(R.drawable.ic_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.pink));
+
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+                ivVignette.setImageResource(R.drawable.ic_un_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(10);
+                break;
+            case 11:
+                ivVignette.setImageResource(R.drawable.ic_vignette);
+                tvVignette.setTextColor(getResources().getColor(R.color.pink));
+
+                ivVibrance.setImageResource(R.drawable.ic_un_vibrance);
+                tvVibrance.setTextColor(getResources().getColor(R.color.black));
+                ivWarmth.setImageResource(R.drawable.ic_un_warmth);
+                tvWarmth.setTextColor(getResources().getColor(R.color.black));
+                ivHue.setImageResource(R.drawable.ic_un_hue);
+                tvHue.setTextColor(getResources().getColor(R.color.black));
+                ivSaturation.setImageResource(R.drawable.ic_un_saturation);
+                tvSaturation.setTextColor(getResources().getColor(R.color.black));
+                ivWhites.setImageResource(R.drawable.ic_un_whites);
+                tvWhites.setTextColor(getResources().getColor(R.color.black));
+                ivBlacks.setImageResource(R.drawable.ic_un_blacks);
+                tvBlacks.setTextColor(getResources().getColor(R.color.black));
+                ivShadows.setImageResource(R.drawable.ic_un_shadows);
+                tvShadows.setTextColor(getResources().getColor(R.color.black));
+                ivHighLight.setImageResource(R.drawable.ic_un_hightlight);
+                tvHighLight.setTextColor(getResources().getColor(R.color.black));
+                ivExposure.setImageResource(R.drawable.ic_un_exposure);
+                tvExposure.setTextColor(getResources().getColor(R.color.black));
+                ivContrast.setImageResource(R.drawable.ic_un_contrast);
+                tvContrast.setTextColor(getResources().getColor(R.color.black));
+                ivBrightness.setImageResource(R.drawable.ic_un_brightness);
+                tvBrightness.setTextColor(getResources().getColor(R.color.black));
+
+                adjustEditOption(11);
+                break;
+        }
+    }
+
+    private void adjustEditOption(int pos) {
+        if (backgroundModel.getAdjustModel() == null)
+            backgroundModel.setAdjustModel(new AdjustModel(0f, 0f, 0f,
+                    0f, 0f, 0f, 0f, 0f, 0f, 0f,
+                    0f, 0f));
+        switch (pos) {
+            case 0:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getBrightness() / 2);
+                break;
+            case 1:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getContrast());
+                break;
+            case 2:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getExposure() / 4);
+                break;
+            case 3:
+                int highlight = (int) backgroundModel.getAdjustModel().getHighlight();
+                if (highlight > 0) sbAdjust.setProgress(highlight / 4);
+                else sbAdjust.setProgress(highlight / 2);
+                break;
+            case 4:
+                int shadow = (int) backgroundModel.getAdjustModel().getShadows();
+                if (shadow > 0) sbAdjust.setProgress(shadow / 4);
+                else sbAdjust.setProgress(shadow / 2);
+                break;
+            case 5:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getBlacks() / 2);
+                break;
+            case 6:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getWhites() / 2);
+                break;
+            case 7:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getSaturation() / 2);
+                break;
+            case 8:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getHue() * 100 / 360);
+                break;
+            case 9:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getWarmth() / 2);
+                break;
+            case 10:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getVibrance() / 2);
+                break;
+            case 11:
+                sbAdjust.setProgress((int) backgroundModel.getAdjustModel().getVignette() / 2);
+                break;
+        }
+
+        tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
+
+        bmAdjust = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+        sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                tvAdjustBackground.setText(String.valueOf(value));
+                setValueAdjust(value, pos);
+            }
+
+            @Override
+            public void onUp(View v, int value) {
+//                setValueAdjust(value, pos);
+            }
+        });
+    }
+
+    private void setValueAdjust(int value, int pos) {
+        switch (pos) {
+            case 0:
+                backgroundModel.getAdjustModel().setBrightness(value * 2f);
+                bitmap = UtilsAdjust.adjustBrightness(bmAdjust, value * 2f);
+                break;
+            case 1:
+                backgroundModel.getAdjustModel().setContrast(value);
+                bitmap = UtilsAdjust.adjustContrast(bmAdjust, value);
+                break;
+            case 2:
+                backgroundModel.getAdjustModel().setExposure(value * 4f);
+                bitmap = UtilsAdjust.adjustExposure(bmAdjust, value * 4f);
+                break;
+            case 3:
+                if (value > 0) {
+                    backgroundModel.getAdjustModel().setHighlight(value * 4f);
+                    bitmap = UtilsAdjust.adjustHighLight(bmAdjust, value * 4f);
+                } else if (value < 0) {
+                    backgroundModel.getAdjustModel().setHighlight(value * 2f);
+                    bitmap = UtilsAdjust.adjustHighLight(bmAdjust, value * 2f);
+                }
+                break;
+            case 4:
+                if (value > 0) {
+                    backgroundModel.getAdjustModel().setShadows(value * 4f);
+                    bitmap = UtilsAdjust.adjustShadow(bmAdjust, value * 4f);
+                } else if (value < 0) {
+                    backgroundModel.getAdjustModel().setShadows(value * 2f);
+                    bitmap = UtilsAdjust.adjustShadow(bmAdjust, value * 2f);
+                }
+                break;
+            case 5:
+                backgroundModel.getAdjustModel().setBlacks(value * 2f);
+                bitmap = UtilsAdjust.adjustBlacks(bmAdjust, value * 2f);
+                break;
+            case 6:
+                backgroundModel.getAdjustModel().setWhites(value * 2f);
+                bitmap = UtilsAdjust.adjustWhites(bmAdjust, value * 2f);
+                break;
+            case 7:
+                backgroundModel.getAdjustModel().setSaturation(value * 2f);
+                bitmap = UtilsAdjust.adjustSaturation(bmAdjust, value * 2f);
+                break;
+            case 8:
+                backgroundModel.getAdjustModel().setHue(value * 360 / 100f);
+                bitmap = UtilsAdjust.adjustHue(bmAdjust, value * 360 / 100f);
+                break;
+            case 9:
+                backgroundModel.getAdjustModel().setWarmth(value * 2f);
+                bitmap = UtilsAdjust.adjustWarmth(bmAdjust, value * 2f);
+                break;
+            case 10:
+                backgroundModel.getAdjustModel().setVibrance(value * 2f);
+                bitmap = UtilsAdjust.adjustVibrance(bmAdjust, value * 2f);
+                break;
+            case 11:
+                backgroundModel.getAdjustModel().setVignette(value * 2f);
+                bitmap = UtilsAdjust.adjustVignette(bmAdjust, value * 2f);
+                break;
+        }
+        if (bitmap != null) vMain.setImageBitmap(bitmap);
+    }
+
+    private void seekAndHideViewBackground(int position) {
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+        if (vEditBackground.getVisibility() == View.VISIBLE) {
+            vEditBackground.setAnimation(animation);
+            vEditBackground.setVisibility(View.GONE);
+        }
+
+        if (tvResetBackground.getVisibility() == View.VISIBLE)
+            tvResetBackground.setVisibility(View.GONE);
+
+        switch (position) {
+            case 0:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditAdjust.getVisibility() == View.GONE) {
+                    rlEditAdjust.setAnimation(animation);
+                    rlEditAdjust.setVisibility(View.VISIBLE);
+
+                    tvAdjustBackground.setText(String.valueOf(0));
+                    sbAdjust.setMax(100);
+                }
+
+                tvTitleEditBackground.setText(R.string.adjust);
                 break;
         }
     }
@@ -1701,24 +2314,24 @@ public class EditActivity extends BaseActivity {
         String strPicUser = DataLocalManager.getOption("bitmap");
         String strPicApp = DataLocalManager.getOption("bitmap_myapp");
         ColorModel colorModel = DataLocalManager.getColor("color");
-        if (!strPicUser.equals("")) {
+
+        if (!strPicUser.equals("") && !strPicUser.equals(strPicUserOld)) {
+            strPicUserOld = strPicUser;
             try {
-                bmRoot = Utils.modifyOrientation(this, Utils.getBitmapFromUri(this, Uri.parse(strPicUser)), Uri.parse(strPicUser));
+                bmRoot = Utils.modifyOrientation(this, Utils.getBitmapFromUri(this, Uri.parse(strPicUser)), Uri.parse(strPicUserOld));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            seekAndHideViewMain(positionCrop, bmRoot, null);
-            return;
-        }
-        if (!strPicApp.equals("")) {
-            bmRoot = Utils.getBitmapFromAsset(this, "offline_myapp", strPicApp, false, false);
-            seekAndHideViewMain(positionCrop, bmRoot, null);
-            return;
-        }
-        if (colorModel != null) {
-            backgroundModel.setColorModel(colorModel);
-            seekAndHideViewMain(positionColor, null, colorModel);
-        }
+            seekAndHideViewMain(positionCrop, bmRoot, null, true);
+        } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
+            strPicAppOld = strPicApp;
+            bmRoot = Utils.getBitmapFromAsset(this, "offline_myapp", strPicAppOld, false, false);
+            seekAndHideViewMain(positionCrop, bmRoot, null, true);
+        } else if (colorModel != null && colorModel != colorModelOld) {
+            colorModelOld = colorModel;
+            backgroundModel.setColorModel(colorModelOld);
+            seekAndHideViewMain(positionColor, null, colorModel, true);
+        } else isReplaceBackground = false;
     }
 
     private void seekAndHideOperation(int position) {
@@ -1727,6 +2340,54 @@ public class EditActivity extends BaseActivity {
         else ivLayer.setImageResource(R.drawable.ic_layer);
 
         switch (position) {
+            case positionBackground:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.setAnimation(animation);
+                    vSize.setVisibility(View.GONE);
+                    llLayerExport.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.VISIBLE);
+                    ivTick.setVisibility(View.VISIBLE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.setAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.setAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.setAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.setAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandEditBackground.getVisibility() == View.GONE) {
+                    rlExpandEditBackground.setAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.VISIBLE);
+                }
+
+                if (vEditBackground.getVisibility() == View.GONE) {
+                    vEditBackground.setAnimation(animation);
+                    vEditBackground.setVisibility(View.VISIBLE);
+                }
+
+                if (tvResetBackground.getVisibility() == View.VISIBLE)
+                    tvResetBackground.setVisibility(View.GONE);
+
+                tvTitleEditBackground.setText(R.string.background);
+                break;
             case positionImage:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
                 if (vSize.getVisibility() == View.VISIBLE) {
@@ -1922,7 +2583,7 @@ public class EditActivity extends BaseActivity {
                         ivColorText.setImageDrawable(createGradientDrawable(new ColorModel(Color.BLACK, Color.BLACK, 0, false)));
                 break;
             case positionSize:
-                seekAndHideViewMain(positionCrop, bmRoot, null);
+                seekAndHideViewMain(positionCrop, bmRoot, null, true);
                 break;
             default:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -1952,6 +2613,11 @@ public class EditActivity extends BaseActivity {
                 if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
                     rlExpandEditImage.setAnimation(animation);
                     rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.setAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
                 }
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -1989,6 +2655,9 @@ public class EditActivity extends BaseActivity {
                 rlEditFilterImage.clearAnimation();
                 rlEditOpacityImage.clearAnimation();
                 rlEditBlendImage.clearAnimation();
+
+                rlExpandEditBackground.clearAnimation();
+                vEditBackground.clearAnimation();
             }
 
             @Override
@@ -1998,70 +2667,86 @@ public class EditActivity extends BaseActivity {
         });
     }
 
-    private void seekAndHideViewMain(@NotNull int position, @Nullable Bitmap bitmap, @Nullable ColorModel colorModel) {
+    private void seekAndHideViewMain(@NotNull int position, @Nullable Bitmap bitmap,
+                                     @Nullable ColorModel colorModel, @NotNull boolean isNew) {
         isColor = false;
 
         if (vSticker.getStickerCount() == 0)
             ivLayer.setImageResource(R.drawable.ic_layer_uncheck);
         else ivLayer.setImageResource(R.drawable.ic_layer);
 
-        animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
-        if (vSize.getVisibility() == View.VISIBLE) {
-            vSize.setAnimation(animation);
-            vSize.setVisibility(View.GONE);
+        if (isNew) {
+            animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+            if (vOperation.getVisibility() == View.VISIBLE) {
+                vOperation.setAnimation(animation);
+                vOperation.setVisibility(View.GONE);
+            }
+
             llLayerExport.setVisibility(View.GONE);
+
+            animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+            if (vSize.getVisibility() == View.GONE) {
+                vSize.setAnimation(animation);
+                vSize.setVisibility(View.VISIBLE);
+            }
+
             tvToolBar.setVisibility(View.VISIBLE);
             ivTick.setVisibility(View.VISIBLE);
-        }
+        } else {
+            animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+            if (vSize.getVisibility() == View.VISIBLE) {
+                vSize.setAnimation(animation);
+                vSize.setVisibility(View.GONE);
+            }
 
-        animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
-        if (vOperation.getVisibility() == View.GONE) {
-            vOperation.setAnimation(animation);
-            vOperation.setVisibility(View.VISIBLE);
-            llLayerExport.setVisibility(View.VISIBLE);
             tvToolBar.setVisibility(View.GONE);
             ivTick.setVisibility(View.GONE);
+
+            animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+            if (vOperation.getVisibility() == View.GONE) {
+                vOperation.setAnimation(animation);
+                vOperation.setVisibility(View.VISIBLE);
+            }
+
+            llLayerExport.setVisibility(View.VISIBLE);
         }
 
         switch (position) {
-            case 0:
+            case positionCrop:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
                 if (vOperation.getVisibility() == View.VISIBLE) {
                     vOperation.setAnimation(animation);
                     vOperation.setVisibility(View.GONE);
-                    llLayerExport.setVisibility(View.GONE);
-                    tvToolBar.setVisibility(View.GONE);
-                    ivTick.setVisibility(View.GONE);
                 }
+
+                llLayerExport.setVisibility(View.GONE);
 
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vSize.getVisibility() == View.GONE) {
                     vSize.setAnimation(animation);
                     vSize.setVisibility(View.VISIBLE);
-                    tvToolBar.setVisibility(View.VISIBLE);
-                    ivTick.setVisibility(View.VISIBLE);
                 }
 
+                tvToolBar.setVisibility(View.VISIBLE);
+                ivTick.setVisibility(View.VISIBLE);
+
                 if (vCrop.getVisibility() == View.GONE) vCrop.setVisibility(View.VISIBLE);
-                if (bitmap != null)
-                    vCrop.setData(bitmap);
+                if (bitmap != null) vCrop.setData(bitmap);
 
                 if (vMain.getVisibility() == View.VISIBLE) vMain.setVisibility(View.GONE);
                 if (vColor.getVisibility() == View.VISIBLE) vColor.setVisibility(View.GONE);
                 break;
-            case 1:
+            case positionMain:
                 if (vMain.getVisibility() == View.GONE) vMain.setVisibility(View.VISIBLE);
-                if (bitmap != null)
-                    vMain.setImageBitmap(bitmap);
+                if (bitmap != null) vMain.setImageBitmap(bitmap);
 
                 if (vCrop.getVisibility() == View.VISIBLE) vCrop.setVisibility(View.GONE);
                 if (vColor.getVisibility() == View.VISIBLE) vColor.setVisibility(View.GONE);
                 break;
-            case 2:
+            case positionColor:
                 isColor = true;
                 if (vColor.getVisibility() == View.GONE) vColor.setVisibility(View.VISIBLE);
-                if (colorModel != null)
-                    vColor.setData(colorModel);
+                if (colorModel != null) vColor.setData(colorModel);
 
                 if (vMain.getVisibility() == View.VISIBLE) vMain.setVisibility(View.GONE);
                 if (vCrop.getVisibility() == View.VISIBLE) vCrop.setVisibility(View.GONE);
@@ -2078,6 +2763,8 @@ public class EditActivity extends BaseActivity {
             public void onAnimationEnd(Animation animation) {
                 vSize.clearAnimation();
                 vOperation.clearAnimation();
+
+                rlExpandEditBackground.clearAnimation();
             }
 
             @Override
@@ -2309,6 +2996,60 @@ public class EditActivity extends BaseActivity {
         rlEditBlendImage = findViewById(R.id.rlEditBlend);
         rcvEditBlendImage = findViewById(R.id.rcvEditBlend);
 
+        //background
+        rlExpandEditBackground = findViewById(R.id.rlExpandEditBackground);
+        vEditBackground = findViewById(R.id.vEditBackground);
+        rlEditBackground = findViewById(R.id.rlEditBackground);
+        tvResetBackground = findViewById(R.id.tvResetBackground);
+        tvTitleEditBackground = findViewById(R.id.tvTitleEditBackground);
+        rlDelBackground = findViewById(R.id.rlDelBackground);
+        rlReplaceBackground = findViewById(R.id.rlReplaceBackground);
+        rlAdjustBackground = findViewById(R.id.rlAdjustBackground);
+        rlFilterBackground = findViewById(R.id.rlFilterBackground);
+        rlOpacityBackground = findViewById(R.id.rlOpacityBackground);
+        rlFlipXBackground = findViewById(R.id.rlFlipXBackground);
+        rlFlipYBackground = findViewById(R.id.rlFlipYBackground);
+        rlEditAdjust = findViewById(R.id.rlEditAdjust);
+
+        rlVignette = findViewById(R.id.rlVignette);
+        rlVibrance = findViewById(R.id.rlVibrance);
+        rlWarmth = findViewById(R.id.rlWarmth);
+        rlHue = findViewById(R.id.rlHue);
+        rlSaturation = findViewById(R.id.rlSaturation);
+        rlWhites = findViewById(R.id.rlWhites);
+        rlBlacks = findViewById(R.id.rlBlacks);
+        rlShadows = findViewById(R.id.rlShadows);
+        rlHighLight = findViewById(R.id.rlHighLight);
+        rlExposure = findViewById(R.id.rlExposure);
+        rlContrast = findViewById(R.id.rlContrast);
+        rlBrightness = findViewById(R.id.rlBrightness);
+        ivBrightness = findViewById(R.id.ivBrightness);
+        tvBrightness = findViewById(R.id.tvBrightness);
+        ivContrast = findViewById(R.id.ivContrast);
+        tvContrast = findViewById(R.id.tvContrast);
+        ivExposure = findViewById(R.id.ivExposure);
+        tvExposure = findViewById(R.id.tvExposure);
+        ivHighLight = findViewById(R.id.ivHighLight);
+        tvHighLight = findViewById(R.id.tvHighLight);
+        ivShadows = findViewById(R.id.ivShadows);
+        tvShadows = findViewById(R.id.tvShadows);
+        ivBlacks = findViewById(R.id.ivBlacks);
+        tvBlacks = findViewById(R.id.tvBlacks);
+        ivWhites = findViewById(R.id.ivWhites);
+        tvWhites = findViewById(R.id.tvWhites);
+        ivSaturation = findViewById(R.id.ivSaturation);
+        tvSaturation = findViewById(R.id.tvSaturation);
+        ivHue = findViewById(R.id.ivHue);
+        tvHue = findViewById(R.id.tvHue);
+        ivWarmth = findViewById(R.id.ivWarmth);
+        tvWarmth = findViewById(R.id.tvWarmth);
+        ivVibrance = findViewById(R.id.ivVibrance);
+        tvVibrance = findViewById(R.id.tvVibrance);
+        ivVignette = findViewById(R.id.ivVignette);
+        tvVignette = findViewById(R.id.tvVignette);
+        sbAdjust = findViewById(R.id.sbAdjust);
+        tvAdjustBackground = findViewById(R.id.tvAdjustBackground);
+
         backgroundModel = new BackgroundModel();
 
         getData();
@@ -2376,5 +3117,18 @@ public class EditActivity extends BaseActivity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+        isReplaceBackground = false;
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (isReplaceBackground) getData();
     }
 }

@@ -58,10 +58,7 @@ public class EmojiFragment extends Fragment {
     }
 
     private void setUpData(String nameEmoji) {
-        EmojiAdapter emojiAdapter = new EmojiAdapter(requireContext(), (o, pos) -> {
-            callBack.callBackItem(o, pos);
-            Utils.showToast(requireContext(), getString(R.string.success));
-        });
+        EmojiAdapter emojiAdapter = new EmojiAdapter(requireContext(), callBack);
 
         emojiAdapter.setData(DataEmoji.getTitleEmoji(requireContext(), nameEmoji));
         GridLayoutManager manager = new GridLayoutManager(requireContext(), 3);
