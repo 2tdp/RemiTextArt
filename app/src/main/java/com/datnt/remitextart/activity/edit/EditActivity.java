@@ -6,6 +6,7 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -77,15 +78,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.wysaid.common.Common;
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EditActivity extends BaseActivity {
 
-    private String nameFolder = "";
     private String nameFolderBackground = "";
     private String nameFolderImage = "";
     private final int positionCrop = 0, positionMain = 1, positionColor = 2;
@@ -96,16 +98,18 @@ public class EditActivity extends BaseActivity {
 
     //background
     private RelativeLayout rlExpandEditBackground, rlDelBackground, rlReplaceBackground, rlAdjustBackground,
-            rlFilterBackground, rlOpacityBackground, rlFlipYBackground, rlFlipXBackground, rlEditBackground,
+            rlFilterBackground, rlOpacityBackground, rlFlipYBackground, rlFlipXBackground, rlCancelEditBackground,
             rlEditAdjust, rlVignette, rlVibrance, rlWarmth, rlHue, rlSaturation, rlWhites, rlBlacks,
-            rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness;
+            rlShadows, rlHighLight, rlExposure, rlContrast, rlBrightness, rlEditFilterBackground,
+            rlEditOpacityBackground;
     private TextView tvTitleEditBackground, tvResetBackground, tvVignette, tvVibrance, tvWarmth,
             tvHue, tvSaturation, tvWhites, tvBlacks, tvShadows, tvHighLight, tvExposure, tvContrast,
             tvBrightness, tvAdjustBackground;
     private ImageView ivVignette, ivVibrance, ivWarmth, ivHue, ivSaturation, ivWhites, ivBlacks,
             ivShadows, ivHighLight, ivExposure, ivContrast, ivBrightness;
     private CustomSeekbarTwoWay sbAdjust;
-
+    private CustomSeekbarRunText sbOpacityBackground;
+    private RecyclerView rcvFilterBackground;
     private Bitmap bmAdjust, bitmap;
     private HorizontalScrollView vEditBackground;
 
@@ -167,7 +171,7 @@ public class EditActivity extends BaseActivity {
     private Bitmap bmMain, bmRoot;
     private BackgroundModel backgroundModel;
     private ArrayList<FilterBlendModel> lstFilter, lstBlend;
-    private boolean isColor, isReplaceBackground;
+    private boolean isColor, isReplaceBackground, isBackground;
     private String strPicUserOld = "old", strPicAppOld = "old";
     private ColorModel colorModelOld = null;
 
@@ -176,6 +180,7 @@ public class EditActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
         init();
         createProject();
     }
@@ -187,7 +192,7 @@ public class EditActivity extends BaseActivity {
             int count = DataLocalManager.getInt(Utils.PROJECT) + 1;
             DataLocalManager.setInt(count, Utils.PROJECT);
         }
-        nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
+        String nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
         Utils.makeFolder(this, nameFolder);
         nameFolderBackground = nameFolder + "/" + Utils.BACKGROUND;
         Utils.makeFolder(this, nameFolderBackground);
@@ -304,6 +309,12 @@ public class EditActivity extends BaseActivity {
                 seekAndHideOperation(-1);
             } else seekAndHideOperation(positionImage);
         });
+        rlCancelEditBackground.setOnClickListener(v -> {
+            if (vEditBackground.getVisibility() == View.VISIBLE) {
+                vSticker.setCurrentSticker(null);
+                seekAndHideOperation(-1);
+            } else seekAndHideOperation(positionBackground);
+        });
 
         //addSticker
         rlAddText.setOnClickListener(v -> {
@@ -353,15 +364,15 @@ public class EditActivity extends BaseActivity {
         //background
         rlBackground.setOnClickListener(v -> seekAndHideOperation(positionBackground));
         rlDelBackground.setOnClickListener(v -> {
-            DataLocalManager.setOption("", "bitmap");
-            DataLocalManager.setOption("", "bitmap_myapp");
-            DataLocalManager.setColor(new ColorModel(Color.WHITE, Color.WHITE, 0, false), "color");
-
-            getData();
+            getData(2, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), false);
             Utils.showToast(this, getResources().getString(R.string.del));
         });
         rlReplaceBackground.setOnClickListener(v -> replaceBackground());
         rlAdjustBackground.setOnClickListener(v -> adjustBackground());
+        rlFilterBackground.setOnClickListener(v -> filterBackground());
+        rlOpacityBackground.setOnClickListener(v -> opacityBackground());
+        rlFlipXBackground.setOnClickListener(v -> flipXBackground());
+        rlFlipYBackground.setOnClickListener(v -> flipYBackground());
 
         //size
         rlCrop.setOnClickListener(v -> {
@@ -425,13 +436,16 @@ public class EditActivity extends BaseActivity {
             vSticker.getLayoutParams().height = bmMain.getHeight();
             vMain.getLayoutParams().height = bmMain.getHeight();
 
-            vMain.setAlpha(backgroundModel.getOpacity());
+            vMain.setAlpha(backgroundModel.getOpacity() / 100f);
 
             seekAndHideViewMain(positionMain, bmMain, null, false);
         } else {
             vSticker.getLayoutParams().height = (int) vColor.getH();
             vSticker.getLayoutParams().width = (int) vColor.getW();
             backgroundModel.setSizeViewColor(vColor.getSize());
+
+            vMain.setAlpha(backgroundModel.getOpacity() * 255 / 100f);
+            seekAndHideViewMain(positionColor, null, backgroundModel.getColorModel(), false);
         }
     }
 
@@ -507,58 +521,165 @@ public class EditActivity extends BaseActivity {
         startActivity(intent, ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
     }
 
+    //Flip Background
+    //flip
+    private void flipXBackground() {
+        if (!isColor) {
+            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(backgroundModel.getUriCache()),
+                    true, false);
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            vMain.setImageBitmap(bitmap);
+        }
+    }
+
+    private void flipYBackground() {
+        if (!isColor) {
+            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(backgroundModel.getUriCache()),
+                    false, true);
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            vMain.setImageBitmap(bitmap);
+        }
+    }
+
+    //Opacity Background
+    private void opacityBackground() {
+        seekAndHideViewBackground(2);
+
+        int opacityOld = backgroundModel.getOpacity();
+        sbOpacityBackground.setProgress(opacityOld);
+        tvResetBackground.setOnClickListener(v -> {
+            backgroundModel.setOpacity(opacityOld);
+            sbOpacityBackground.setProgress(opacityOld);
+
+            if (vMain.getVisibility() == View.VISIBLE) vMain.setAlpha(opacityOld / 100f);
+            else if (vColor.getVisibility() == View.VISIBLE)
+                vColor.setAlpha(opacityOld * 255 / 100);
+        });
+
+        sbOpacityBackground.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+                backgroundModel.setOpacity(value);
+                if (vMain.getVisibility() == View.VISIBLE) vMain.setAlpha(value / 100f);
+                else if (vColor.getVisibility() == View.VISIBLE) vColor.setAlpha(value * 255 / 100);
+            }
+
+            @Override
+            public void onUp(View v, int value) {
+
+            }
+        });
+    }
+
+    //Filter Background
+    private void filterBackground() {
+        isBackground = true;
+        seekAndHideViewBackground(1);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+
+        filterBlendImageAdapter = new FilterBlendImageAdapter(this, (o, pos) -> {
+            FilterBlendModel filter = (FilterBlendModel) o;
+            filter.setCheck(true);
+            filterBlendImageAdapter.setCurrent(pos);
+            filterBlendImageAdapter.changeNotify();
+
+            Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
+
+            backgroundModel.setPositionFilterBackground(pos);
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(EditActivity.this,
+                    bm, nameFolderBackground, Utils.BACKGROUND));
+            vMain.setImageBitmap(bm);
+        });
+
+        if (!lstFilter.isEmpty()) filterBlendImageAdapter.setData(lstFilter);
+
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvFilterBackground.setLayoutManager(manager);
+        rcvFilterBackground.setAdapter(filterBlendImageAdapter);
+
+        rcvFilterBackground.smoothScrollToPosition(backgroundModel.getPositionFilterBackground());
+        filterBlendImageAdapter.setCurrent(backgroundModel.getPositionFilterBackground());
+        filterBlendImageAdapter.changeNotify();
+    }
+
+    //Adjust Background
     private void adjustBackground() {
         seekAndHideViewBackground(0);
         setUpOptionAdjustBackground(0);
 
+        tvResetBackground.setOnClickListener(v -> {
+            @SuppressLint("InflateParams")
+            View vDialog = LayoutInflater.from(this).inflate(R.layout.dialog_del_sticker, null, false);
+            TextView tvNo = vDialog.findViewById(R.id.tvNo);
+            TextView tvYes = vDialog.findViewById(R.id.tvYes);
+            TextView tvDes = vDialog.findViewById(R.id.tvDes);
+
+            AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
+            dialog.setView(vDialog);
+            dialog.show();
+
+            tvDes.setText(getResources().getString(R.string.des_reset_adjust));
+            tvNo.setOnClickListener(vNo -> dialog.cancel());
+            tvYes.setOnClickListener(vYes -> {
+                adjust(backgroundModel.getAdjustModel(), true);
+                sbAdjust.setProgress(0);
+                tvAdjustBackground.setText(String.valueOf(0));
+                dialog.cancel();
+            });
+        });
+
         rlBrightness.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap,
-                    nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(0);
         });
         rlContrast.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap,
-                    nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(1);
         });
         rlExposure.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(2);
         });
         rlHighLight.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(3);
         });
         rlShadows.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(4);
         });
         rlBlacks.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(5);
         });
         rlWhites.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(6);
         });
         rlSaturation.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(7);
         });
         rlHue.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(8);
         });
         rlWarmth.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(9);
         });
         rlVibrance.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(10);
         });
         rlVignette.setOnClickListener(v -> {
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            bitmap = null;
             setUpOptionAdjustBackground(11);
         });
     }
@@ -990,64 +1111,89 @@ public class EditActivity extends BaseActivity {
         switch (pos) {
             case 0:
                 backgroundModel.getAdjustModel().setBrightness(value * 2f);
-                bitmap = UtilsAdjust.adjustBrightness(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 1:
                 backgroundModel.getAdjustModel().setContrast(value);
-                bitmap = UtilsAdjust.adjustContrast(bmAdjust, value);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 2:
                 backgroundModel.getAdjustModel().setExposure(value * 4f);
-                bitmap = UtilsAdjust.adjustExposure(bmAdjust, value * 4f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 3:
-                if (value > 0) {
-                    backgroundModel.getAdjustModel().setHighlight(value * 4f);
-                    bitmap = UtilsAdjust.adjustHighLight(bmAdjust, value * 4f);
-                } else if (value < 0) {
-                    backgroundModel.getAdjustModel().setHighlight(value * 2f);
-                    bitmap = UtilsAdjust.adjustHighLight(bmAdjust, value * 2f);
-                }
+                if (value > 0) backgroundModel.getAdjustModel().setHighlight(value * 4f);
+                else if (value < 0) backgroundModel.getAdjustModel().setHighlight(value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 4:
-                if (value > 0) {
-                    backgroundModel.getAdjustModel().setShadows(value * 4f);
-                    bitmap = UtilsAdjust.adjustShadow(bmAdjust, value * 4f);
-                } else if (value < 0) {
-                    backgroundModel.getAdjustModel().setShadows(value * 2f);
-                    bitmap = UtilsAdjust.adjustShadow(bmAdjust, value * 2f);
-                }
+                if (value > 0) backgroundModel.getAdjustModel().setShadows(value * 4f);
+                else if (value < 0) backgroundModel.getAdjustModel().setShadows(value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 5:
                 backgroundModel.getAdjustModel().setBlacks(value * 2f);
-                bitmap = UtilsAdjust.adjustBlacks(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 6:
                 backgroundModel.getAdjustModel().setWhites(value * 2f);
-                bitmap = UtilsAdjust.adjustWhites(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 7:
                 backgroundModel.getAdjustModel().setSaturation(value * 2f);
-                bitmap = UtilsAdjust.adjustSaturation(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 8:
-                backgroundModel.getAdjustModel().setHue(value * 360 / 100f);
-                bitmap = UtilsAdjust.adjustHue(bmAdjust, value * 360 / 100f);
+                backgroundModel.getAdjustModel().setHue(value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 9:
                 backgroundModel.getAdjustModel().setWarmth(value * 2f);
-                bitmap = UtilsAdjust.adjustWarmth(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 10:
                 backgroundModel.getAdjustModel().setVibrance(value * 2f);
-                bitmap = UtilsAdjust.adjustVibrance(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
             case 11:
                 backgroundModel.getAdjustModel().setVignette(value * 2f);
-                bitmap = UtilsAdjust.adjustVignette(bmAdjust, value * 2f);
+                adjust(backgroundModel.getAdjustModel(), false);
                 break;
         }
-        if (bitmap != null) vMain.setImageBitmap(bitmap);
+    }
+
+    private void adjust(AdjustModel adjust, boolean fulReset) {
+        if (!fulReset) {
+            if (adjust.getBrightness() != 0f)
+                bitmap = UtilsAdjust.adjustBrightness(bmAdjust, adjust.getBrightness());
+            if (adjust.getContrast() != 0f)
+                bitmap = UtilsAdjust.adjustContrast(bmAdjust, adjust.getContrast());
+            if (adjust.getExposure() != 0f)
+                bitmap = UtilsAdjust.adjustExposure(bmAdjust, adjust.getExposure());
+            if (adjust.getHighlight() != 0f)
+                bitmap = UtilsAdjust.adjustHighLight(bmAdjust, adjust.getHighlight());
+            if (adjust.getShadows() != 0f)
+                bitmap = UtilsAdjust.adjustShadow(bmAdjust, adjust.getShadows());
+            if (adjust.getBlacks() != 0f)
+                bitmap = UtilsAdjust.adjustBlacks(bmAdjust, adjust.getBlacks());
+            if (adjust.getWhites() != 0f)
+                bitmap = UtilsAdjust.adjustWhites(bmAdjust, adjust.getWhites());
+            if (adjust.getSaturation() != 0f)
+                bitmap = UtilsAdjust.adjustSaturation(bmAdjust, adjust.getSaturation());
+            if (adjust.getHue() != 0f) bitmap = UtilsAdjust.adjustHue(bmAdjust, adjust.getHue());
+            if (adjust.getWarmth() != 0f)
+                bitmap = UtilsAdjust.adjustWarmth(bmAdjust, adjust.getWarmth());
+            if (adjust.getVibrance() != 0f)
+                bitmap = UtilsAdjust.adjustVibrance(bmAdjust, adjust.getVibrance());
+            if (adjust.getVignette() != 0f)
+                bitmap = UtilsAdjust.adjustVignette(bmAdjust, adjust.getVignette());
+
+            if (bitmap != null) vMain.setImageBitmap(bitmap);
+        } else {
+            backgroundModel.setAdjustModel(new AdjustModel(0f, 0f, 0f,
+                    0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f));
+            vMain.setImageBitmap(bmAdjust);
+        }
     }
 
     private void seekAndHideViewBackground(int position) {
@@ -1071,7 +1217,37 @@ public class EditActivity extends BaseActivity {
                     sbAdjust.setMax(100);
                 }
 
+                if (tvResetBackground.getVisibility() == View.GONE)
+                    tvResetBackground.setVisibility(View.VISIBLE);
+
                 tvTitleEditBackground.setText(R.string.adjust);
+                break;
+            case 1:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditFilterBackground.getVisibility() == View.GONE) {
+                    rlEditFilterBackground.setAnimation(animation);
+                    rlEditFilterBackground.setVisibility(View.VISIBLE);
+                }
+                setUpDataFilter(BitmapFactory.decodeFile(backgroundModel.getUriCache()));
+
+                tvTitleEditBackground.setText(R.string.filter);
+                break;
+            case 2:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlEditOpacityBackground.getVisibility() == View.GONE) {
+                    rlEditOpacityBackground.setAnimation(animation);
+                    rlEditOpacityBackground.setVisibility(View.VISIBLE);
+
+                    sbOpacityBackground.setColorText(getResources().getColor(R.color.green));
+                    sbOpacityBackground.setSizeText(com.intuit.ssp.R.dimen._10ssp);
+                    sbOpacityBackground.setProgress(100);
+                    sbOpacityBackground.setMax(100);
+                }
+
+                if (tvResetBackground.getVisibility() == View.GONE)
+                    tvResetBackground.setVisibility(View.VISIBLE);
+
+                tvTitleEditBackground.setText(R.string.opacity);
                 break;
         }
     }
@@ -1125,6 +1301,13 @@ public class EditActivity extends BaseActivity {
                                 filterBlendImageAdapter.setCurrent(drawableSticker.getImageModel().getPosFilter());
                                 filterBlendImageAdapter.changeNotify();
                             }
+                        }
+                    } else {
+                        if (filterBlendImageAdapter != null) {
+                            filterBlendImageAdapter.setData(lstFilter);
+                            rcvFilterBackground.smoothScrollToPosition(backgroundModel.getPositionFilterBackground());
+                            filterBlendImageAdapter.setCurrent(backgroundModel.getPositionFilterBackground());
+                            filterBlendImageAdapter.changeNotify();
                         }
                     }
                     break;
@@ -1385,7 +1568,7 @@ public class EditActivity extends BaseActivity {
     private void opacityImage(DrawableStickerCustom drawableSticker) {
         seekAndHideViewImage(3);
 
-        int opacityOld = drawableSticker.getImageModel().getOpacity();
+        int opacityOld = drawableSticker.getImageModel().getOpacity() * 100 / 255;
         sbOpacityImage.setProgress(opacityOld);
         tvResetImage.setOnClickListener(v -> resetImage(1, drawableSticker, null, opacityOld));
 
@@ -1399,7 +1582,7 @@ public class EditActivity extends BaseActivity {
             public void onMove(View v, int value) {
                 drawableSticker.getImageModel().setOpacity(value);
                 if (!drawableSticker.isShadowImage()) {
-                    drawableSticker.getImageModel().setOpacity(value);
+                    drawableSticker.getImageModel().setOpacity(value * 255 / 100);
                     vSticker.replace(drawableSticker.getImageModel().opacity(EditActivity.this, drawableSticker), true);
                 } else {
                     drawableSticker.setAlpha(value * 255 / 100);
@@ -1437,6 +1620,7 @@ public class EditActivity extends BaseActivity {
                     drawableSticker.getImageModel().setPosBlend(pos);
                     drawableSticker.getImageModel().setUri(Utils.saveBitmapToApp(EditActivity.this,
                             bm, nameFolderImage, Utils.IMAGE));
+                    drawableSticker.getImageModel().setOpacity(155);
                     drawableSticker.replaceImage();
                     vSticker.invalidate();
                 });
@@ -2310,28 +2494,25 @@ public class EditActivity extends BaseActivity {
         });
     }
 
-    public void getData() {
-        String strPicUser = DataLocalManager.getOption("bitmap");
-        String strPicApp = DataLocalManager.getOption("bitmap_myapp");
-        ColorModel colorModel = DataLocalManager.getColor("color");
-
-        if (!strPicUser.equals("") && !strPicUser.equals(strPicUserOld)) {
-            strPicUserOld = strPicUser;
-            try {
-                bmRoot = Utils.modifyOrientation(this, Utils.getBitmapFromUri(this, Uri.parse(strPicUser)), Uri.parse(strPicUserOld));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            seekAndHideViewMain(positionCrop, bmRoot, null, true);
-        } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
-            strPicAppOld = strPicApp;
-            bmRoot = Utils.getBitmapFromAsset(this, "offline_myapp", strPicAppOld, false, false);
-            seekAndHideViewMain(positionCrop, bmRoot, null, true);
-        } else if (colorModel != null && colorModel != colorModelOld) {
-            colorModelOld = colorModel;
-            backgroundModel.setColorModel(colorModelOld);
-            seekAndHideViewMain(positionColor, null, colorModel, true);
-        } else isReplaceBackground = false;
+    public void getData(int position, String strPic, ColorModel color, boolean isNewData) {
+        switch (position) {
+            case 0:
+                try {
+                    bmRoot = Utils.modifyOrientation(this, Utils.getBitmapFromUri(this, Uri.parse(strPic)), Uri.parse(strPic));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                seekAndHideViewMain(positionCrop, bmRoot, null, isNewData);
+                break;
+            case 1:
+                bmRoot = Utils.getBitmapFromAsset(this, "offline_myapp", strPic, false, false);
+                seekAndHideViewMain(positionCrop, bmRoot, null, isNewData);
+                break;
+            case 2:
+                backgroundModel.setColorModel(color);
+                seekAndHideViewMain(positionColor, null, color, isNewData);
+                break;
+        }
     }
 
     private void seekAndHideOperation(int position) {
@@ -2372,6 +2553,26 @@ public class EditActivity extends BaseActivity {
                     rlExpandEditImage.setVisibility(View.GONE);
                 }
 
+                if (rlEditAdjust.getVisibility() == View.VISIBLE) {
+                    rlEditAdjust.setAnimation(animation);
+                    rlEditAdjust.setVisibility(View.GONE);
+
+                    if (bitmap != null)
+                        backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap,
+                                nameFolderBackground, Utils.BACKGROUND));
+                }
+
+                if (rlEditFilterBackground.getVisibility() == View.VISIBLE) {
+                    rlEditFilterBackground.setAnimation(animation);
+                    rlEditFilterBackground.setVisibility(View.GONE);
+                    isBackground = false;
+                }
+
+                if (rlEditOpacityBackground.getVisibility() == View.VISIBLE) {
+                    rlEditOpacityBackground.setAnimation(animation);
+                    rlEditOpacityBackground.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (rlExpandEditBackground.getVisibility() == View.GONE) {
                     rlExpandEditBackground.setAnimation(animation);
@@ -2381,6 +2582,18 @@ public class EditActivity extends BaseActivity {
                 if (vEditBackground.getVisibility() == View.GONE) {
                     vEditBackground.setAnimation(animation);
                     vEditBackground.setVisibility(View.VISIBLE);
+                }
+
+                if (isColor) {
+                    rlFilterBackground.setVisibility(View.GONE);
+                    rlAdjustBackground.setVisibility(View.GONE);
+                    rlFlipYBackground.setVisibility(View.GONE);
+                    rlFlipXBackground.setVisibility(View.GONE);
+                } else {
+                    rlFilterBackground.setVisibility(View.VISIBLE);
+                    rlAdjustBackground.setVisibility(View.VISIBLE);
+                    rlFlipYBackground.setVisibility(View.VISIBLE);
+                    rlFlipXBackground.setVisibility(View.VISIBLE);
                 }
 
                 if (tvResetBackground.getVisibility() == View.VISIBLE)
@@ -2702,6 +2915,9 @@ public class EditActivity extends BaseActivity {
             tvToolBar.setVisibility(View.GONE);
             ivTick.setVisibility(View.GONE);
 
+            if (rlExpandEditBackground.getVisibility() == View.VISIBLE)
+                rlExpandEditBackground.setVisibility(View.GONE);
+
             animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
             if (vOperation.getVisibility() == View.GONE) {
                 vOperation.setAnimation(animation);
@@ -2999,7 +3215,7 @@ public class EditActivity extends BaseActivity {
         //background
         rlExpandEditBackground = findViewById(R.id.rlExpandEditBackground);
         vEditBackground = findViewById(R.id.vEditBackground);
-        rlEditBackground = findViewById(R.id.rlEditBackground);
+        rlCancelEditBackground = findViewById(R.id.rlCancelEditBackground);
         tvResetBackground = findViewById(R.id.tvResetBackground);
         tvTitleEditBackground = findViewById(R.id.tvTitleEditBackground);
         rlDelBackground = findViewById(R.id.rlDelBackground);
@@ -3050,9 +3266,13 @@ public class EditActivity extends BaseActivity {
         sbAdjust = findViewById(R.id.sbAdjust);
         tvAdjustBackground = findViewById(R.id.tvAdjustBackground);
 
-        backgroundModel = new BackgroundModel();
+        rlEditFilterBackground = findViewById(R.id.rlEditFilterBackground);
+        rcvFilterBackground = findViewById(R.id.rcvEditFilterBackground);
 
-        getData();
+        rlEditOpacityBackground = findViewById(R.id.rlEditOpacityBackground);
+        sbOpacityBackground = findViewById(R.id.sbOpacityBackground);
+
+        backgroundModel = new BackgroundModel();
     }
 
     private int getId() {
@@ -3113,22 +3333,62 @@ public class EditActivity extends BaseActivity {
 
     private boolean checkCurrentSticker(Sticker sticker) {
         if (sticker == null) {
-            Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
+            if (!isBackground)
+                Utils.showToast(this, getResources().getString(R.string.choose_sticker_text));
             return false;
         }
         return true;
     }
 
-    @Override
-    protected void onStop() {
-        isReplaceBackground = false;
-        super.onStop();
-    }
+    private String[] nameFilter = {"edgy_amber.png", "filmstock.png", "foggy_night.png", "hehe.jpg",
+            "late_sunset.png", "mapping0.jpg", "soft_warning.png", "wildbird.png"};
+
+    private CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
+
+        //Notice: the 'name' passed in is just what you write in the rule, e.g: 1.jpg
+        @Override
+        public Bitmap loadImage(String name, Object arg) {
+
+            Log.d("2tdp", "Loading file: " + name);
+            AssetManager am = getAssets();
+            InputStream is;
+            try {
+                is = am.open("filter/" + name);
+            } catch (IOException e) {
+                Log.d("2tdp", "Loading file: can't load file");
+                return null;
+            }
+
+            return BitmapFactory.decodeStream(is);
+        }
+
+        @Override
+        public void loadImageOK(Bitmap bmp, Object arg) {
+            Log.i(Common.LOG_TAG, "Loading bitmap over, you can choose to recycle or cache");
+
+            //The bitmap is which you returned at 'loadImage'.
+            //You can call recycle when this function is called, or just keep it for further usage.
+            bmp.recycle();
+        }
+    };
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (isReplaceBackground) getData();
+        String strPicUser = DataLocalManager.getOption("bitmap");
+        String strPicApp = DataLocalManager.getOption("bitmap_myapp");
+        ColorModel colorModel = DataLocalManager.getColor("color");
+
+        if (!strPicUser.equals("")) {
+            getData(0, strPicUser, null, !strPicUser.equals(strPicUserOld));
+            strPicUserOld = strPicUser;
+        } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
+            getData(1, strPicApp, null, !strPicUser.equals(strPicUserOld));
+            strPicAppOld = strPicApp;
+        } else if (colorModel != null) {
+            getData(2, "", colorModel, colorModel != colorModelOld);
+            colorModelOld = colorModel;
+        }
     }
 }

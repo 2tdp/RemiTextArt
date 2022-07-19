@@ -189,7 +189,7 @@ public class TextStickerCustom extends Sticker {
 
     @NonNull
     public TextStickerCustom setTextSize(@Dimension(unit = Dimension.SP) float size) {
-        createDrawableText();
+//        createDrawableText();
         textPaint.setTextSize(convertSpToPx(size));
         shadowPaint.setTextSize(convertSpToPx(size));
         maxTextSizePixels = textPaint.getTextSize();

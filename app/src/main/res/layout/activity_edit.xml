@@ -160,7 +160,7 @@
         android:visibility="gone">
 
         <RelativeLayout
-            android:id="@+id/rlEditBackground"
+            android:id="@+id/rlCancelEditBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -211,7 +211,7 @@
             android:id="@+id/rlEditOpacityBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/rlEditBackground"
+            android:layout_below="@+id/rlCancelEditBackground"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
@@ -231,7 +231,8 @@
             android:id="@+id/rlEditFilterBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/rlEditBackground"
+            android:layout_below="@+id/rlCancelEditBackground"
+            android:layout_centerVertical="true"
             android:padding="@dimen/_5sdp"
             android:visibility="gone">
 
@@ -250,7 +251,7 @@
             android:id="@+id/rlEditAdjust"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/rlEditBackground"
+            android:layout_below="@+id/rlCancelEditBackground"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp"

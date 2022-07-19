@@ -12,13 +12,13 @@ public class BackgroundModel implements Serializable {
     private int sizeViewColor;
     private AdjustModel adjustModel;
     private int positionFilterBackground = 0;
-    private float opacity = 1f;
+    private int opacity = 100;
 
     public BackgroundModel() {
     }
 
     public BackgroundModel(String uriCache, String uriRoot, ColorModel colorModel, int sizeViewColor,
-                           AdjustModel adjustModel, int positionFilterBackground, float opacity) {
+                           AdjustModel adjustModel, int positionFilterBackground, int opacity) {
         this.uriCache = uriCache;
         this.uriRoot = uriRoot;
         this.colorModel = colorModel;
@@ -76,11 +76,11 @@ public class BackgroundModel implements Serializable {
         this.positionFilterBackground = positionFilterBackground;
     }
 
-    public float getOpacity() {
+    public int getOpacity() {
         return opacity;
     }
 
-    public void setOpacity(float opacity) {
+    public void setOpacity(int opacity) {
         this.opacity = opacity;
     }
 }

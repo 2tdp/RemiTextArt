@@ -116,6 +116,7 @@
     <string name="flip_y">Flip-Y</string>
 
     //background
+    <string name="des_reset_adjust">Press "Yes" if you want reset full edit!</string>
     <string name="adjust">Adjust</string>
     <string name="brightness">Brightness</string>
     <string name="contrast">Contrast</string>

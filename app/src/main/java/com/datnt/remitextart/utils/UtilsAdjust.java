@@ -103,30 +103,32 @@ public class UtilsAdjust {
         return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust saturation 2", saturation / 100f);
     }
 
-    public static Bitmap adjustHue(Bitmap bmp, float value) {
-        value = cleanValue(value, 360f) / 360f * (float) Math.PI;
-        if (value == 0) {
-            return bmp;
-        }
-        float cosVal = (float) Math.cos(value);
-        float sinVal = (float) Math.sin(value);
-
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        lumR + cosVal * (1 - lumR) + sinVal * (-lumR), lumG + cosVal * (-lumG) + sinVal * (-lumG), lumB + cosVal * (-lumB) + sinVal * (1 - lumB), 0, 0,
-                        lumR + cosVal * (-lumR) + sinVal * (0.143f), lumG + cosVal * (1 - lumG) + sinVal * (0.140f), lumB + cosVal * (-lumB) + sinVal * (-0.283f), 0, 0,
-                        lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)), lumG + cosVal * (-lumG) + sinVal * (lumG), lumB + cosVal * (1 - lumB) + sinVal * (lumB), 0, 0,
-                        0f, 0f, 0f, 1f, 0f});
-
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
+    public static Bitmap adjustHue(Bitmap bmp, float hue) {
+//        value = cleanValue(value, 360f) / 360f * (float) Math.PI;
+//        if (value == 0) {
+//            return bmp;
+//        }
+//        float cosVal = (float) Math.cos(value);
+//        float sinVal = (float) Math.sin(value);
+//
+//        ColorMatrix cm = new ColorMatrix(new float[]
+//                {
+//                        lumR + cosVal * (1 - lumR) + sinVal * (-lumR), lumG + cosVal * (-lumG) + sinVal * (-lumG), lumB + cosVal * (-lumB) + sinVal * (1 - lumB), 0, 0,
+//                        lumR + cosVal * (-lumR) + sinVal * (0.143f), lumG + cosVal * (1 - lumG) + sinVal * (0.140f), lumB + cosVal * (-lumB) + sinVal * (-0.283f), 0, 0,
+//                        lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)), lumG + cosVal * (-lumG) + sinVal * (lumG), lumB + cosVal * (1 - lumB) + sinVal * (lumB), 0, 0,
+//                        0f, 0f, 0f, 1f, 0f});
+//
+//        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+//
+//        Canvas canvas = new Canvas(ret);
+//
+//        Paint paint = new Paint();
+//        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+//        canvas.drawBitmap(bmp, 0, 0, paint);
+//
+//        return ret;
+        Log.d(TAG, "adjustHue: " + hue);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust hsl -0.66 0.34 0.15", hue / 100f);
     }
 
     public static Bitmap adjustWarmth(Bitmap bmp, float warmth) {

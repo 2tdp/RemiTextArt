@@ -137,7 +137,7 @@ public class ImageModel extends EditSticker implements Serializable {
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof DrawableStickerCustom) {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-            drawableSticker.setAlpha((int) (opacity * 255 / 100f));
+            drawableSticker.setAlpha(opacity);
             return sticker;
         }
         return null;

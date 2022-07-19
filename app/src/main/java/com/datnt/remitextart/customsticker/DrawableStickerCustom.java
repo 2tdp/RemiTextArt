@@ -76,6 +76,10 @@ public class DrawableStickerCustom extends Sticker {
         if (this.drawable == null)
             this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
 
+        if (this.rectFShadow == null) rectFShadow = new RectF();
+        if (this.shadowImagePath == null) this.shadowImagePath = new Path();
+        if (this.shadowImagePaint == null) this.shadowImagePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
         setDataImage(this.imageModel);
 
         realBounds = new RectF(distance, distance, getWidth() - distance, getHeight() - distance);
@@ -156,7 +160,9 @@ public class DrawableStickerCustom extends Sticker {
     @NonNull
     @Override
     public DrawableStickerCustom setAlpha(@IntRange(from = 0, to = 255) int alpha) {
-        drawable.setAlpha(alpha);
+        if (!typeSticker.equals(Utils.IMAGE))
+            drawable.setAlpha(alpha);
+        else if (paintBitmap != null) paintBitmap.setAlpha(alpha);
         if (shadowImagePaint != null) shadowImagePaint.setAlpha(alpha);
         return this;
     }
@@ -166,11 +172,7 @@ public class DrawableStickerCustom extends Sticker {
     }
 
     public void setShadowPathShapeImage(String pathShape) {
-        if (rectFShadow == null) rectFShadow = new RectF();
-        if (this.shadowImagePath == null) this.shadowImagePath = new Path();
-        else shadowImagePath.reset();
-        if (this.shadowImagePaint == null) this.shadowImagePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+        this.shadowImagePath.reset();
         this.shadowImagePath.addPath(PathParser.createPathFromPathData(pathShape));
 
         shadowImagePath.computeBounds(rectFShadow, true);

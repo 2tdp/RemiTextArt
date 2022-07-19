@@ -44,12 +44,12 @@ public class FilterBlendImage {
 
     public static final String[] EFFECT_CONFIGS_BLEND = {
             "",
-            "@blend overlay image 80",
-            "@blend multiply image 80",
-            "@blend lighten image 80",
-            "@blend screen image 80",
-            "@blend softlight image 80",
-            "@blend lineardodge image 80"
+            "@selfblend overlay 100",
+            "@selfblend multiply 100",
+            "@selfblend lighten 100",
+            "@selfblend screen 100",
+            "@selfblend softlight 100",
+            "@selfblend lineardodge 100"
     };
 
     public static final String[] EFFECT_CONFIGS = {
