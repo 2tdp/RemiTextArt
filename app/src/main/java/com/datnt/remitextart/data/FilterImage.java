@@ -1,56 +1,29 @@
 package com.datnt.remitextart.data;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
-import com.datnt.remitextart.model.FilterBlendModel;
+import com.datnt.remitextart.model.FilterModel;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.util.ArrayList;
 
-public class FilterBlendImage {
+public class FilterImage {
 
-    public static ArrayList<FilterBlendModel> getDataBlend(Bitmap bitmap, String name) {
-        ArrayList<FilterBlendModel> lstBlend = new ArrayList<>();
-
-        int i = 0;
-        Bitmap bm;
-        for (String s : EFFECT_CONFIGS_BLEND) {
-            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s.replace("image", name), 0.8f);
-            Log.d("2tdp", "getDataBlend: " + s.replace("image", name));
-            if (bm != null) {
-                lstBlend.add(new FilterBlendModel(bm, "blend" + i, s.replace("image", name), false));
-                i++;
-            }
-        }
-        return lstBlend;
-    }
-
-    public static ArrayList<FilterBlendModel> getDataFilter(Bitmap bitmap) {
-        ArrayList<FilterBlendModel> lstFilter = new ArrayList<>();
+    public static ArrayList<FilterModel> getDataFilter(Bitmap bitmap) {
+        ArrayList<FilterModel> lstFilter = new ArrayList<>();
 
         int i = 0;
         Bitmap bm;
         for (String s : EFFECT_CONFIGS) {
             bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
             if (bm != null) {
-                lstFilter.add(new FilterBlendModel(bm, "filter" + i, s, false));
+                lstFilter.add(new FilterModel(bm, "filter" + i, s, false));
                 i++;
             }
         }
         return lstFilter;
     }
-
-    public static final String[] EFFECT_CONFIGS_BLEND = {
-            "",
-            "@selfblend overlay 100",
-            "@selfblend multiply 100",
-            "@selfblend lighten 100",
-            "@selfblend screen 100",
-            "@selfblend softlight 100",
-            "@selfblend lineardodge 100"
-    };
 
     public static final String[] EFFECT_CONFIGS = {
             "",

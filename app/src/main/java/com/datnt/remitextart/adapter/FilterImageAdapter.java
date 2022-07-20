@@ -11,24 +11,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.callback.ICallBackItem;
-import com.datnt.remitextart.model.FilterBlendModel;
+import com.datnt.remitextart.model.FilterModel;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 
-public class FilterBlendImageAdapter extends RecyclerView.Adapter<FilterBlendImageAdapter.FilterImageHolder> {
+public class FilterImageAdapter extends RecyclerView.Adapter<FilterImageAdapter.FilterImageHolder> {
 
     private Context context;
-    private ArrayList<FilterBlendModel> lstFilter;
+    private ArrayList<FilterModel> lstFilter;
     private ICallBackItem callBack;
 
-    public FilterBlendImageAdapter(Context context, ICallBackItem callBack) {
+    public FilterImageAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
         this.callBack = callBack;
         lstFilter = new ArrayList<>();
     }
 
-    public void setData(ArrayList<FilterBlendModel> lstFilter) {
+    public void setData(ArrayList<FilterModel> lstFilter) {
         this.lstFilter = new ArrayList<>(lstFilter);
         changeNotify();
     }
@@ -60,7 +60,7 @@ public class FilterBlendImageAdapter extends RecyclerView.Adapter<FilterBlendIma
         }
 
         public void onBind(int position) {
-            FilterBlendModel filterBlendModel = lstFilter.get(position);
+            FilterModel filterBlendModel = lstFilter.get(position);
             if (filterBlendModel == null) return;
 
             if (filterBlendModel.isCheck())

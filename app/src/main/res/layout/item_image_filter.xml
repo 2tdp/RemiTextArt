@@ -13,4 +13,13 @@
         android:scaleType="centerCrop"
         app:riv_border_width="2dp"
         app:riv_corner_radius="@dimen/_34sdp" />
+
+    <TextView
+        android:id="@+id/tvPic"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivPic"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10ssp" />
 </RelativeLayout>

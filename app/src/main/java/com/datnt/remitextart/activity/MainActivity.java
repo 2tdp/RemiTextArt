@@ -30,12 +30,42 @@ public class MainActivity extends BaseActivity {
     private ImageView ivVip;
     private TextView tvCrePro, tvTemp, tvPro;
 
+    private CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
+
+        //Notice: the 'name' passed in is just what you write in the rule, e.g: 1.jpg
+        @Override
+        public Bitmap loadImage(String name, Object arg) {
+
+            Log.d("2tdp", "Loading file: " + name);
+            AssetManager am = getAssets();
+            InputStream is;
+            try {
+                is = am.open("filter/" + name);
+            } catch (IOException e) {
+                Log.d("2tdp", "Loading file: can't load file");
+                return null;
+            }
+
+            return BitmapFactory.decodeStream(is);
+        }
+
+        @Override
+        public void loadImageOK(Bitmap bmp, Object arg) {
+            Log.i(Common.LOG_TAG, "Loading bitmap over, you can choose to recycle or cache");
+
+            //The bitmap is which you returned at 'loadImage'.
+            //You can call recycle when this function is called, or just keep it for further usage.
+            bmp.recycle();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         init();
+        CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
     }
 
     private void init() {

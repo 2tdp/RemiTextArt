@@ -7,11 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -20,12 +18,12 @@ import androidx.core.graphics.PathParser;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.customview.stickerview.Sticker;
-import com.datnt.remitextart.data.FilterBlendImage;
+import com.datnt.remitextart.data.FilterImage;
 import com.datnt.remitextart.model.EmojiModel;
+import com.datnt.remitextart.model.OverlayModel;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.utils.Utils;
-import com.datnt.remitextart.utils.UtilsAdjust;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
@@ -47,6 +45,7 @@ public class DrawableStickerCustom extends Sticker {
 
     private EmojiModel emojiModel;
     private ImageModel imageModel;
+    private OverlayModel overlayModel;
 
     public DrawableStickerCustom(Context context, Object o, int id, String type) {
         this.context = context;
@@ -60,6 +59,10 @@ public class DrawableStickerCustom extends Sticker {
             case Utils.IMAGE:
                 this.imageModel = (ImageModel) o;
                 initImage();
+                break;
+            case Utils.OVERLAY:
+                this.overlayModel = (OverlayModel) o;
+                initOverlay();
                 break;
         }
     }
@@ -98,6 +101,14 @@ public class DrawableStickerCustom extends Sticker {
             setShadowPathShapeImage(imageModel.getPathShape());
 
         if (imageModel.getShadowModel() != null) setShadowImage(imageModel.getShadowModel());
+    }
+
+    private void initOverlay() {
+        this.drawable = new BitmapDrawable(context.getResources(),
+                Utils.getBitmapFromAsset(context, overlayModel.getNameFolder(), overlayModel.getNameOverlay(),
+                        false, false));
+
+        realBounds = new RectF(distance, distance, getWidth() - distance, getHeight() - distance);
     }
 
     @Override
@@ -168,7 +179,7 @@ public class DrawableStickerCustom extends Sticker {
     }
 
     public void setFilterImage(int positionFilter) {
-        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterBlendImage.EFFECT_CONFIGS[positionFilter], 0.8f);
+        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterImage.EFFECT_CONFIGS[positionFilter], 0.8f);
     }
 
     public void setShadowPathShapeImage(String pathShape) {
@@ -198,6 +209,15 @@ public class DrawableStickerCustom extends Sticker {
                 this.shadowImagePaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         Color.BLACK);
         }
+    }
+
+    public OverlayModel getOverlayModel() {
+        return overlayModel;
+    }
+
+    public void setOverlayModel(OverlayModel overlayModel) {
+        this.overlayModel = overlayModel;
+        initOverlay();
     }
 
     public void replaceImage() {

@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "RemiTextArt"
 include ':app'
 include ':library'
+include ':androidimgprolib'

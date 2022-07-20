@@ -17,7 +17,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.PathParser;
 
-import com.datnt.remitextart.data.FilterBlendImage;
+import com.datnt.remitextart.data.FilterImage;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.utils.Utils;
 
@@ -129,7 +129,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
 
         if (imageModel.getPosFilter() != 0)
             this.bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
-                    FilterBlendImage.EFFECT_CONFIGS[imageModel.getPosFilter()], 0.8f);
+                    FilterImage.EFFECT_CONFIGS[imageModel.getPosFilter()], 0.8f);
 
         paintBitmap.setAlpha(imageModel.getOpacity());
         invalidate();

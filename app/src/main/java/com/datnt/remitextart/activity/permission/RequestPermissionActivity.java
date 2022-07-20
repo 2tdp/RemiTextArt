@@ -66,9 +66,9 @@ public class RequestPermissionActivity extends BaseActivity {
                         public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                             if (multiplePermissionsReport.areAllPermissionsGranted()) {
                                 DataLocalManager.setCheck("per", true);
-                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                                 startActivity(intent);
                                 finish();
+                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                             } else {
                                 Utils.showToast(RequestPermissionActivity.this, getString(R.string.rp_3));
                                 openSettingPermission();
@@ -88,9 +88,9 @@ public class RequestPermissionActivity extends BaseActivity {
                         public void onPermissionsChecked(MultiplePermissionsReport multiplePermissionsReport) {
                             if (multiplePermissionsReport.areAllPermissionsGranted()) {
                                 DataLocalManager.setCheck("per", true);
-                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                                 startActivity(intent);
                                 finish();
+                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                             } else {
                                 Utils.showToast(RequestPermissionActivity.this, getString(R.string.rp_3));
                                 openSettingPermission();

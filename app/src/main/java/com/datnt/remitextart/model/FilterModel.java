@@ -4,13 +4,13 @@ import android.graphics.Bitmap;
 
 import java.io.Serializable;
 
-public class FilterBlendModel implements Serializable {
+public class FilterModel implements Serializable {
     private Bitmap bitmap;
     private String nameFilter;
     private String parameterFilter;
     private boolean isCheck;
 
-    public FilterBlendModel(Bitmap bitmap, String nameFilter, String parameterFilter, boolean isCheck) {
+    public FilterModel(Bitmap bitmap, String nameFilter, String parameterFilter, boolean isCheck) {
         this.bitmap = bitmap;
         this.nameFilter = nameFilter;
         this.parameterFilter = parameterFilter;
