@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.edit.EditActivity;
-import com.datnt.remitextart.adapter.MyAppAdapter;
+import com.datnt.remitextart.adapter.home.MyAppAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.data.DataPic;
 import com.datnt.remitextart.sharepref.DataLocalManager;

@@ -30,7 +30,7 @@ public class MainActivity extends BaseActivity {
     private ImageView ivVip;
     private TextView tvCrePro, tvTemp, tvPro;
 
-    private CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
+    private final CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
 
         //Notice: the 'name' passed in is just what you write in the rule, e.g: 1.jpg
         @Override

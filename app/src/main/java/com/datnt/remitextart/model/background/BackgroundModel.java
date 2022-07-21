@@ -7,6 +7,7 @@ import java.io.Serializable;
 public class BackgroundModel implements Serializable {
 
     private String uriCache;
+    private String uriOverlay = "";
     private String uriRoot;
     private ColorModel colorModel;
     private int sizeViewColor;
@@ -17,9 +18,10 @@ public class BackgroundModel implements Serializable {
     public BackgroundModel() {
     }
 
-    public BackgroundModel(String uriCache, String uriRoot, ColorModel colorModel, int sizeViewColor,
-                           AdjustModel adjustModel, int positionFilterBackground, int opacity) {
+    public BackgroundModel(String uriCache, String uriOverlay, String uriRoot, ColorModel colorModel,
+                           int sizeViewColor, AdjustModel adjustModel, int positionFilterBackground, int opacity) {
         this.uriCache = uriCache;
+        this.uriOverlay = uriOverlay;
         this.uriRoot = uriRoot;
         this.colorModel = colorModel;
         this.adjustModel = adjustModel;
@@ -34,6 +36,14 @@ public class BackgroundModel implements Serializable {
 
     public void setUriCache(String uriCache) {
         this.uriCache = uriCache;
+    }
+
+    public String getUriOverlay() {
+        return uriOverlay;
+    }
+
+    public void setUriOverlay(String uriOverlay) {
+        this.uriOverlay = uriOverlay;
     }
 
     public String getUriRoot() {

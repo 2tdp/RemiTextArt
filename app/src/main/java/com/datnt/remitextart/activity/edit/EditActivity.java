@@ -6,19 +6,17 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -42,9 +40,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
 import com.datnt.remitextart.activity.project.CreateProjectActivity;
-import com.datnt.remitextart.adapter.BlendImageAdapter;
-import com.datnt.remitextart.adapter.ColorAdapter;
-import com.datnt.remitextart.adapter.FilterImageAdapter;
+import com.datnt.remitextart.adapter.decor.TitleDecorAdapter;
+import com.datnt.remitextart.adapter.filterblend.BlendImageAdapter;
+import com.datnt.remitextart.adapter.home.ColorAdapter;
+import com.datnt.remitextart.adapter.filterblend.FilterImageAdapter;
 import com.datnt.remitextart.adapter.OverlayAdapter;
 import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.remitextart.adapter.emoji.TitleEmojiAdapter;
@@ -61,15 +60,18 @@ import com.datnt.remitextart.customview.OnSeekbarResult;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.customview.stickerview.StickerView;
 import com.datnt.remitextart.data.DataColor;
+import com.datnt.remitextart.data.DataDecor;
 import com.datnt.remitextart.data.DataEmoji;
 import com.datnt.remitextart.data.DataOverlay;
 import com.datnt.remitextart.data.DataPic;
 import com.datnt.remitextart.data.FilterImage;
 import com.datnt.remitextart.data.blend.BlendImage;
+import com.datnt.remitextart.fragment.DecorFragment;
 import com.datnt.remitextart.fragment.EmojiFragment;
 import com.datnt.remitextart.fragment.ImageFragment;
 import com.datnt.remitextart.model.BlendModel;
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.DecorModel;
 import com.datnt.remitextart.model.EmojiModel;
 import com.datnt.remitextart.model.FilterModel;
 import com.datnt.remitextart.model.OverlayModel;
@@ -87,9 +89,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.wysaid.common.Common;
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -97,11 +101,28 @@ public class EditActivity extends BaseActivity {
 
     private String nameFolderBackground = "";
     private String nameFolderImage = "";
+    private String nameFolder = "";
+    private final int indexDefault = -1;
     private final int positionCrop = 0, positionMain = 1, positionColor = 2;
     private final int positionOriginal = 0, position1_1 = 1, position9_16 = 2, position4_5 = 3,
             position16_9 = 4;
     private final int positionAddText = 0, positionEmoji = 1, positionImage = 2, positionBackground = 3,
             positionOverlay = 4, positionDecor = 5, positionSize = 6;
+
+    //decor
+    private HorizontalScrollView vEditDecor;
+    private RelativeLayout rlExpandPickDecor, rlCancelPickDecor, rlExpandEditDecor, rlCancelEditDecor,
+            rlEditOpacityDecor, rlEditColorDecor, rlDelDecor, rlReplaceDecor, rlDuplicateDecor,
+            rlColorDecor, rlShadowDecor, rlOpacityDecor, rlFlipYDecor, rlFlipXDecor;
+    private LinearLayout llEditShadowDecor;
+    private TextView tvResetEditDecor, tvTitleEditDecor, tvXPosDecor, tvYPosDecor, tvBlurDecor;
+    private ImageView ivColorBlurDecor;
+    private CustomSeekbarRunText sbOpacityDecor;
+    private CustomSeekbarTwoWay sbXPosDecor, sbYPosDecor, sbBlurDecor;
+    private RecyclerView rcvTypeDecor, rcvEditColorDecor;
+    private ViewPager2 vpDecor;
+    private TitleDecorAdapter titleDecorAdapter;
+    private boolean isReplaceDecor;
 
     //Overlay
     private RelativeLayout rlPickOverlay, rlCancelPickOverlay, rlExpandEditOverlay, rlCancelEditOverlay,
@@ -110,7 +131,6 @@ public class EditActivity extends BaseActivity {
     private RecyclerView rcvOverlay;
     private TextView tvTitleEditOverlay, tvResetEditOverlay;
     private CustomSeekbarRunText sbOpacityOverlay;
-    private boolean isReplaceOverlay;
 
     //background
     private RelativeLayout rlExpandEditBackground, rlDelBackground, rlReplaceBackground, rlAdjustBackground,
@@ -203,13 +223,13 @@ public class EditActivity extends BaseActivity {
     }
 
     private void createProject() {
-        if (DataLocalManager.getInt(Utils.PROJECT) == -1)
+        if (DataLocalManager.getInt(Utils.PROJECT) == indexDefault)
             DataLocalManager.setInt(1, Utils.PROJECT);
         else {
             int count = DataLocalManager.getInt(Utils.PROJECT) + 1;
             DataLocalManager.setInt(count, Utils.PROJECT);
         }
-        String nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
+        nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
         Utils.makeFolder(this, nameFolder);
         nameFolderBackground = nameFolder + "/" + Utils.BACKGROUND;
         Utils.makeFolder(this, nameFolderBackground);
@@ -306,41 +326,44 @@ public class EditActivity extends BaseActivity {
         ivExport.setOnClickListener(v -> exportPhoto());
 
         rlMain.setOnClickListener(v -> {
-            vSticker.setCurrentSticker(null);
-            seekAndHideOperation(-1);
+            if (rlExpandEditOverlay.getVisibility() == View.GONE) {
+                vSticker.setCurrentSticker(null);
+                seekAndHideOperation(indexDefault);
+            }
         });
         rlEditText.setOnClickListener(v -> {
             if (vEditText.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
-                seekAndHideOperation(-1);
+                seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionAddText);
         });
-        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(-1));
+        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditEmoji.setOnClickListener(v -> {
             if (llEditEmoji.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
-                seekAndHideOperation(-1);
+                seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionEmoji);
         });
         rlCancelEditImage.setOnClickListener(V -> {
             if (vEditImage.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
-                seekAndHideOperation(-1);
+                seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionImage);
         });
         rlCancelEditBackground.setOnClickListener(v -> {
             if (vEditBackground.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
-                seekAndHideOperation(-1);
+                seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionBackground);
         });
-        rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(-1));
+        rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditOverlay.setOnClickListener(v -> {
             if (llEditOverlay.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
-                seekAndHideOperation(-1);
+                seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionOverlay);
         });
+        rlCancelPickDecor.setOnClickListener(v -> seekAndHideOperation(indexDefault));
 
         //addSticker
         rlAddText.setOnClickListener(v -> {
@@ -401,12 +424,9 @@ public class EditActivity extends BaseActivity {
         rlFlipYBackground.setOnClickListener(v -> flipYBackground());
 
         //overlay
-        rlOverlay.setOnClickListener(v -> {
-            isReplaceOverlay = false;
-            pickOverlay();
-        });
+        rlOverlay.setOnClickListener(v -> pickOverlay());
         rlDelOverlay.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlReplaceOverlay.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
+        rlReplaceOverlay.setOnClickListener(v -> pickOverlay());
         rlOpacityOverlay.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
         rlFlipXOverlay.setOnClickListener(v -> {
             vSticker.flipCurrentSticker(0);
@@ -416,6 +436,14 @@ public class EditActivity extends BaseActivity {
             vSticker.flipCurrentSticker(1);
             flip(vSticker.getCurrentSticker(), false, true);
         });
+
+        //decor
+        rlDecor.setOnClickListener(v -> {
+            isReplaceDecor = false;
+            pickDecor();
+        });
+        rlDelDecor.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
+        rlReplaceDecor.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
 
         //size
         rlCrop.setOnClickListener(v -> {
@@ -471,7 +499,11 @@ public class EditActivity extends BaseActivity {
             backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bmMain,
                     nameFolderBackground, Utils.BACKGROUND_ROOT));
             backgroundModel.setUriRoot(Utils.saveBitmapToApp(this, bmMain,
-                    nameFolderBackground, Utils.BACKGROUND));
+                    nameFolderBackground, uriBackground()[0]));
+
+            if (!backgroundModel.getUriOverlay().equals(""))
+                backgroundModel.setUriRoot(Utils.saveBitmapToApp(this, bmMain,
+                        nameFolderBackground, uriBackground()[0]));
 
             //setSize
             vSticker.getLayoutParams().width = bmMain.getWidth();
@@ -541,7 +573,7 @@ public class EditActivity extends BaseActivity {
             case Utils.EMOJI:
                 break;
             case Utils.IMAGE:
-                vSticker.addSticker(drawableSticker.getImageModel().duplicate(this, getId()));
+                vSticker.addSticker(drawableSticker.getImageModel().duplicate(this, getId()), indexDefault);
                 break;
         }
     }
@@ -561,9 +593,94 @@ public class EditActivity extends BaseActivity {
                 isReplaceImage = true;
                 pickImage();
                 break;
-            case Utils.OVERLAY:
-                isReplaceOverlay = true;
-                pickOverlay();
+            case Utils.DECOR:
+                isReplaceDecor = true;
+                pickDecor();
+                break;
+        }
+    }
+
+    //Decor
+    private void pickDecor() {
+        rlExpandPickDecor.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
+        seekAndHideViewDecor(indexDefault);
+        setUpTitleDecor();
+        setUpDataDecor();
+    }
+
+    private void addNewDecor(DecorModel decor) {
+        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, decor, getId(), Utils.DECOR);
+        vSticker.addSticker(drawableSticker, indexDefault);
+    }
+
+    private void replaceDecor(DecorModel decor) {
+        DrawableStickerCustom drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
+        if (drawableSticker != null && drawableSticker.getTypeSticker().equals(Utils.DECOR))
+            drawableSticker.setDecorModel(decor);
+
+        vSticker.invalidate();
+    }
+
+    private void setUpDataDecor() {
+        addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+
+        String[] nameDecor = new String[]{"box", "draw", "frame", "shape"};
+        for (String s : nameDecor) {
+            DecorFragment decorFragment = DecorFragment.newInstance(s, (o, pos) -> {
+                DecorModel decor = (DecorModel) o;
+                if (!isReplaceDecor) addNewDecor(decor);
+                else replaceDecor(decor);
+
+                seekAndHideOperation(positionDecor);
+            });
+            addFragmentsAdapter.addFrag(decorFragment);
+        }
+
+        vpDecor.setAdapter(addFragmentsAdapter);
+        vpDecor.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                titleDecorAdapter.setCurrent(position);
+                rcvTypeDecor.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    private void setUpTitleDecor() {
+        titleDecorAdapter = new TitleDecorAdapter(this, (o, pos) -> {
+            titleDecorAdapter.setCurrent(pos);
+            vpDecor.setCurrentItem(pos, true);
+        });
+
+        titleDecorAdapter.setData(DataDecor.getTitleDecor(this, "title"));
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvTypeDecor.setLayoutManager(manager);
+        rcvTypeDecor.setAdapter(titleDecorAdapter);
+    }
+
+    private void seekAndHideViewDecor(int position) {
+        animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+        if (vOperation.getVisibility() == View.VISIBLE) {
+            vOperation.setAnimation(animation);
+            vOperation.setVisibility(View.GONE);
+        }
+        switch (position) {
+            case 0:
+                break;
+            default:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandPickDecor.getVisibility() == View.GONE) {
+                    rlExpandPickDecor.setAnimation(animation);
+                    rlExpandPickDecor.setVisibility(View.VISIBLE);
+                }
+
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE)
+                    rlExpandEditDecor.setVisibility(View.GONE);
+
+                if (tvResetEditDecor.getVisibility() == View.VISIBLE)
+                    tvResetEditDecor.setVisibility(View.GONE);
+
+                tvTitleEditDecor.setText(R.string.decor);
                 break;
         }
     }
@@ -571,23 +688,19 @@ public class EditActivity extends BaseActivity {
     //Overlay
     private void pickOverlay() {
         rlPickOverlay.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
-        seekAndHideViewOverlay(-1);
+        seekAndHideViewOverlay(indexDefault);
         setUpDataOverlay();
     }
 
     //Add Overlay
     private void addOverlay(OverlayModel overlay) {
-        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, overlay, getId(), Utils.OVERLAY);
-        vSticker.addSticker(drawableSticker);
-    }
+        Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
 
-    //Replace Overlay
-    private void replaceOverlay(OverlayModel overlay) {
-        DrawableStickerCustom drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
-        if (drawableSticker != null && drawableSticker.getTypeSticker().equals(Utils.OVERLAY))
-            drawableSticker.setOverlayModel(overlay);
+        String blend = "@blend screen image 80";
+        Bitmap bmOverlay = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, blend.replace("image", overlay.getNameOverlay()), 0.8f);
 
-        vSticker.invalidate();
+        backgroundModel.setUriOverlay(Utils.saveBitmapToApp(this, bmOverlay, nameFolderBackground, Utils.BACKGROUND_OVERLAY));
+        vMain.setImageBitmap(bmOverlay);
     }
 
     private void setUpDataOverlay() {
@@ -596,8 +709,7 @@ public class EditActivity extends BaseActivity {
         OverlayAdapter overlayAdapter = new OverlayAdapter(this, (o, pos) -> {
             OverlayModel overlay = (OverlayModel) o;
 
-            if (!isReplaceOverlay) addOverlay(overlay);
-            else replaceOverlay(overlay);
+            addOverlay(overlay);
 
             seekAndHideOperation(positionOverlay);
         });
@@ -700,7 +812,7 @@ public class EditActivity extends BaseActivity {
                 if (tvResetEditOverlay.getVisibility() == View.VISIBLE)
                     tvResetEditOverlay.setVisibility(View.GONE);
 
-                tvTitleEditEmoji.setText(R.string.overlay);
+                tvTitleEditOverlay.setText(R.string.overlay);
                 break;
         }
     }
@@ -714,21 +826,23 @@ public class EditActivity extends BaseActivity {
     }
 
     //Flip Background
-    //flip
     private void flipXBackground() {
         if (!isColor) {
-            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(backgroundModel.getUriCache()),
-                    true, false);
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(uriBackground()[0]), true, false);
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, uriBackground()[1]));
+            if (!backgroundModel.getUriOverlay().equals(""))
+                backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
             vMain.setImageBitmap(bitmap);
         }
     }
 
     private void flipYBackground() {
         if (!isColor) {
-            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(backgroundModel.getUriCache()),
+            Bitmap bitmap = UtilsAdjust.createFlippedBitmap(BitmapFactory.decodeFile(uriBackground()[0]),
                     false, true);
-            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
+            backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, uriBackground()[1]));
+            if (!backgroundModel.getUriOverlay().equals(""))
+                backgroundModel.setUriCache(Utils.saveBitmapToApp(this, bitmap, nameFolderBackground, Utils.BACKGROUND));
             vMain.setImageBitmap(bitmap);
         }
     }
@@ -773,7 +887,7 @@ public class EditActivity extends BaseActivity {
         isBackground = true;
         seekAndHideViewBackground(1);
 
-        Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+        Bitmap bitmap = BitmapFactory.decodeFile(uriBackground()[0]);
 
         filterImageAdapter = new FilterImageAdapter(this, (o, pos) -> {
             FilterModel filter = (FilterModel) o;
@@ -785,7 +899,11 @@ public class EditActivity extends BaseActivity {
 
             backgroundModel.setPositionFilterBackground(pos);
             backgroundModel.setUriCache(Utils.saveBitmapToApp(EditActivity.this,
-                    bm, nameFolderBackground, Utils.BACKGROUND));
+                    bm, nameFolderBackground, uriBackground()[1]));
+
+            if (!backgroundModel.getUriOverlay().equals(""))
+                backgroundModel.setUriCache(Utils.saveBitmapToApp(EditActivity.this,
+                        bm, nameFolderBackground, Utils.BACKGROUND));
             vMain.setImageBitmap(bm);
         });
 
@@ -1279,7 +1397,7 @@ public class EditActivity extends BaseActivity {
 
         tvAdjustBackground.setText(String.valueOf(sbAdjust.getProgress()));
 
-        bmAdjust = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+        bmAdjust = BitmapFactory.decodeFile(uriBackground()[0]);
         sbAdjust.setOnSeekbarResult(new OnSeekbarResult() {
             @Override
             public void onDown(View v) {
@@ -1388,6 +1506,18 @@ public class EditActivity extends BaseActivity {
         }
     }
 
+    private String[] uriBackground() {
+        String[] background = {"", ""};
+        if (backgroundModel.getUriOverlay().equals("")) {
+            background[0] = backgroundModel.getUriCache();
+            background[1] = Utils.BACKGROUND;
+        } else {
+            background[0] = backgroundModel.getUriOverlay();
+            background[1] = Utils.BACKGROUND_OVERLAY;
+        }
+        return background;
+    }
+
     private void seekAndHideViewBackground(int position) {
         animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
         if (vEditBackground.getVisibility() == View.VISIBLE) {
@@ -1474,7 +1604,7 @@ public class EditActivity extends BaseActivity {
                                 DrawableStickerCustom drawableSticker =
                                         new DrawableStickerCustom(EditActivity.this, imageModel, getId(), Utils.IMAGE);
 
-                                vSticker.addSticker(drawableSticker);
+                                vSticker.addSticker(drawableSticker, indexDefault);
                                 seekAndHideOperation(positionImage);
                             } else replaceImage(path);
                         } else
@@ -1737,7 +1867,7 @@ public class EditActivity extends BaseActivity {
 
         ShadowModel shadowModelOld = new ShadowModel(xPos, yPos, blur, color);
 
-        tvResetImage.setOnClickListener(v -> resetImage(0, drawableSticker, shadowModelOld, -1));
+        tvResetImage.setOnClickListener(v -> resetImage(0, drawableSticker, shadowModelOld, indexDefault));
 
         tvXPosImage.setText(String.valueOf((int) xPos));
         sbXPosImage.setProgress((int) xPos);
@@ -1971,14 +2101,14 @@ public class EditActivity extends BaseActivity {
     //Emoji
     private void pickEmoji() {
         rlExpandEmoji.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 90 / 100;
-        seeAndHideViewEmoji(-1);
+        seeAndHideViewEmoji(indexDefault);
         setUpTitleEmoji();
         setUpDataEmoji();
     }
 
     private void addNewEmoji(EmojiModel emoji) {
         DrawableStickerCustom emojiSticker = new DrawableStickerCustom(this, emoji, getId(), Utils.EMOJI);
-        vSticker.addSticker(emojiSticker);
+        vSticker.addSticker(emojiSticker, indexDefault);
     }
 
     private void setUpDataEmoji() {
@@ -2145,7 +2275,7 @@ public class EditActivity extends BaseActivity {
 
                         if (isAdd) {
                             TextStickerCustom textSticker = new TextStickerCustom(this, textModel, getId());
-                            vSticker.addSticker(textSticker);
+                            vSticker.addSticker(textSticker, indexDefault);
                             seekAndHideOperation(positionAddText);
                         } else {
                             TextStickerCustom textSticker = (TextStickerCustom) vSticker.getCurrentSticker();
@@ -2180,7 +2310,7 @@ public class EditActivity extends BaseActivity {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
 
             TextStickerCustom newSticker = (TextStickerCustom) textSticker.getTextModel().duplicate(this, getId());
-            vSticker.addSticker(newSticker);
+            vSticker.addSticker(newSticker, indexDefault);
 
             vSticker.invalidate();
 
@@ -2199,7 +2329,7 @@ public class EditActivity extends BaseActivity {
             int sizeOld = (int) textSticker.getTextSize();
             sbFontText.setProgress(sizeOld);
             tvFontText.setText(String.valueOf(sizeOld));
-            tvResetText.setOnClickListener(v -> resetText(0, textSticker, sizeOld, null, null, null, -1));
+            tvResetText.setOnClickListener(v -> resetText(0, textSticker, sizeOld, null, null, null, indexDefault));
 
             sbFontText.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
@@ -2235,8 +2365,8 @@ public class EditActivity extends BaseActivity {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
 
             ColorModel colorModelOld = textSticker.getTextModel().getColorModel();
-            tvResetText.setOnClickListener(v -> resetText(1, textSticker, -1,
-                    colorModelOld, null, null, -1));
+            tvResetText.setOnClickListener(v -> resetText(1, textSticker, indexDefault,
+                    colorModelOld, null, null, indexDefault));
 
             ColorAdapter colorAdapter = new ColorAdapter(this, R.layout.item_color_edit, (o, pos) -> {
 
@@ -2350,8 +2480,8 @@ public class EditActivity extends BaseActivity {
         ShearTextModel shearTextModelOld = new ShearTextModel(shearX / 100f,
                 shearY / 100f, stretch / 100f);
 
-        tvResetText.setOnClickListener(v -> resetText(2, textSticker, -1,
-                null, shearTextModelOld, null, -1));
+        tvResetText.setOnClickListener(v -> resetText(2, textSticker, indexDefault,
+                null, shearTextModelOld, null, indexDefault));
 
         tvShearX.setText(String.valueOf(shearX));
         sbShearX.setProgress(shearX);
@@ -2455,8 +2585,8 @@ public class EditActivity extends BaseActivity {
 
         ShadowModel shadowModelOld = new ShadowModel(xPos, yPos, blur, color);
 
-        tvResetText.setOnClickListener(v -> resetText(3, textSticker, -1,
-                null, null, shadowModelOld, -1));
+        tvResetText.setOnClickListener(v -> resetText(3, textSticker, indexDefault,
+                null, null, shadowModelOld, indexDefault));
 
         tvXPosText.setText(String.valueOf((int) xPos));
         sbXPosText.setProgress((int) xPos);
@@ -2484,7 +2614,7 @@ public class EditActivity extends BaseActivity {
 
             int opacityOld = textSticker.getTextModel().getOpacity();
             sbOpacityText.setProgress(opacityOld);
-            tvResetText.setOnClickListener(v -> resetText(4, textSticker, -1, null,
+            tvResetText.setOnClickListener(v -> resetText(4, textSticker, indexDefault, null,
                     null, null, opacityOld));
 
             sbOpacityText.setOnSeekbarResult(new OnSeekbarResult() {
@@ -2712,6 +2842,66 @@ public class EditActivity extends BaseActivity {
         else ivLayer.setImageResource(R.drawable.ic_layer);
 
         switch (position) {
+            case positionDecor:
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
+                if (vSize.getVisibility() == View.VISIBLE) {
+                    vSize.setAnimation(animation);
+                    vSize.setVisibility(View.GONE);
+                    llLayerExport.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.VISIBLE);
+                    ivTick.setVisibility(View.VISIBLE);
+                }
+
+                if (vOperation.getVisibility() == View.VISIBLE) {
+                    vOperation.setAnimation(animation);
+                    vOperation.setVisibility(View.GONE);
+                    tvToolBar.setVisibility(View.GONE);
+                    ivTick.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditText.getVisibility() == View.VISIBLE) {
+                    rlExpandEditText.setAnimation(animation);
+                    rlExpandEditText.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditEmoji.getVisibility() == View.VISIBLE) {
+                    rlExpandEditEmoji.setAnimation(animation);
+                    rlExpandEditEmoji.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditImage.getVisibility() == View.VISIBLE) {
+                    rlExpandEditImage.setAnimation(animation);
+                    rlExpandEditImage.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditBackground.getVisibility() == View.VISIBLE) {
+                    rlExpandEditBackground.setAnimation(animation);
+                    rlExpandEditBackground.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
+                    rlExpandEditOverlay.setAnimation(animation);
+                    rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandPickDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandPickDecor.setAnimation(animation);
+                    rlExpandPickDecor.setVisibility(View.GONE);
+                }
+
+                animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
+                if (rlExpandEditDecor.getVisibility() == View.GONE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.VISIBLE);
+                }
+
+                if (vEditDecor.getVisibility() == View.GONE) {
+                    vEditDecor.setAnimation(animation);
+                    vEditDecor.setVisibility(View.VISIBLE);
+                }
+
+                tvTitleEditDecor.setText(R.string.decor);
+                break;
             case positionOverlay:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
                 if (vSize.getVisibility() == View.VISIBLE) {
@@ -2752,6 +2942,11 @@ public class EditActivity extends BaseActivity {
                 if (rlEditOpacityOverlay.getVisibility() == View.VISIBLE) {
                     rlEditOpacityOverlay.setAnimation(animation);
                     rlEditOpacityOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
                 }
 
                 if (tvResetEditOverlay.getVisibility() == View.VISIBLE)
@@ -2805,6 +3000,11 @@ public class EditActivity extends BaseActivity {
                 if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
                     rlExpandEditOverlay.setAnimation(animation);
                     rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
                 }
 
                 if (rlEditAdjust.getVisibility() == View.VISIBLE) {
@@ -2890,6 +3090,11 @@ public class EditActivity extends BaseActivity {
                 if (rlExpandEditOverlay.getVisibility() == View.VISIBLE) {
                     rlExpandEditOverlay.setAnimation(animation);
                     rlExpandEditOverlay.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
                 }
 
                 if (rlEditCrop.getVisibility() == View.VISIBLE) {
@@ -2980,6 +3185,11 @@ public class EditActivity extends BaseActivity {
                     rlExpandEditOverlay.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
+                }
+
                 if (tvResetEmoji.getVisibility() == View.VISIBLE)
                     tvResetEmoji.setVisibility(View.GONE);
 
@@ -3058,6 +3268,11 @@ public class EditActivity extends BaseActivity {
                     rlExpandEditOverlay.setVisibility(View.GONE);
                 }
 
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
+                }
+
                 tvTitleEditText.setText(R.string.text);
 
                 if (tvResetText.getVisibility() == View.VISIBLE)
@@ -3127,6 +3342,16 @@ public class EditActivity extends BaseActivity {
                     rlExpandEditOverlay.setVisibility(View.GONE);
                 }
 
+                if (rlExpandPickDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandPickDecor.setAnimation(animation);
+                    rlExpandPickDecor.setVisibility(View.GONE);
+                }
+
+                if (rlExpandEditDecor.getVisibility() == View.VISIBLE) {
+                    rlExpandEditDecor.setAnimation(animation);
+                    rlExpandEditDecor.setVisibility(View.GONE);
+                }
+
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
                 if (vOperation.getVisibility() == View.GONE) {
                     vOperation.setAnimation(animation);
@@ -3168,6 +3393,10 @@ public class EditActivity extends BaseActivity {
 
                 rlPickOverlay.clearAnimation();
                 rlExpandEditOverlay.clearAnimation();
+                rlOpacityOverlay.clearAnimation();
+
+                rlExpandPickDecor.clearAnimation();
+                rlExpandEditDecor.clearAnimation();
             }
 
             @Override
@@ -3588,6 +3817,25 @@ public class EditActivity extends BaseActivity {
         rlEditOpacityOverlay = findViewById(R.id.rlEditOpacityOverlay);
         sbOpacityOverlay = findViewById(R.id.sbOpacityOverlay);
 
+        //Decor
+        vEditDecor = findViewById(R.id.vEditDecor);
+        rlExpandPickDecor = findViewById(R.id.rlExpandPickDecor);
+        rlCancelPickDecor = findViewById(R.id.rlCancelPickDecor);
+        vpDecor = findViewById(R.id.vpDecor);
+        rcvTypeDecor = findViewById(R.id.rcvTypeDecor);
+        rlExpandEditDecor = findViewById(R.id.rlExpandEditDecor);
+        tvResetEditDecor = findViewById(R.id.tvResetEditDecor);
+        tvTitleEditDecor = findViewById(R.id.tvTitleEditDecor);
+
+        rlDelDecor = findViewById(R.id.rlDelDecor);
+        rlReplaceDecor = findViewById(R.id.rlReplaceDecor);
+        rlDuplicateDecor = findViewById(R.id.rlDuplicateDecor);
+        rlColorDecor = findViewById(R.id.rlColorDecor);
+        rlShadowDecor = findViewById(R.id.rlShadowDecor);
+        rlOpacityDecor = findViewById(R.id.rlOpacityDecor);
+        rlFlipXDecor = findViewById(R.id.rlFlipXDecor);
+        rlFlipYDecor = findViewById(R.id.rlFlipYDecor);
+
         backgroundModel = new BackgroundModel();
     }
 
@@ -3615,7 +3863,7 @@ public class EditActivity extends BaseActivity {
         tvNo.setOnClickListener(vNo -> dialog.cancel());
         tvYes.setOnClickListener(vYes -> {
             vSticker.remove(sticker);
-            seekAndHideOperation(-1);
+            seekAndHideOperation(indexDefault);
             dialog.cancel();
         });
     }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
-import com.datnt.remitextart.adapter.RecentAdapter;
+import com.datnt.remitextart.adapter.home.RecentAdapter;
 import com.datnt.remitextart.callback.ICallBackItem;
 import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;

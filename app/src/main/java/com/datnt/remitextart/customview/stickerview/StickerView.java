@@ -867,20 +867,20 @@ public class StickerView extends FrameLayout {
     }
 
     @NonNull
-    public StickerView addSticker(@NonNull Sticker sticker) {
-        return addSticker(sticker, Sticker.Position.CENTER);
+    public StickerView addSticker(@NonNull Sticker sticker, int index) {
+        return addSticker(sticker, index, Sticker.Position.CENTER);
     }
 
-    public StickerView addSticker(@NonNull final Sticker sticker, final @Sticker.Position int position) {
+    public StickerView addSticker(@NonNull final Sticker sticker, int index, final @Sticker.Position int position) {
         if (ViewCompat.isLaidOut(this)) {
-            addStickerImmediately(sticker, position);
+            addStickerImmediately(sticker, index, position);
         } else {
-            post(() -> addStickerImmediately(sticker, position));
+            post(() -> addStickerImmediately(sticker, index, position));
         }
         return this;
     }
 
-    protected void addStickerImmediately(@NonNull Sticker sticker, @Sticker.Position int position) {
+    protected void addStickerImmediately(@NonNull Sticker sticker, int index, @Sticker.Position int position) {
         setStickerPosition(sticker, position);
 
         float scaleFactor, widthScaleFactor, heightScaleFactor;
@@ -893,7 +893,8 @@ public class StickerView extends FrameLayout {
                 .postScale(scaleFactor / 2, scaleFactor / 2, getWidth() / 2f, getHeight() / 2f);
 
         handlingSticker = sticker;
-        stickers.add(sticker);
+        if (index != -1) stickers.add(index, sticker);
+        else stickers.add(sticker);
         if (onStickerOperationListener != null) {
             onStickerOperationListener.onStickerAdded(sticker);
         }

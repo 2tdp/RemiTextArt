@@ -1,4 +1,4 @@
-package com.datnt.remitextart.adapter;
+package com.datnt.remitextart.adapter.home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

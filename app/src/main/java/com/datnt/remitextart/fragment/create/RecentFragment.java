@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.edit.EditActivity;
 import com.datnt.remitextart.adapter.BucketAdapter;
-import com.datnt.remitextart.adapter.RecentAdapter;
+import com.datnt.remitextart.adapter.home.RecentAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.callback.IClickFolder;
 import com.datnt.remitextart.model.picture.BucketPicModel;
