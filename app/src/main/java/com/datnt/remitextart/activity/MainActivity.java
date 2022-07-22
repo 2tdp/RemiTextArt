@@ -42,8 +42,9 @@ public class MainActivity extends BaseActivity {
             try {
                 is = am.open("filter/" + name);
             } catch (IOException e) {
-                Log.d("2tdp", "Loading file: can't load file");
-                return null;
+//                Log.d("2tdp", "Loading file: can't load file");
+                Log.d("2tdp", "Loading file: " + name);
+                return BitmapFactory.decodeFile(name);
             }
 
             return BitmapFactory.decodeStream(is);

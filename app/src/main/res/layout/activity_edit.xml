@@ -141,6 +141,14 @@
             android:layout_centerInParent="true"
             app:showBorder="true"
             app:showIcons="true" />
+
+        <ImageView
+            android:id="@+id/ivLoading"
+            android:layout_width="@dimen/_84sdp"
+            android:layout_height="@dimen/_84sdp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:padding="@dimen/_2sdp" />
     </RelativeLayout>
 
     <View
@@ -1007,6 +1015,14 @@
             android:layout_centerVertical="true"
             android:padding="@dimen/_5sdp"
             android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/ivLoadingFilterBackground"
+                android:layout_width="@dimen/_84sdp"
+                android:layout_height="@dimen/_84sdp"
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                android:padding="@dimen/_2sdp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvEditFilterBackground"

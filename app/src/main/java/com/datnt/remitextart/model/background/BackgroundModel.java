@@ -1,6 +1,11 @@
 package com.datnt.remitextart.model.background;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.OverlayModel;
+import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
 
@@ -9,22 +14,27 @@ public class BackgroundModel implements Serializable {
     private String uriCache;
     private String uriOverlay = "";
     private String uriRoot;
+    private String uriOverlayRoot = "";
     private ColorModel colorModel;
     private int sizeViewColor;
     private AdjustModel adjustModel;
+    private OverlayModel overlayModel;
     private int positionFilterBackground = 0;
     private int opacity = 100;
 
     public BackgroundModel() {
     }
 
-    public BackgroundModel(String uriCache, String uriOverlay, String uriRoot, ColorModel colorModel,
-                           int sizeViewColor, AdjustModel adjustModel, int positionFilterBackground, int opacity) {
+    public BackgroundModel(String uriCache, String uriOverlay, String uriRoot, String uriOverlayRoot, ColorModel colorModel,
+                           int sizeViewColor, AdjustModel adjustModel, OverlayModel overlayModel,
+                           int positionFilterBackground, int opacity) {
         this.uriCache = uriCache;
         this.uriOverlay = uriOverlay;
         this.uriRoot = uriRoot;
+        this.uriOverlayRoot = uriOverlayRoot;
         this.colorModel = colorModel;
         this.adjustModel = adjustModel;
+        this.overlayModel = overlayModel;
         this.sizeViewColor = sizeViewColor;
         this.positionFilterBackground = positionFilterBackground;
         this.opacity = opacity;
@@ -54,6 +64,14 @@ public class BackgroundModel implements Serializable {
         this.uriRoot = uriRoot;
     }
 
+    public String getUriOverlayRoot() {
+        return uriOverlayRoot;
+    }
+
+    public void setUriOverlayRoot(String uriOverlayRoot) {
+        this.uriOverlayRoot = uriOverlayRoot;
+    }
+
     public ColorModel getColorModel() {
         return colorModel;
     }
@@ -68,6 +86,14 @@ public class BackgroundModel implements Serializable {
 
     public void setAdjustModel(AdjustModel adjustModel) {
         this.adjustModel = adjustModel;
+    }
+
+    public OverlayModel getOverlayModel() {
+        return overlayModel;
+    }
+
+    public void setOverlayModel(OverlayModel overlayModel) {
+        this.overlayModel = overlayModel;
     }
 
     public int getSizeViewColor() {

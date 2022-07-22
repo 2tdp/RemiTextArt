@@ -68,7 +68,8 @@ public class Utils {
     //cache save
     public static final String BACKGROUND_ROOT = "background_root";
     public static final String BACKGROUND = "background";
-    public static final String BACKGROUND_OVERLAY = "background_overlay";
+    public static final String BACKGROUND_OVERLAY_CACHE = "background_overlay_cache";
+    public static final String OVERLAY_ROOT = "overlay_root";
     public static final String IMAGE_ROOT = "image_root";
 
     //animation

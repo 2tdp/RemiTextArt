@@ -26,7 +26,7 @@ public class OverlayModel extends EditSticker implements Serializable {
         this.opacity = overlayModel.getOpacity();
         this.flipX = overlayModel.isFlipX();
         this.flipY = overlayModel.isFlipY();
-        this.isSelected = overlayModel.isSelected;
+        this.isSelected = overlayModel.isSelected();
         this.matrix = overlayModel.getMatrix();
     }
 

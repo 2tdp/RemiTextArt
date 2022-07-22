@@ -80,6 +80,18 @@ public class CGENativeLibrary {
     public static class TextureResult {
         int texID;
         int width, height;
+
+        public int getTexID() {
+            return texID;
+        }
+
+        public int getWidth() {
+            return width;
+        }
+
+        public int getHeight() {
+            return height;
+        }
     }
 
     //will be called from jni.

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -50,7 +51,6 @@ public class DrawableStickerCustom extends Sticker {
 
     private EmojiModel emojiModel;
     private ImageModel imageModel;
-    private OverlayModel overlayModel;
     private DecorModel decorModel;
 
     public DrawableStickerCustom(Context context, Object o, int id, String type) {
@@ -65,10 +65,6 @@ public class DrawableStickerCustom extends Sticker {
             case Utils.IMAGE:
                 this.imageModel = (ImageModel) o;
                 initImage();
-                break;
-            case Utils.OVERLAY:
-                this.overlayModel = (OverlayModel) o;
-                initOverlay();
                 break;
             case Utils.DECOR:
                 this.decorModel = (DecorModel) o;
@@ -108,14 +104,6 @@ public class DrawableStickerCustom extends Sticker {
         if (imageModel.getShadowModel() != null) setShadow(imageModel.getShadowModel());
     }
 
-    private void initOverlay() {
-        this.drawable = new BitmapDrawable(context.getResources(),
-                Utils.getBitmapFromAsset(context, overlayModel.getNameFolder(), overlayModel.getNameOverlay(),
-                        false, false));
-
-        realBounds = new RectF(distance, distance, getWidth() - distance, getHeight() - distance);
-    }
-
     private void initDecor() {
         if (this.drawable == null)
             this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
@@ -128,9 +116,10 @@ public class DrawableStickerCustom extends Sticker {
         if (pathDecor == null) pathDecor = new Path();
 
         if (!decor.getLstPathData().isEmpty())
-            for (String path : decor.getLstPathData()) {
-                pathDecor.addPath(PathParser.createPathFromPathData(path));
-            }
+            pathDecor.reset();
+        for (String path : decor.getLstPathData()) {
+            pathDecor.addPath(PathParser.createPathFromPathData(path));
+        }
         scalePathDecor();
     }
 
@@ -138,14 +127,14 @@ public class DrawableStickerCustom extends Sticker {
         if (rectFDecor == null) rectFDecor = new RectF();
         this.pathDecor.computeBounds(rectFDecor, true);
 
-        scaleX = (getWidth() - 2f * distance) / rectFDecor.width();
-        scaleY = (getHeight() - 2f * distance) / rectFDecor.height();
-        Log.d("2tdp", "scalePathDecor: " + scaleX + "..." + scaleY);
+        float scale = (getWidth() - 2f * distance) / rectFDecor.width();
+        Matrix matrix = new Matrix();
+        matrix.preScale(scale, scale);
+        pathDecor.transform(matrix);
 
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setSize( (int) (rectFDecor.width() + scaleX), (int) (rectFDecor.height() * scaleY));
-        drawable.setColor(Color.TRANSPARENT);
-        setDrawable(drawable);
+        pathDecor.computeBounds(rectFDecor, true);
+        realBounds = new RectF(distance, distance, rectFDecor.right - distance, rectFDecor.bottom - distance);
+        Log.d("2tdp", "path: " + (int) realBounds.left + ".." + (int) realBounds.top + "..." + (int) realBounds.right + "...." + (int) realBounds.bottom);
     }
 
     @Override
@@ -176,16 +165,15 @@ public class DrawableStickerCustom extends Sticker {
             canvas.save();
             canvas.concat(getMatrix());
 
-            canvas.scale(scaleX, scaleY);
-            canvas.drawPath(pathDecor, paintDecor);
+            UtilsAdjust.drawIconWithPath(canvas, pathDecor, paintDecor, realBounds.width(), (int) realBounds.left + distance, (int) realBounds.top + distance);
             canvas.restore();
         }
 
         canvas.save();
         canvas.concat(getMatrix());
 
-        if (!this.typeSticker.equals(Utils.DECOR))
-            drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
+        drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
+        Log.d("2tdp", "draw: " + (int) realBounds.left + ".." + (int) realBounds.top + "..." + (int) realBounds.right + "...." + (int) realBounds.bottom);
         drawable.draw(canvas);
         canvas.restore();
     }
@@ -270,15 +258,6 @@ public class DrawableStickerCustom extends Sticker {
     public void setDecorModel(DecorModel decorModel) {
         this.decorModel = decorModel;
         initDecor();
-    }
-
-    public OverlayModel getOverlayModel() {
-        return overlayModel;
-    }
-
-    public void setOverlayModel(OverlayModel overlayModel) {
-        this.overlayModel = overlayModel;
-        initOverlay();
     }
 
     public void replaceImage() {
