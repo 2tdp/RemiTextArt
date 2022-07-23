@@ -216,6 +216,7 @@ public class EditActivity extends BaseActivity {
     private BackgroundModel backgroundModel;
     private ArrayList<FilterModel> lstFilter;
     private ArrayList<BlendModel> lstBlend;
+    private ArrayList<ColorModel> lstColor;
     private boolean isColor, isBackground;
     private String strPicUserOld = "old", strPicAppOld = "old";
     private ColorModel colorModelOld = null;
@@ -448,6 +449,8 @@ public class EditActivity extends BaseActivity {
         });
         rlDelDecor.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
         rlReplaceDecor.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
+        rlDuplicateDecor.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
+        rlColorDecor.setOnClickListener(v -> colorDecor(vSticker.getCurrentSticker()));
 
         //size
         rlCrop.setOnClickListener(v -> {
@@ -569,6 +572,9 @@ public class EditActivity extends BaseActivity {
             case Utils.IMAGE:
                 vSticker.addSticker(drawableSticker.getImageModel().duplicate(this, getId()), indexDefault);
                 break;
+            case Utils.DECOR:
+                vSticker.addSticker(drawableSticker.getDecorModel().duplicate(this, getId()), indexDefault);
+                break;
         }
     }
 
@@ -652,6 +658,31 @@ public class EditActivity extends BaseActivity {
         rcvTypeDecor.setAdapter(titleDecorAdapter);
     }
 
+    //Color Decor
+    private void colorDecor(Sticker sticker) {
+        if (!checkCurrentSticker(sticker)) return;
+        seekAndHideViewDecor(0);
+
+        DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+        ColorAdapter colorAdapter = new ColorAdapter(this, R.layout.item_color_edit, (o, pos) -> {
+            ColorModel color = (ColorModel) o;
+            if (pos == 0) DataColor.pickColor(this, c -> setColorDecor(drawableSticker, c));
+            else if (color.getColorStart() == color.getColorEnd()) setColorDecor(drawableSticker, color);
+            else DataColor.pickDirection(this, color, c -> setColorDecor(drawableSticker, c));
+        });
+        if (!lstColor.isEmpty()) colorAdapter.setData(lstColor);
+
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvEditColorDecor.setLayoutManager(manager);
+        rcvEditColorDecor.setAdapter(colorAdapter);
+    }
+
+    private void setColorDecor(DrawableStickerCustom drawableSticker, ColorModel color) {
+        drawableSticker.getDecorModel().setColorModel(color);
+
+        vSticker.invalidate();
+    }
+
     private void seekAndHideViewDecor(int position) {
         animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
         if (vOperation.getVisibility() == View.VISIBLE) {
@@ -660,6 +691,7 @@ public class EditActivity extends BaseActivity {
         }
         switch (position) {
             case 0:
+
                 break;
             default:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_up_in);
@@ -2420,7 +2452,6 @@ public class EditActivity extends BaseActivity {
     private void colorText(Sticker sticker) {
         if (!checkCurrentSticker(sticker)) return;
         seeAndHideViewText(1);
-        ArrayList<ColorModel> lstColor = DataColor.getListColor(this);
 
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
@@ -3915,6 +3946,7 @@ public class EditActivity extends BaseActivity {
         rlFlipYDecor = findViewById(R.id.rlFlipYDecor);
 
         backgroundModel = new BackgroundModel();
+        new Thread(() -> lstColor = DataColor.getListColor(this)).start();
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.loading)

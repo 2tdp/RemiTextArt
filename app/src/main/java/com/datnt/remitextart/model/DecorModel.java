@@ -6,8 +6,11 @@ import android.graphics.Matrix;
 
 import androidx.annotation.NonNull;
 
+import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.EditSticker;
 import com.datnt.remitextart.customview.stickerview.Sticker;
+import com.datnt.remitextart.model.image.ImageModel;
+import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -134,7 +137,14 @@ public class DecorModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker duplicate(Context context, @NonNull int id) {
-        return null;
+        ShadowModel shadow = null;
+        if (shadowModel != null)
+            shadow = new ShadowModel(shadowModel);
+
+        DecorModel decorModel = new DecorModel(nameDecor, nameFolder, lstPathData, colorModel, shadow,
+                opacity, flipX, flipY, isSelected, matrix);
+
+        return new DrawableStickerCustom(context, decorModel, id, Utils.DECOR);
     }
 
     @Override

@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -22,6 +24,7 @@ import androidx.core.graphics.PathParser;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.data.FilterImage;
+import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.DecorModel;
 import com.datnt.remitextart.model.EmojiModel;
 import com.datnt.remitextart.model.OverlayModel;
@@ -115,31 +118,43 @@ public class DrawableStickerCustom extends Sticker {
         if (paintDecor == null) paintDecor = new Paint(Paint.ANTI_ALIAS_FLAG);
         if (pathDecor == null) pathDecor = new Path();
 
-        if (!decor.getLstPathData().isEmpty())
+        if (!decor.getLstPathData().isEmpty()) {
             pathDecor.reset();
-        for (String path : decor.getLstPathData()) {
-            pathDecor.addPath(PathParser.createPathFromPathData(path));
+            for (String path : decor.getLstPathData()) {
+                pathDecor.addPath(PathParser.createPathFromPathData(path));
+            }
+            scalePathDecor();
         }
-        scalePathDecor();
+
+        if (decor.getColorModel() != null) setColor(decor.getColorModel());
     }
 
     private void scalePathDecor() {
         if (rectFDecor == null) rectFDecor = new RectF();
         this.pathDecor.computeBounds(rectFDecor, true);
 
-        float scale = (getWidth() - 2f * distance) / rectFDecor.width();
+        float maxRect = Math.max(rectFDecor.width(), rectFDecor.height());
+        float scale = (getWidth() - 2f * distance) / maxRect;
+        Log.d("2tdp", "scalePathDecor: w: " + getWidth() + ", h:" + getHeight() + "max: " + maxRect);
         Matrix matrix = new Matrix();
         matrix.preScale(scale, scale);
         pathDecor.transform(matrix);
 
         pathDecor.computeBounds(rectFDecor, true);
-        realBounds = new RectF(distance, distance, rectFDecor.right - distance, rectFDecor.bottom - distance);
-        Log.d("2tdp", "path: " + (int) realBounds.left + ".." + (int) realBounds.top + "..." + (int) realBounds.right + "...." + (int) realBounds.bottom);
+
+        createDrawable();
+    }
+
+    private void createDrawable() {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setSize((int) rectFDecor.width() + distance, (int) rectFDecor.height() + distance);
+        drawable.setColor(Color.TRANSPARENT);
+        drawable.setBounds(distance, distance, (int) rectFDecor.right + distance, (int) rectFDecor.bottom + distance);
+        setDrawable(drawable);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-
         if (isShadowImage && this.typeSticker.equals(Utils.IMAGE)) {
             if (isShadowCrop) {
                 canvas.save();
@@ -165,15 +180,16 @@ public class DrawableStickerCustom extends Sticker {
             canvas.save();
             canvas.concat(getMatrix());
 
-            UtilsAdjust.drawIconWithPath(canvas, pathDecor, paintDecor, realBounds.width(), (int) realBounds.left + distance, (int) realBounds.top + distance);
+            canvas.translate((int) realBounds.left, (int) realBounds.top);
+            canvas.drawPath(pathDecor, paintDecor);
             canvas.restore();
         }
 
         canvas.save();
         canvas.concat(getMatrix());
 
-        drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
-        Log.d("2tdp", "draw: " + (int) realBounds.left + ".." + (int) realBounds.top + "..." + (int) realBounds.right + "...." + (int) realBounds.bottom);
+        if (!typeSticker.equals(Utils.DECOR))
+            drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
         canvas.restore();
     }
@@ -211,6 +227,52 @@ public class DrawableStickerCustom extends Sticker {
         else paintBitmap.setAlpha(alpha);
         if (shadowPaint != null) shadowPaint.setAlpha(alpha);
         return this;
+    }
+
+    private void setColor(ColorModel color) {
+        if (typeSticker.equals(Utils.DECOR)) {
+            if (color.getColorStart() == color.getColorEnd()) {
+                paintDecor.setShader(null);
+                paintDecor.setColor(color.getColorStart());
+            } else if (color.getDirec() == 4) {
+                int c = color.getColorStart();
+                color.setColorStart(color.getColorEnd());
+                color.setColorEnd(c);
+
+                color.setDirec(0);
+            } else if (color.getDirec() == 5) {
+                int c = color.getColorStart();
+                color.setColorStart(color.getColorEnd());
+                color.setColorEnd(c);
+
+                color.setDirec(2);
+            }
+
+            Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
+                    setDirection(color.getDirec())[1],
+                    setDirection(color.getDirec())[2],
+                    setDirection(color.getDirec())[3],
+                    new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
+                    new float[]{0, 1}, Shader.TileMode.MIRROR);
+
+            paintDecor.setShader(shader);
+        }
+    }
+
+    private int[] setDirection(int direc) {
+        float w = getWidth();
+        float h = getHeight();
+        switch (direc) {
+            case 0:
+                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
+            case 1:
+                return new int[]{0, 0, (int) w, (int) h};
+            case 2:
+                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
+            case 3:
+                return new int[]{0, (int) h, (int) w, 0};
+        }
+        return new int[]{};
     }
 
     public void setFilterImage(int positionFilter) {
