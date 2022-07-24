@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.EditSticker;
+import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.utils.Utils;
@@ -149,6 +150,14 @@ public class DecorModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            for (String path : lstPathData) {
+                drawableSticker.setShadowPathShape(path);
+            }
+            drawableSticker.setShadow(shadowModel);
+            return sticker;
+        }
         return null;
     }
 

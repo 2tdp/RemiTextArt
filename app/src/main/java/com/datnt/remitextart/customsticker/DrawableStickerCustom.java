@@ -50,8 +50,6 @@ public class DrawableStickerCustom extends Sticker {
     private int id;
     private final String typeSticker;
 
-    private float scaleX = 1f, scaleY = 1f;
-
     private EmojiModel emojiModel;
     private ImageModel imageModel;
     private DecorModel decorModel;
@@ -87,7 +85,6 @@ public class DrawableStickerCustom extends Sticker {
     private void initImage() {
         if (this.drawable == null)
             this.drawable = ContextCompat.getDrawable(context, R.drawable.sticker_transparent_text);
-
         setDataImage(this.imageModel);
 
         realBounds = new RectF(distance, distance, bitmap.getWidth() - distance, bitmap.getHeight() - distance);
@@ -135,7 +132,6 @@ public class DrawableStickerCustom extends Sticker {
 
         float maxRect = Math.max(rectFDecor.width(), rectFDecor.height());
         float scale = (getWidth() - 2f * distance) / maxRect;
-        Log.d("2tdp", "scalePathDecor: w: " + getWidth() + ", h:" + getHeight() + "max: " + maxRect);
         Matrix matrix = new Matrix();
         matrix.preScale(scale, scale);
         pathDecor.transform(matrix);
@@ -147,20 +143,20 @@ public class DrawableStickerCustom extends Sticker {
 
     private void createDrawable() {
         GradientDrawable drawable = new GradientDrawable();
-        drawable.setSize((int) rectFDecor.width() + distance, (int) rectFDecor.height() + distance);
-        drawable.setColor(Color.TRANSPARENT);
-        drawable.setBounds(distance, distance, (int) rectFDecor.right + distance, (int) rectFDecor.bottom + distance);
+        if (typeSticker.equals(Utils.DECOR)) {
+            drawable.setSize((int) rectFDecor.width(), (int) rectFDecor.height());
+            drawable.setColor(Color.TRANSPARENT);
+            drawable.setBounds(distance, distance, (int) rectFDecor.right - distance, (int) rectFDecor.bottom - distance);
+        }
         setDrawable(drawable);
     }
 
     @Override
     public void draw(@NonNull Canvas canvas) {
-        if (isShadowImage && this.typeSticker.equals(Utils.IMAGE)) {
-            if (isShadowCrop) {
+        if (isShadowImage && (this.typeSticker.equals(Utils.IMAGE) || this.typeSticker.equals(Utils.DECOR))) {
+            if (isShadowCrop || this.typeSticker.equals(Utils.DECOR)) {
                 canvas.save();
                 canvas.concat(getMatrix());
-                canvas.translate(distance, distance);
-                canvas.scale(scaleX, scaleY);
                 canvas.drawPath(shadowPath, shadowPaint);
                 canvas.restore();
             } else {
@@ -188,7 +184,7 @@ public class DrawableStickerCustom extends Sticker {
         canvas.save();
         canvas.concat(getMatrix());
 
-        if (!typeSticker.equals(Utils.DECOR))
+        if (!typeSticker.equals(Utils.DECOR) && !isShadowImage)
             drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
         canvas.restore();
@@ -229,7 +225,8 @@ public class DrawableStickerCustom extends Sticker {
         return this;
     }
 
-    private void setColor(ColorModel color) {
+    public void setColor(ColorModel color) {
+        this.decorModel.setColorModel(color);
         if (typeSticker.equals(Utils.DECOR)) {
             if (color.getColorStart() == color.getColorEnd()) {
                 paintDecor.setShader(null);
@@ -288,28 +285,39 @@ public class DrawableStickerCustom extends Sticker {
 
         shadowPath.computeBounds(rectFShadow, true);
 
-        scaleX = (getWidth() - 2f * distance) / rectFShadow.width();
-        scaleY = (getHeight() - 2f * distance) / rectFShadow.height();
+        float maxScreen = Math.max(realBounds.width(), realBounds.height());
+        float max = Math.max(rectFShadow.width(), rectFShadow.height());
+        float scale = maxScreen / max;
+
+        Matrix matrix = new Matrix();
+        matrix.preTranslate(realBounds.left, realBounds.top);
+        matrix.preScale(scale, scale);
+        shadowPath.transform(matrix);
+
+        shadowPath.computeBounds(rectFShadow, true);
     }
 
     public void setShadow(ShadowModel shadow) {
         if (this.shadowPaint == null) this.shadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         setShadowImage(true);
-        isShadowCrop = !imageModel.getPathShape().equals("");
+        if (typeSticker.equals(Utils.IMAGE))
+            isShadowCrop = !imageModel.getPathShape().equals("");
 
         if (shadow != null) {
-            if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
+            if (shadow.getColorBlur() == 0 && shadow.getBlur() == 0f
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
                 this.shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         Color.TRANSPARENT);
-            }
-            if (shadow.getColorBlur() != 0f) {
+                this.shadowPaint.setColor(Color.TRANSPARENT);
+            } else if (shadow.getColorBlur() != 0) {
                 this.shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         shadow.getColorBlur());
-            } else
+            } else if (shadow.getColorBlur() == 0 && (shadow.getBlur() != 0f
+                    || shadow.getXPos() != 0f || shadow.getYPos() != 0f)) {
                 this.shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         Color.BLACK);
+            }
         }
     }
 

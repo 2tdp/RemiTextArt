@@ -34,7 +34,6 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
     private MatrixGestureDetector detector;
     private final RectF clip = new RectF();
 
-    private int y = 1;
     private float scale = 1;
 
     public CropImage(Context context) {
@@ -80,7 +79,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         canvas.drawLine(0, getHeight(), getWidth(), getHeight(), paintLine);
 
         if (rectF != null) {
-            canvas.translate(getWidth() / 5f, (getHeight() - y) / 4f);
+            canvas.translate(0.25f * getWidth(), 0.25f * getHeight());
             canvas.scale(scale, scale);
             canvas.clipPath(path);
         }
@@ -97,7 +96,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         Canvas canvas = new Canvas(bm);
 
         if (rectF != null) {
-            canvas.translate(getWidth() / 5f, (getHeight() - y) / 4f);
+            canvas.translate(0.25f * getWidth(), 0.25f * getHeight());
             canvas.scale(scale, scale);
             canvas.clipPath(path);
         }
@@ -160,8 +159,9 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
         path.addPath(PathParser.createPathFromPathData(o));
 
         path.computeBounds(rectF, true);
-        scale = 3 * getWidth() / (rectF.width() * 5f);
-        y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
+        float maxScreen = Math.max(getWidth(), getHeight());
+        float max = Math.max(rectF.width(), rectF.height());
+        scale = 0.5f * (maxScreen / max);
 
         invalidate();
     }

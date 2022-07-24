@@ -257,7 +257,7 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:fontFamily="@font/poppins_medium"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/cancel"
+                android:text="@string/reset"
                 android:textColor="@color/red"
                 android:textSize="@dimen/_10ssp"
                 android:visibility="gone" />
