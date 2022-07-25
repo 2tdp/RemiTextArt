@@ -156,7 +156,7 @@ public class TextModel extends EditSticker implements Serializable {
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            textSticker.setAlpha((int) (opacity * 255 / 100f));
+            textSticker.setAlpha(opacity);
             return sticker;
         }
         return null;

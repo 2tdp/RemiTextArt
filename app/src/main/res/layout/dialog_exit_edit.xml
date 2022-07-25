@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginStart="@dimen/_20sdp"
+    android:layout_marginEnd="@dimen/_20sdp"
+    android:background="@drawable/boder_dialog"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_84sdp"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/ic_warning" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/poppins_regular"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/des_exit_1"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13ssp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#AFAFAF" />
+
+    <TextView
+        android:id="@+id/tvDiscard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/discard"
+        android:textColor="@color/green"
+        android:textSize="@dimen/_15ssp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#AFAFAF" />
+
+    <TextView
+        android:id="@+id/tvSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/poppins_semi_bold"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/save"
+        android:textColor="@color/green"
+        android:textSize="@dimen/_15ssp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#AFAFAF" />
+
+    <TextView
+        android:id="@+id/tvCancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:fontFamily="@font/poppins_regular"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/cancel"
+        android:textColor="@color/red"
+        android:textSize="@dimen/_15ssp" />
+</LinearLayout>

@@ -126,8 +126,8 @@ public class ImageModel extends EditSticker implements Serializable {
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof DrawableStickerCustom) {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-            drawableSticker.setShadowPathShape(drawableSticker.getImageModel().getPathShape());
-            drawableSticker.setShadow(shadowModel);
+            drawableSticker.setShadowPathShapeImage(drawableSticker.getImageModel().getPathShape());
+            drawableSticker.setShadowImage(shadowModel);
             return sticker;
         }
         return null;

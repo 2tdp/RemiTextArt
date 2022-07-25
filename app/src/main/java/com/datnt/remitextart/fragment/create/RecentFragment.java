@@ -175,6 +175,7 @@ public class RecentFragment extends Fragment {
             DataLocalManager.setOption(pic.getUri(), "bitmap");
             DataLocalManager.setOption("", "bitmap_myapp");
             DataLocalManager.setColor(null, "color");
+            DataLocalManager.setTemp(null, "temp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else checkTouch.checkTouch(true);

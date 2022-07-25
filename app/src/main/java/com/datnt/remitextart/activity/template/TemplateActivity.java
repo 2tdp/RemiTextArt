@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.activity.edit.EditActivity;
 import com.datnt.remitextart.adapter.TemplateAdapter;
 import com.datnt.remitextart.data.DataTemplate;
 import com.datnt.remitextart.model.TemplateModel;
@@ -35,7 +36,8 @@ public class TemplateActivity extends BaseActivity {
             DataLocalManager.setTemp(template, "temp");
             DataLocalManager.setOption("", "bitmap");
             DataLocalManager.setOption("", "bitmap_myapp");
-//            Utils.setIntent(this, EditActivity.class.getName());
+            DataLocalManager.setColor(null, "color");
+            Utils.setIntent(this, EditActivity.class.getName());
         });
 
         templateAdapter.setData(DataTemplate.getTemplate(this, ""));

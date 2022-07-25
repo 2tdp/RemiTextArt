@@ -128,11 +128,11 @@ public class DataLocalManager {
     public static void setTemp(TemplateModel temp, String key) {
         Gson gson = new Gson();
         JsonObject jsonObject = null;
-        if (temp != null) jsonObject = gson.toJsonTree(temp).getAsJsonObject();
-
-        String json;
-        if (jsonObject != null) json = jsonObject.toString();
-        else json = "";
+        String json = "";
+        if (temp != null) {
+            jsonObject = gson.toJsonTree(temp).getAsJsonObject();
+            json = jsonObject.toString();
+        }
 
         DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
     }

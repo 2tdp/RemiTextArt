@@ -153,9 +153,9 @@ public class DecorModel extends EditSticker implements Serializable {
         if (sticker instanceof DrawableStickerCustom) {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
             for (String path : lstPathData) {
-                drawableSticker.setShadowPathShape(path);
+                drawableSticker.setShadowPathShapeImage(path);
             }
-            drawableSticker.setShadow(shadowModel);
+            drawableSticker.setShadowImage(shadowModel);
             return sticker;
         }
         return null;
@@ -163,6 +163,11 @@ public class DecorModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            drawableSticker.setAlpha(opacity);
+            return sticker;
+        }
         return null;
     }
 

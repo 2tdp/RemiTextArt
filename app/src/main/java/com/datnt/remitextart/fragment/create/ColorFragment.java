@@ -83,6 +83,7 @@ public class ColorFragment extends Fragment {
         DataLocalManager.setColor(color, "color");
         DataLocalManager.setOption("", "bitmap");
         DataLocalManager.setOption("", "bitmap_myapp");
+        DataLocalManager.setTemp(null, "temp");
         if (!isBackground)
             Utils.setIntent(requireActivity(), EditActivity.class.getName());
         else clickTouch.checkTouch(true);

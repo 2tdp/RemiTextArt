@@ -22,7 +22,6 @@ import java.util.ArrayList;
 public class MyAppFragment extends Fragment {
 
     private RecyclerView rcvPicMyApp;
-    private MyAppAdapter myAppAdapter;
 
     private final ICheckTouch clickTouch;
     private boolean isBackground;
@@ -63,11 +62,12 @@ public class MyAppFragment extends Fragment {
     private void setUpLayout() {
         ArrayList<String> lstPic = new ArrayList<>(DataPic.getPicAssets(requireContext(), "offline_myapp"));
 
-        myAppAdapter = new MyAppAdapter(requireContext(), (Object o, int pos) -> {
+        MyAppAdapter myAppAdapter = new MyAppAdapter(requireContext(), (Object o, int pos) -> {
             String picAsset = (String) o;
             DataLocalManager.setOption(picAsset, "bitmap_myapp");
             DataLocalManager.setOption("", "bitmap");
             DataLocalManager.setColor(null, "color");
+            DataLocalManager.setTemp(null, "temp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);

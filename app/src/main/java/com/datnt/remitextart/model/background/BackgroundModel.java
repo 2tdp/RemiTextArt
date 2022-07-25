@@ -1,11 +1,7 @@
 package com.datnt.remitextart.model.background;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.OverlayModel;
-import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
 

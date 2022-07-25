@@ -1,8 +1,11 @@
 package com.datnt.remitextart.data;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import com.datnt.remitextart.model.TemplateModel;
+import com.datnt.remitextart.model.background.BackgroundModel;
+import com.datnt.remitextart.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,7 +23,8 @@ public class DataTemplate {
             for (String s : f) {
                 String background = "template_background" + s.split("template")[1];
                 String text = "json_temp_text" + s.split("template")[1].replace(".webp", ".json");
-                lstTemp.add(new TemplateModel(s, background, text, getPathDataTemp(context, text), null, null));
+                lstTemp.add(new TemplateModel(s, background, getPathDataTemp(context, text),
+                        null, null, 255, false, false, null));
             }
         } catch (IOException e) {
             e.printStackTrace();

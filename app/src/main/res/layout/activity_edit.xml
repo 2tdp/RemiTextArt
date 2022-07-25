@@ -120,6 +120,7 @@
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true" />
 
+            <!--            main-->
             <ImageView
                 android:id="@+id/vMain"
                 android:layout_width="match_parent"
@@ -142,13 +143,14 @@
             app:showBorder="true"
             app:showIcons="true" />
 
+        <!--        loading-->
         <ImageView
             android:id="@+id/ivLoading"
             android:layout_width="@dimen/_84sdp"
             android:layout_height="@dimen/_84sdp"
             android:layout_centerInParent="true"
-            android:visibility="gone"
-            android:padding="@dimen/_2sdp" />
+            android:padding="@dimen/_2sdp"
+            android:visibility="gone" />
     </RelativeLayout>
 
     <View
@@ -157,6 +159,510 @@
         android:layout_height="@dimen/_140sdp"
         android:layout_alignParentBottom="true"
         android:visibility="invisible" />
+
+    <!--    template-->
+    <RelativeLayout
+        android:id="@+id/rlPickTemp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/boder_layout_radius_top"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/rlCancelPickTemp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13ssp" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:background="@drawable/border_custom"
+                android:padding="@dimen/_6sdp"
+                android:src="@drawable/ic_bottom" />
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvTextTemp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rlCancelPickTemp"
+            android:padding="@dimen/_5sdp"
+            android:scrollbars="none" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlExpandEditTemp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_145sdp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/boder_layout_radius_top"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/rlCancelEditTemp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp">
+
+            <TextView
+                android:id="@+id/tvResetEditTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/poppins_medium"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/reset"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_10ssp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvTitleEditTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="@string/temp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13ssp" />
+
+            <ImageView
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:background="@drawable/border_custom"
+                android:padding="@dimen/_6sdp"
+                android:src="@drawable/ic_bottom" />
+        </RelativeLayout>
+
+        <!--        opacity-->
+        <RelativeLayout
+            android:id="@+id/rlEditOpacityTemp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlCancelEditTemp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <com.datnt.remitextart.customview.CustomSeekbarRunText
+                android:id="@+id/sbOpacityTemp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_10sdp" />
+
+        </RelativeLayout>
+
+        <!--        shadow-->
+        <LinearLayout
+            android:id="@+id/llEditShadowTemp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlCancelEditTemp"
+            android:layout_margin="@dimen/_5sdp"
+            android:orientation="vertical"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/x_pos"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvXPosTemp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbXPosTemp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/y_pos"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvYPosTemp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbYPosTemp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_weight="1">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:layout_toStartOf="@+id/ivColorBlurTemp"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:text="@string/blur"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+
+                        <TextView
+                            android:id="@+id/tvBlurTemp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="@dimen/_4sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10ssp" />
+                    </RelativeLayout>
+
+                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                        android:id="@+id/sbBlurTemp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/ivColorBlurTemp"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_pick_color_cir" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <!--        color-->
+        <RelativeLayout
+            android:id="@+id/rlEditColorTemp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rlCancelEditTemp"
+            android:padding="@dimen/_5sdp"
+            android:visibility="gone">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvEditColorTemp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/_5sdp"
+                android:scrollbars="none" />
+
+        </RelativeLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/vEditTemp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:scrollbars="none"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/rlDelTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_trash" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/del"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlReplaceTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_replace" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/replace"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlDuplicateTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_duplicate" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/duplicate"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlColorTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/ivColorTemp"
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_color_decor" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/color"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlBackgroundTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_background" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/background"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlShadowTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_shadow" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/shadow"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlOpacityTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_opacity" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/opacity"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlFlipXTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_flip_x" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/flip_x"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/rlFlipYTemp"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_84sdp"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_flip_y" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/flip_y"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10ssp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </HorizontalScrollView>
+    </RelativeLayout>
 
     <!--    decor-->
     <RelativeLayout
@@ -1021,8 +1527,8 @@
                 android:layout_width="@dimen/_84sdp"
                 android:layout_height="@dimen/_84sdp"
                 android:layout_centerInParent="true"
-                android:visibility="gone"
-                android:padding="@dimen/_2sdp" />
+                android:padding="@dimen/_2sdp"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvEditFilterBackground"

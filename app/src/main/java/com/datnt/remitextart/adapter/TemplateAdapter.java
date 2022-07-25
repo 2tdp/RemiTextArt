@@ -72,11 +72,11 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.Templa
 
             if (layoutResource == R.layout.item_template)
                 Glide.with(context)
-                        .load(Uri.parse("file:///android_asset/template/template/" + template.getName()))
+                        .load(Uri.parse("file:///android_asset/template/template/" + template.getText()))
                         .into(ivTemp);
             else {
                 itemView.setBackgroundResource(R.drawable.border_item_layer_unselected);
-                ivTempText.setDataPath(template.getLstPathData(), false, true);
+                ivTempText.setDataPath(template.getLstPathDataText(), false, true);
             }
 
             itemView.setOnClickListener(v -> callBack.callBackItem(template, position));
