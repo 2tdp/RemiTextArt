@@ -152,10 +152,8 @@ public class DecorModel extends EditSticker implements Serializable {
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof DrawableStickerCustom) {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-            for (String path : lstPathData) {
-                drawableSticker.setShadowPathShapeImage(path);
-            }
-            drawableSticker.setShadowImage(shadowModel);
+            drawableSticker.setShadowPathShape(lstPathData);
+            drawableSticker.setShadow(shadowModel);
             return sticker;
         }
         return null;

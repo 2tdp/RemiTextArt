@@ -28,6 +28,7 @@ import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.model.text.TypeFontModel;
 import com.datnt.remitextart.utils.Utils;
 import com.datnt.remitextart.utils.UtilsAdjust;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 public class TextStickerCustom extends Sticker {
 
@@ -215,49 +216,9 @@ public class TextStickerCustom extends Sticker {
     @NonNull
     public TextStickerCustom setTextColor(@NonNull ColorModel color) {
         this.textModel.setColorModel(color);
+        UtilsAdjust.setColor(color, textPaint, getWidth(), getHeight());
 
-        if (color.getColorStart() == color.getColorEnd()) {
-            textPaint.setShader(null);
-            textPaint.setColor(color.getColorStart());
-        } else if (color.getDirec() == 4) {
-            int c = color.getColorStart();
-            color.setColorStart(color.getColorEnd());
-            color.setColorEnd(c);
-
-            color.setDirec(0);
-        } else if (color.getDirec() == 5) {
-            int c = color.getColorStart();
-            color.setColorStart(color.getColorEnd());
-            color.setColorEnd(c);
-
-            color.setDirec(2);
-        }
-
-        Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
-                setDirection(color.getDirec())[1],
-                setDirection(color.getDirec())[2],
-                setDirection(color.getDirec())[3],
-                new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
-                new float[]{0, 1}, Shader.TileMode.MIRROR);
-
-        textPaint.setShader(shader);
         return this;
-    }
-
-    private int[] setDirection(int direc) {
-        float w = getWidth();
-        float h = getHeight();
-        switch (direc) {
-            case 0:
-                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
-            case 1:
-                return new int[]{0, 0, (int) w, (int) h};
-            case 2:
-                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
-            case 3:
-                return new int[]{0, (int) h, (int) w, 0};
-        }
-        return new int[]{};
     }
 
     public void setShadow(ShadowModel shadow) {

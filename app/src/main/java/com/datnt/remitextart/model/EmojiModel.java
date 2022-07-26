@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.EditSticker;
 import com.datnt.remitextart.customview.stickerview.Sticker;
+import com.datnt.remitextart.model.image.ImageModel;
+import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
 
@@ -100,7 +102,9 @@ public class EmojiModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker duplicate(Context context, @NonNull int id) {
-        return null;
+        EmojiModel emojiModel = new EmojiModel(nameEmoji, folder, opacity, flipX, flipY, isSelected, matrix);
+
+        return new DrawableStickerCustom(context, emojiModel, id, Utils.EMOJI);
     }
 
     @Override

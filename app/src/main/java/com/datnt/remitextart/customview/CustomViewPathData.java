@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.PathParser;
 
 import com.datnt.remitextart.utils.UtilsAdjust;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class CustomViewPathData extends View {
 
         path.computeBounds(rectF, true);
         int y = (int) (getWidth() * 0.5f * rectF.height() / rectF.width());
-        UtilsAdjust.drawIconWithPath(canvas, path, paint, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);
+        UtilsBitmap.drawIconWithPath(canvas, path, paint, getWidth() / 2f, getWidth() / 4, (getHeight() - y) / 2);
     }
 
     public void setDataPath(List<String> lstPath, boolean isDecor, boolean isTemp) {

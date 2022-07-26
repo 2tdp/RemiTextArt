@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_55sdp"
+    android:layout_height="@dimen/_50sdp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginEnd="@dimen/_5sdp">
+
+    <com.datnt.remitextart.customview.CustomViewPathData
+        android:id="@+id/ivPath"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_50sdp" />
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/ivLayer"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_50sdp"
+        app:riv_corner_radius="@dimen/_15sdp"
+        android:padding="@dimen/_1sdp"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        android:id="@+id/ivLock"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginEnd="@dimen/_2sdp"
+        android:layout_toStartOf="@+id/ivLook"
+        android:src="@drawable/ic_lock1"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/ivLook"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_marginEnd="@dimen/_2sdp"
+        android:src="@drawable/ic_look1"
+        android:visibility="gone" />
+</RelativeLayout>

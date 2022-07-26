@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.utils.UtilsAdjust;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 public class ColorView extends View {
 
@@ -124,46 +125,6 @@ public class ColorView extends View {
     }
 
     private void resetColor() {
-        if (color != null)
-            if (color.getColorStart() == color.getColorEnd()) {
-                paint.setColor(color.getColorStart());
-            } else {
-                if (color.getDirec() == 4) {
-                    int c = color.getColorStart();
-                    color.setColorStart(color.getColorEnd());
-                    color.setColorEnd(c);
-
-                    color.setDirec(0);
-                } else if (color.getDirec() == 5) {
-                    int c = color.getColorStart();
-                    color.setColorStart(color.getColorEnd());
-                    color.setColorEnd(c);
-
-                    color.setDirec(2);
-                }
-
-                Shader shader = new LinearGradient(setDirection(color.getDirec())[0],
-                        setDirection(color.getDirec())[1],
-                        setDirection(color.getDirec())[2],
-                        setDirection(color.getDirec())[3],
-                        new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
-                        new float[]{0, 1}, Shader.TileMode.MIRROR);
-
-                paint.setShader(shader);
-            }
-    }
-
-    private int[] setDirection(int direc) {
-        switch (direc) {
-            case 0:
-                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
-            case 1:
-                return new int[]{0, 0, (int) w, (int) h};
-            case 2:
-                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
-            case 3:
-                return new int[]{0, (int) h, (int) w, 0};
-        }
-        return new int[]{0, 0, 0, 0};
+        if (color != null) UtilsAdjust.setColor(color, paint, w, h);
     }
 }

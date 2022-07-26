@@ -16,6 +16,7 @@ import androidx.core.graphics.PathParser;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.utils.Utils;
 import com.datnt.remitextart.utils.UtilsAdjust;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 import java.util.ArrayList;
 
@@ -84,9 +85,9 @@ public class DrawableSticker extends Sticker {
         canvas.save();
         canvas.concat(getMatrix());
         if (isShadow)
-            UtilsAdjust.drawIconWithPath(canvas, path, paintShadow, realBounds.width(), 0, 0);
+            UtilsBitmap.drawIconWithPath(canvas, path, paintShadow, realBounds.width(), 0, 0);
 
-        UtilsAdjust.drawIconWithPath(canvas, path, paint, realBounds.width(), 0, 0);
+        UtilsBitmap.drawIconWithPath(canvas, path, paint, realBounds.width(), 0, 0);
 
         drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
@@ -129,7 +130,7 @@ public class DrawableSticker extends Sticker {
 
         if (color == 0) paintShadow.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
         else
-            paintShadow.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
+            paintShadow.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsBitmap.toRGBString(color)));
     }
 
     public void setColor(ColorModel color) {

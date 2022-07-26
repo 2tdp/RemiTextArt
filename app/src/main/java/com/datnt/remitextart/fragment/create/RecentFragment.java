@@ -21,6 +21,7 @@ import com.datnt.remitextart.adapter.BucketAdapter;
 import com.datnt.remitextart.adapter.home.RecentAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.callback.IClickFolder;
+import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.model.picture.BucketPicModel;
 import com.datnt.remitextart.model.picture.PicModel;
 import com.datnt.remitextart.sharepref.DataLocalManager;
@@ -175,7 +176,7 @@ public class RecentFragment extends Fragment {
             DataLocalManager.setOption(pic.getUri(), "bitmap");
             DataLocalManager.setOption("", "bitmap_myapp");
             DataLocalManager.setColor(null, "color");
-            DataLocalManager.setTemp(null, "temp");
+            DataLocalManager.setTemp(new TemplateModel(), "temp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else checkTouch.checkTouch(true);

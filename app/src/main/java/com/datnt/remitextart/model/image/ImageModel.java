@@ -13,6 +13,7 @@ import com.datnt.remitextart.model.ShadowModel;
 import com.datnt.remitextart.utils.Utils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class ImageModel extends EditSticker implements Serializable {
 
@@ -124,10 +125,12 @@ public class ImageModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
+        ArrayList<String> lstPath = new ArrayList<>();
         if (sticker instanceof DrawableStickerCustom) {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-            drawableSticker.setShadowPathShapeImage(drawableSticker.getImageModel().getPathShape());
-            drawableSticker.setShadowImage(shadowModel);
+            lstPath.add(drawableSticker.getImageModel().getPathShape());
+            drawableSticker.setShadowPathShape(lstPath);
+            drawableSticker.setShadow(shadowModel);
             return sticker;
         }
         return null;

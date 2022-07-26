@@ -980,6 +980,10 @@ public class StickerView extends FrameLayout {
         return stickers.size();
     }
 
+    public int getIndexStickerCurrent() {
+        return stickers.indexOf(handlingSticker);
+    }
+
     public ArrayList<LayerModel> getListLayer() {
         ArrayList<LayerModel> lstLayer = new ArrayList<>();
         for (Sticker st : stickers) {

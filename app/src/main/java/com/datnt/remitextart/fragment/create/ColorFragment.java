@@ -15,6 +15,7 @@ import com.datnt.remitextart.adapter.home.ColorAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.data.DataColor;
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
@@ -83,7 +84,7 @@ public class ColorFragment extends Fragment {
         DataLocalManager.setColor(color, "color");
         DataLocalManager.setOption("", "bitmap");
         DataLocalManager.setOption("", "bitmap_myapp");
-        DataLocalManager.setTemp(null, "temp");
+        DataLocalManager.setTemp(new TemplateModel(), "temp");
         if (!isBackground)
             Utils.setIntent(requireActivity(), EditActivity.class.getName());
         else clickTouch.checkTouch(true);

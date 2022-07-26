@@ -2,7 +2,9 @@ package com.datnt.remitextart.sharepref;
 
 import android.content.Context;
 
+import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.Project;
 import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.model.picture.BucketPicModel;
 import com.datnt.remitextart.model.text.FontModel;
@@ -157,64 +159,32 @@ public class DataLocalManager {
         return temp;
     }
 
-//    public static void setListProject(ArrayList<Project> lstProject, String key) {
-//        Gson gson = new Gson();
-//        JsonArray jsonArray = gson.toJsonTree(lstProject).getAsJsonArray();
-//        String json = jsonArray.toString();
-//
-//        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
-//    }
+    public static void setListProject(ArrayList<Project> lstProject, String key) {
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.toJsonTree(lstProject).getAsJsonArray();
+        String json = jsonArray.toString();
 
-//    public static ArrayList<Project> getListProject(String key) {
-//        Gson gson = new Gson();
-//        JSONObject jsonObject;
-//        ArrayList<Project> lstProject = new ArrayList<>();
-//
-//        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
-//        try {
-//            JSONArray jsonArray = new JSONArray(strJson);
-//            for (int i = 0; i < jsonArray.length(); i++) {
-//                jsonObject = jsonArray.getJSONObject(i);
-//                lstProject.add(gson.fromJson(jsonObject.toString(), Project.class));
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return lstProject;
-//    }
-//
-//    public static void setProject(Project project, String key) {
-//        Gson gson = new Gson();
-//        JsonObject jsonObject = null;
-//        if (project != null) jsonObject = gson.toJsonTree(project).getAsJsonObject();
-//
-//        String json;
-//        if (jsonObject != null) json = jsonObject.toString();
-//        else json = "";
-//
-//        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
-//    }
+        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
 
-//    public static Project getProject(String key) {
-//        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
-//        Project project = null;
-//
-//        Gson gson = new Gson();
-//
-//        JSONObject jsonObject = null;
-//        try {
-//            jsonObject = new JSONObject(strJson);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (jsonObject != null) {
-//            project = gson.fromJson(jsonObject.toString(), Project.class);
-//        }
-//
-//        return project;
-//    }
+    public static ArrayList<Project> getListProject(String key) {
+        Gson gson = new Gson();
+        JSONObject jsonObject;
+        ArrayList<Project> lstProject = new ArrayList<>();
+
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        try {
+            JSONArray jsonArray = new JSONArray(strJson);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObject = jsonArray.getJSONObject(i);
+                lstProject.add(gson.fromJson(jsonObject.toString(), Project.class));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return lstProject;
+    }
 
     public static void setListBucket(ArrayList<BucketPicModel> lstBucket, String key) {
         Gson gson = new Gson();

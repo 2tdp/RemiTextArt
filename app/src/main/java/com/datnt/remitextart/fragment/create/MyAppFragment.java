@@ -14,6 +14,7 @@ import com.datnt.remitextart.activity.edit.EditActivity;
 import com.datnt.remitextart.adapter.home.MyAppAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.data.DataPic;
+import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
@@ -67,7 +68,7 @@ public class MyAppFragment extends Fragment {
             DataLocalManager.setOption(picAsset, "bitmap_myapp");
             DataLocalManager.setOption("", "bitmap");
             DataLocalManager.setColor(null, "color");
-            DataLocalManager.setTemp(null, "temp");
+            DataLocalManager.setTemp(new TemplateModel(), "temp");
             if (!isBackground)
                 Utils.setIntent(requireActivity(), EditActivity.class.getName());
             else clickTouch.checkTouch(true);

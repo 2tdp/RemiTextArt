@@ -20,6 +20,7 @@ import androidx.core.graphics.PathParser;
 import com.datnt.remitextart.data.FilterImage;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.utils.Utils;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
@@ -106,7 +107,7 @@ public class CropImage extends View implements MatrixGestureDetector.OnMatrixCha
             canvas.drawBitmap(bitmap, maskMatrix, paintBitmap);
         }
 
-        return Utils.saveBitmapToApp(context, Utils.trim(bm), nameFolderImage, Utils.IMAGE);
+        return UtilsBitmap.saveBitmapToApp(context, UtilsBitmap.trim(bm), nameFolderImage, Utils.IMAGE);
     }
 
     @Override

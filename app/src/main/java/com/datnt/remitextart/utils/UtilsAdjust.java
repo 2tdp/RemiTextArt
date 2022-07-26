@@ -7,10 +7,12 @@ import android.graphics.ColorFilter;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.LightingColorFilter;
+import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.util.Log;
 
 import com.datnt.remitextart.model.ColorModel;
@@ -24,43 +26,46 @@ public class UtilsAdjust {
     private static final float lumB = 0.0820f; // or  0.0721
     private static final String TAG = "2tdp";
 
-    public static void drawIconWithPath(Canvas canvas, Path path, Paint paint, float size, int x, int y) {
-        RectF rectF = new RectF();
-        path.computeBounds(rectF, true);
-        float scale = size / rectF.width();
-        canvas.translate(x, y);
-        canvas.scale(scale, scale);
-        canvas.drawPath(path, paint);
+    public static void setColor(ColorModel color, Paint paint, float w, float h) {
+        if (color.getColorStart() == color.getColorEnd()) {
+            paint.setShader(null);
+            paint.setColor(color.getColorStart());
+        } else if (color.getDirec() == 4) {
+            int c = color.getColorStart();
+            color.setColorStart(color.getColorEnd());
+            color.setColorEnd(c);
+
+            color.setDirec(0);
+        } else if (color.getDirec() == 5) {
+            int c = color.getColorStart();
+            color.setColorStart(color.getColorEnd());
+            color.setColorEnd(c);
+
+            color.setDirec(2);
+        }
+
+        Shader shader = new LinearGradient(setDirection(color.getDirec(), w, h)[0],
+                setDirection(color.getDirec(), w, h)[1],
+                setDirection(color.getDirec(), w, h)[2],
+                setDirection(color.getDirec(), w, h)[3],
+                new int[]{Color.parseColor(UtilsBitmap.toRGBString(color.getColorStart())), Color.parseColor(UtilsBitmap.toRGBString(color.getColorEnd()))},
+                new float[]{0, 1}, Shader.TileMode.MIRROR);
+
+        paint.setShader(shader);
     }
 
-    public static Bitmap createFlippedBitmap(Bitmap source, boolean xFlip, boolean yFlip) {
-        Matrix matrix = new Matrix();
-        matrix.postScale(xFlip ? -1 : 1, yFlip ? -1 : 1, source.getWidth() / 2f, source.getHeight() / 2f);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-    }
-
-    public static Bitmap changeBitmapColor(Bitmap sourceBitmap, ColorModel color) {
-        Bitmap resultBitmap = sourceBitmap.copy(sourceBitmap.getConfig(), true);
-        Paint paint = new Paint();
-        ColorFilter filter = new LightingColorFilter(color.getColorStart(), 1);
-        paint.setColorFilter(filter);
-        Canvas canvas = new Canvas(resultBitmap);
-        canvas.drawBitmap(resultBitmap, 0, 0, paint);
-        return resultBitmap;
-    }
-
-    public static String toRGBString(int color) {
-        // format: #RRGGBB
-        String red = Integer.toHexString(Color.red(color));
-        String green = Integer.toHexString(Color.green(color));
-        String blue = Integer.toHexString(Color.blue(color));
-        if (red.length() == 1)
-            red = "0" + red;
-        if (green.length() == 1)
-            green = "0" + green;
-        if (blue.length() == 1)
-            blue = "0" + blue;
-        return "#" + red + green + blue;
+    public static int[] setDirection(int direc, float w, float h) {
+        switch (direc) {
+            case 0:
+                return new int[]{(int) w / 2, 0, (int) w / 2, (int) h};
+            case 1:
+                return new int[]{0, 0, (int) w, (int) h};
+            case 2:
+                return new int[]{0, (int) h / 2, (int) w, (int) h / 2};
+            case 3:
+                return new int[]{0, (int) h, (int) w, 0};
+        }
+        return new int[]{};
     }
 
     public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {

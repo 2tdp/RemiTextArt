@@ -25,6 +25,7 @@ import com.datnt.remitextart.R;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.utils.UtilsAdjust;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 /**
  * Customize your sticker with text and image background.
@@ -233,7 +234,7 @@ public class TextSticker extends Sticker {
                     setDirection(color.getDirec())[1],
                     setDirection(color.getDirec())[2],
                     setDirection(color.getDirec())[3],
-                    new int[]{Color.parseColor(UtilsAdjust.toRGBString(color.getColorStart())), Color.parseColor(UtilsAdjust.toRGBString(color.getColorEnd()))},
+                    new int[]{Color.parseColor(UtilsBitmap.toRGBString(color.getColorStart())), Color.parseColor(UtilsBitmap.toRGBString(color.getColorEnd()))},
                     new float[]{0, 1}, Shader.TileMode.MIRROR);
             textPaint.setShader(shader);
         }
@@ -262,7 +263,7 @@ public class TextSticker extends Sticker {
         this.dy = dy;
         this.colorShadow = color;
         if (color != 0)
-            textPaint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsAdjust.toRGBString(color)));
+            textPaint.setShadowLayer(radiusBlur, dx, dy, Color.parseColor(UtilsBitmap.toRGBString(color)));
         else textPaint.setShadowLayer(radiusBlur, dx, dy, Color.BLACK);
         return this;
     }
