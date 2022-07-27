@@ -9,7 +9,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.activity.permission.RequestPermissionActivity;
 import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.remitextart.data.DataPic;
 import com.datnt.remitextart.fragment.create.ColorFragment;
 import com.datnt.remitextart.fragment.create.MyAppFragment;
 import com.datnt.remitextart.fragment.create.RecentFragment;

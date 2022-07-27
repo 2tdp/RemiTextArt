@@ -20,9 +20,11 @@ public class EmojiFragment extends Fragment {
     private static final String NAME_EMOJI = "name_emoji";
 
     private String nameEmoji;
-    private final ICallBackItem callBack;
+    private ICallBackItem callBack;
 
     private RecyclerView rcvEmoji;
+
+    public EmojiFragment(){}
 
     public EmojiFragment(ICallBackItem callBack) {
         this.callBack = callBack;

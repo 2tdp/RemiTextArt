@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.model.LayerModel;
+import com.datnt.remitextart.utils.UtilsBitmap;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -866,6 +867,19 @@ public class StickerView extends FrameLayout {
         invalidate();
     }
 
+//    public void addSticker(Sticker sticker, Matrix matrix) {
+//        if (sticker != null) {
+//            stickers.add(sticker);
+//
+//            if (onStickerOperationListener != null) {
+//                sticker.setMatrix(matrix);
+//                onStickerOperationListener.onStickerAdded(sticker);
+//            }
+//        }
+//        handlingSticker = sticker;
+//        invalidate();
+//    }
+
     @NonNull
     public StickerView addSticker(@NonNull Sticker sticker) {
         return addSticker(sticker, Sticker.Position.CENTER);
@@ -948,14 +962,17 @@ public class StickerView extends FrameLayout {
         return bitmap;
     }
 
-    public Bitmap getThumb() {
+    public Bitmap getThumb(Bitmap bitmap) {
         handlingSticker = null;
 
-        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
+        Bitmap bmSticker = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bmSticker);
         this.draw(canvas);
 
-        return bitmap;
+        Bitmap bmOverlay = UtilsBitmap.overlay(bitmap, bmSticker);
+
+        return Bitmap.createScaledBitmap(bmOverlay, 400,
+                400 * bmOverlay.getHeight() / bmOverlay.getWidth(), false);
     }
 
     public void save(@NonNull File file) {

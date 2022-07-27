@@ -68,7 +68,6 @@ public class RequestPermissionActivity extends BaseActivity {
                                 DataLocalManager.setCheck("per", true);
                                 startActivity(intent);
                                 finish();
-                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                             } else {
                                 Utils.showToast(RequestPermissionActivity.this, getString(R.string.rp_3));
                                 openSettingPermission();
@@ -90,7 +89,6 @@ public class RequestPermissionActivity extends BaseActivity {
                                 DataLocalManager.setCheck("per", true);
                                 startActivity(intent);
                                 finish();
-                                runOnUiThread(() -> DataPic.getBucketPictureList(RequestPermissionActivity.this));
                             } else {
                                 Utils.showToast(RequestPermissionActivity.this, getString(R.string.rp_3));
                                 openSettingPermission();

@@ -178,19 +178,21 @@ public class UtilsBitmap {
         return bitmap;
     }
 
-    public static Bitmap loadBitmapFromView(View view) {
+    public static Bitmap loadBitmapFromView(View view, boolean isColor) {
         Bitmap b = Bitmap.createBitmap(view.getLayoutParams().width, view.getLayoutParams().height, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(b);
-        view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+        if (isColor)
+            view.layout(view.getLeft(), view.getTop(), view.getLayoutParams().width, view.getLayoutParams().height);
+        else view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
         c.rotate(view.getRotation(), (float) view.getWidth() / 2, (float) view.getHeight() / 2);
         view.draw(c);
         return b;
     }
 
     public static Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
-        Bitmap bmOverlay = Bitmap.createBitmap(bmp2.getWidth(), bmp2.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmOverlay);
-        RectF rectF = new RectF(0, 0, bmp2.getWidth(), bmp2.getHeight());
+        RectF rectF = new RectF(0, 0, bmp1.getWidth(), bmp1.getHeight());
         canvas.drawBitmap(bmp1, null, rectF, new Paint());
         canvas.drawBitmap(bmp2, null, rectF, new Paint());
         return bmOverlay;

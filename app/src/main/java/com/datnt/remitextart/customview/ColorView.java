@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -122,6 +123,7 @@ public class ColorView extends View {
             width = w;
             height = w / scale;
         }
+        Log.d("2tdp", "setPath: " + width + "...." + height);
     }
 
     private void resetColor() {

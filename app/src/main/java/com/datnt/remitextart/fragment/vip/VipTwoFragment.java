@@ -17,6 +17,8 @@ public class VipTwoFragment extends Fragment {
     private ImageView ivBack, ivMonth, ivYear, ivLifetime;
     private RelativeLayout rlMonth, rlYear, rlLifeTime;
 
+    public VipTwoFragment(){}
+
     public static VipTwoFragment newInstance() {
         return new VipTwoFragment();
     }

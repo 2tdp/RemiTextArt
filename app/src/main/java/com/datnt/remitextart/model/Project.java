@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 public class Project implements Serializable {
 
+    private String uriThumb;
     private BackgroundModel backgroundModel;
     private OverlayModel overlayModel;
 
@@ -21,9 +22,10 @@ public class Project implements Serializable {
     public Project() {
     }
 
-    public Project(BackgroundModel backgroundModel, OverlayModel overlayModel, ArrayList<TextModel> lstTextModel,
+    public Project(String uriThumb, BackgroundModel backgroundModel, OverlayModel overlayModel, ArrayList<TextModel> lstTextModel,
                    ArrayList<EmojiModel> lstEmojiModel, ArrayList<ImageModel> lstImageModel,
                    ArrayList<DecorModel> lstDecorModel, ArrayList<TemplateModel> lstTempModel) {
+        this.uriThumb = uriThumb;
         this.backgroundModel = backgroundModel;
         this.overlayModel = overlayModel;
         this.lstTextModel = lstTextModel;
@@ -31,6 +33,14 @@ public class Project implements Serializable {
         this.lstImageModel = lstImageModel;
         this.lstDecorModel = lstDecorModel;
         this.lstTempModel = lstTempModel;
+    }
+
+    public String getUriThumb() {
+        return uriThumb;
+    }
+
+    public void setUriThumb(String uriThumb) {
+        this.uriThumb = uriThumb;
     }
 
     public BackgroundModel getBackgroundModel() {

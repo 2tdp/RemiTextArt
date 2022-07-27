@@ -24,8 +24,10 @@ public class MyAppFragment extends Fragment {
 
     private RecyclerView rcvPicMyApp;
 
-    private final ICheckTouch clickTouch;
+    private ICheckTouch clickTouch;
     private boolean isBackground;
+
+    public MyAppFragment(){}
 
     public MyAppFragment(ICheckTouch clickTouch) {
         this.clickTouch = clickTouch;

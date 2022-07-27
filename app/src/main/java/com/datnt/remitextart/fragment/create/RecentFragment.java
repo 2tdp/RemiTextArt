@@ -2,11 +2,15 @@ package com.datnt.remitextart.fragment.create;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +19,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.edit.EditActivity;
+import com.datnt.remitextart.activity.project.CreateProjectActivity;
 import com.datnt.remitextart.adapter.BucketAdapter;
 import com.datnt.remitextart.adapter.home.RecentAdapter;
 import com.datnt.remitextart.callback.ICheckTouch;
 import com.datnt.remitextart.callback.IClickFolder;
+import com.datnt.remitextart.data.DataPic;
 import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.model.picture.BucketPicModel;
 import com.datnt.remitextart.model.picture.PicModel;
@@ -36,14 +43,19 @@ public class RecentFragment extends Fragment {
     private ArrayList<BucketPicModel> lstBucket;
     private RelativeLayout rlExpand;
     private RecyclerView rcvPicRecent, rcvBucket;
+    private BucketAdapter bucketAdapter;
     private RecentAdapter recentAdapter;
     private View vBg;
-    private ImageView ivExpand;
+    private ImageView ivExpand, ivLoading;
     private Animation animation;
 
     private boolean isBackground;
-    private final IClickFolder clickFolder;
-    private final ICheckTouch checkTouch;
+    private IClickFolder clickFolder;
+    private ICheckTouch checkTouch;
+
+    public RecentFragment() {
+
+    }
 
     public RecentFragment(IClickFolder clickFolder, ICheckTouch checkTouch) {
         this.clickFolder = clickFolder;
@@ -62,6 +74,11 @@ public class RecentFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) isBackground = getArguments().getBoolean(IS_BACKGROUND);
+
+        new Thread(() -> {
+            DataPic.getBucketPictureList(requireContext());
+            handler.sendEmptyMessage(0);
+        }).start();
     }
 
     @Override
@@ -73,15 +90,38 @@ public class RecentFragment extends Fragment {
         return v;
     }
 
+    Handler handler = new Handler(Looper.getMainLooper(), new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+            if (msg.what == 0) {
+                lstBucket = DataLocalManager.getListBucket("bucket");
+
+                if (ivLoading.getVisibility() == View.VISIBLE) ivLoading.setVisibility(View.GONE);
+
+                bucketAdapter.setData(lstBucket);
+                recentAdapter.setData(lstBucket.get(0).getLstPic());
+            }
+            return true;
+        }
+    });
+
     private void init(View view) {
         rcvPicRecent = view.findViewById(R.id.rcvPicRecent);
         rcvBucket = view.findViewById(R.id.rcvBucketPic);
         rlExpand = view.findViewById(R.id.rlExpand);
         vBg = view.findViewById(R.id.viewBg);
+        ivLoading = view.findViewById(R.id.ivLoading);
+
+        Glide.with(this)
+                .asGif()
+                .load(R.drawable.loading)
+                .into(ivLoading);
+
+        lstBucket = new ArrayList<>();
+
+        if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
 
         rlExpand.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 60 / 100;
-
-        lstBucket = new ArrayList<>(DataLocalManager.getListBucket("bucket"));
 
         if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
 
@@ -100,7 +140,8 @@ public class RecentFragment extends Fragment {
 
     public void setExpand(ImageView ivExpand, String click) {
         this.ivExpand = ivExpand;
-        checkExpand(ivExpand, rlExpand.getVisibility() == View.VISIBLE, click);
+        if (rlExpand != null)
+            checkExpand(ivExpand, rlExpand.getVisibility() == View.VISIBLE, click);
     }
 
     private void checkExpand(ImageView ivExpand, boolean check, String click) {
@@ -156,7 +197,7 @@ public class RecentFragment extends Fragment {
     }
 
     private void setUpBucket() {
-        BucketAdapter bucketAdapter = new BucketAdapter(requireContext(), (Object o, int pos) -> {
+        bucketAdapter = new BucketAdapter(requireContext(), (Object o, int pos) -> {
             BucketPicModel bucket = (BucketPicModel) o;
             recentAdapter.setData(bucket.getLstPic());
             recentAdapter.notifyChange();

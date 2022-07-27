@@ -47,4 +47,12 @@
             android:layout_marginBottom="@dimen/_10sdp"
             android:background="@color/gray" />
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/ivLoading"
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_84sdp"
+        android:layout_centerInParent="true"
+        android:padding="@dimen/_2sdp"
+        android:visibility="gone" />
 </RelativeLayout>

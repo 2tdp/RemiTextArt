@@ -45,17 +45,23 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.datnt.remitextart.R;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 
 public class Utils {
 
     public static final String PROJECT = "project";
+    public static final String NUMB_PROJECT = "numbProject";
+    public static final String THUMB = "thumb";
 
     //Model Check
     public static final String STICKER_ICON = "sticker_icon";
@@ -153,6 +159,52 @@ public class Utils {
         toast.show();
     }
 
+    public static void delFileInFolder(Context context, String nameFolder, String nameFile) {
+        File dir = new File(getStore(context) + "/" + nameFolder + "/" + nameFile);
+        if (dir.isDirectory()) {
+            File[] children = dir.listFiles();
+            if (children != null)
+                for (File file : children) {
+                    if (file.isFile()) new File(dir, file.getName()).delete();
+                    else if (file.isDirectory())
+                        delFileInFolder(context, nameFolder, file.getName());
+                }
+        }
+    }
+
+    public static void writeToFileText(Context context, String data, String name) {
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(name, Context.MODE_PRIVATE));
+            outputStreamWriter.write(data);
+            outputStreamWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String readFromFile(Context context, String name) {
+        String data = "";
+        try {
+            InputStream inputStream = context.openFileInput(name);
+
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append("\n").append(receiveString);
+                }
+                inputStream.close();
+                data = stringBuilder.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public static SpannableString underLine(String strUnder) {
         SpannableString underLine = new SpannableString(strUnder);
         underLine.setSpan(new UnderlineSpan(), 0, underLine.length(), 0);
@@ -215,7 +267,6 @@ public class Utils {
                     output = contentResolver.openOutputStream(newUri);
 
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-                    showToast(context, context.getString(R.string.done));
                 } catch (IOException e) {
                     contentResolver.delete(newUri, null, null);
                 }
@@ -241,7 +292,6 @@ public class Utils {
                     try {
                         output = contentResolver.openOutputStream(uri);
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-                        showToast(context, context.getString(R.string.done));
                     } catch (IOException e) {
                         if (uri != null) {
                             contentResolver.delete(uri, null, null);

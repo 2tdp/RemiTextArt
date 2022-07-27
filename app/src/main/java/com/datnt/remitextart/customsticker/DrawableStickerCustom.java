@@ -207,29 +207,31 @@ public class DrawableStickerCustom extends Sticker {
 
     @Override
     public void draw(@NonNull Canvas canvas) {
+        Matrix matrix = getMatrix();
+        Log.d("2tdp", "draw: 2" + matrix);
         if (isShadow && (this.typeSticker.equals(Utils.IMAGE)
                 || this.typeSticker.equals(Utils.DECOR)
                 || this.typeSticker.equals(Utils.TEMPLATE))) {
             if (isShadowCrop) {
                 canvas.save();
-                canvas.concat(getMatrix());
+                canvas.concat(matrix);
                 canvas.drawPath(shadowPath, shadowPaint);
                 canvas.restore();
             } else if (this.typeSticker.equals(Utils.DECOR)) {
                 canvas.save();
-                canvas.concat(getMatrix());
+                canvas.concat(matrix);
                 canvas.translate((int) realBounds.left, (int) realBounds.top);
                 canvas.drawPath(pathDecor, shadowPaint);
                 canvas.restore();
             } else if (this.typeSticker.equals(Utils.TEMPLATE)) {
                 canvas.save();
-                canvas.concat(getMatrix());
+                canvas.concat(matrix);
                 canvas.translate((int) realBounds.left, (int) realBounds.top);
                 canvas.drawPath(pathTemp, shadowPaint);
                 canvas.restore();
             } else {
                 canvas.save();
-                canvas.concat(getMatrix());
+                canvas.concat(matrix);
                 canvas.drawRect(realBounds, shadowPaint);
                 canvas.restore();
             }
@@ -238,7 +240,7 @@ public class DrawableStickerCustom extends Sticker {
         }
 
         canvas.save();
-        canvas.concat(getMatrix());
+        canvas.concat(matrix);
         switch (this.typeSticker) {
             case Utils.IMAGE:
                 canvas.drawBitmap(bitmap, null, realBounds, paintBitmap);
@@ -255,12 +257,27 @@ public class DrawableStickerCustom extends Sticker {
         canvas.restore();
 
         canvas.save();
-        canvas.concat(getMatrix());
+        canvas.concat(matrix);
 
         if (!typeSticker.equals(Utils.DECOR) && !isShadow)
             drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
         canvas.restore();
+    }
+
+    private Matrix getMatrixSticker() {
+        switch (this.typeSticker) {
+            case Utils.EMOJI:
+                return this.emojiModel.getMatrix();
+            case Utils.IMAGE:
+                return this.imageModel.getMatrix();
+            case Utils.DECOR:
+                return this.decorModel.getMatrix();
+            case Utils.TEMPLATE:
+                return this.templateModel.getMatrix();
+            default:
+                return getMatrix();
+        }
     }
 
     @Override

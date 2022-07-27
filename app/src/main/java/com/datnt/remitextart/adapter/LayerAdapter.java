@@ -116,7 +116,7 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
 
             if (layer.getSticker() instanceof DrawableStickerCustom) {
                 DrawableStickerCustom drawableSticker = (DrawableStickerCustom) layer.getSticker();
-                switch (drawableSticker.getTypeSticker()){
+                switch (drawableSticker.getTypeSticker()) {
                     case Utils.DECOR:
                         ivLayer.setVisibility(View.GONE);
                         ivPath.setVisibility(View.VISIBLE);
@@ -136,7 +136,7 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             } else {
                 TextStickerCustom textSticker = (TextStickerCustom) layer.getSticker();
 
-                if (bitmap == null) bitmap = UtilsBitmap.loadBitmapFromView(ivLayer);
+                if (bitmap == null) bitmap = UtilsBitmap.loadBitmapFromView(ivLayer, false);
 
                 String str = textSticker.getText();
                 paintText.setTextSize(15);

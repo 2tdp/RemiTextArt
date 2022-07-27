@@ -8,6 +8,7 @@ import com.datnt.remitextart.model.Project;
 import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.model.picture.BucketPicModel;
 import com.datnt.remitextart.model.text.FontModel;
+import com.datnt.remitextart.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -159,20 +160,52 @@ public class DataLocalManager {
         return temp;
     }
 
-    public static void setListProject(ArrayList<Project> lstProject, String key) {
+    public static void setProject(Project project, String key) {
         Gson gson = new Gson();
-        JsonArray jsonArray = gson.toJsonTree(lstProject).getAsJsonArray();
-        String json = jsonArray.toString();
+        JsonObject jsonObject = null;
+        String json = "";
+        if (project != null) {
+            jsonObject = gson.toJsonTree(project).getAsJsonObject();
+            json = jsonObject.toString();
+        }
 
         DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
     }
 
-    public static ArrayList<Project> getListProject(String key) {
+    public static Project getProject(String key) {
+        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        Project project = null;
+
+        Gson gson = new Gson();
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(strJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (jsonObject != null) project = gson.fromJson(jsonObject.toString(), Project.class);
+
+        return project;
+    }
+
+    public static void setListProject(Context context, ArrayList<Project> lstProject, String name) {
+        Gson gson = new Gson();
+        JsonArray jsonArray = gson.toJsonTree(lstProject).getAsJsonArray();
+        String json = jsonArray.toString();
+
+        Utils.writeToFileText(context, json, name);
+//        DataLocalManager.getInstance().mySharedPreferences.putStringwithKey(key, json);
+    }
+
+    public static ArrayList<Project> getListProject(Context context, String name) {
         Gson gson = new Gson();
         JSONObject jsonObject;
         ArrayList<Project> lstProject = new ArrayList<>();
 
-        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+//        String strJson = DataLocalManager.getInstance().mySharedPreferences.getStringwithKey(key, "");
+        String strJson = Utils.readFromFile(context, name);
         try {
             JSONArray jsonArray = new JSONArray(strJson);
             for (int i = 0; i < jsonArray.length(); i++) {

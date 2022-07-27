@@ -137,8 +137,8 @@
 
         <com.datnt.remitextart.customview.stickerview.StickerView
             android:id="@+id/stickerView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_centerInParent="true"
             app:showBorder="true"
             app:showIcons="true" />
@@ -320,10 +320,10 @@
         android:id="@+id/rlPickTemp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:focusable="true"
-        android:clickable="true"
         android:layout_alignParentBottom="true"
         android:background="@drawable/boder_layout_radius_top"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone">
 
         <RelativeLayout
@@ -361,8 +361,8 @@
             android:id="@+id/rcvTextTemp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_below="@+id/rlCancelPickTemp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:padding="@dimen/_5sdp"
             android:scrollbars="none" />
     </RelativeLayout>

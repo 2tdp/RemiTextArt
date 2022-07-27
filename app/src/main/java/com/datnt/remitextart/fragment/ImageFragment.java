@@ -21,7 +21,9 @@ public class ImageFragment extends Fragment {
     private ImageView ivBack;
     private RecyclerView rcvPickImage;
 
-    private final ICallBackItem callBack;
+    private ICallBackItem callBack;
+
+    public ImageFragment(){}
 
     public ImageFragment(ICallBackItem callBack) {
         this.callBack = callBack;

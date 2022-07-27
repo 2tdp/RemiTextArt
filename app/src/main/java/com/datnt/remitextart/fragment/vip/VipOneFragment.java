@@ -17,6 +17,8 @@ public class VipOneFragment extends Fragment {
     private TextView tvContinue;
     private ImageView ivBack;
 
+    public VipOneFragment(){}
+
     public static VipOneFragment newInstance() {
         return new VipOneFragment();
     }

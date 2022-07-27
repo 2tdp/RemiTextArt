@@ -20,6 +20,9 @@ public class SplashFragment extends Fragment {
     private int pic;
     private String text;
 
+    public SplashFragment() {
+    }
+
     public static SplashFragment newInstance(int pic, String text) {
         SplashFragment fragment = new SplashFragment();
         Bundle args = new Bundle();

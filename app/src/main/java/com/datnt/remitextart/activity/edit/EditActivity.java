@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorSpace;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
@@ -234,6 +235,7 @@ public class EditActivity extends BaseActivity {
     private ColorView vColor;
     private StickerView vSticker;
 
+    private Matrix matrix = null;
     private Sticker stickerOld = null;
     private ViewPager2 vpEmoji;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
@@ -258,13 +260,13 @@ public class EditActivity extends BaseActivity {
     }
 
     private void createProject() {
-        if (DataLocalManager.getInt(Utils.PROJECT) == indexDefault)
-            DataLocalManager.setInt(1, Utils.PROJECT);
+        if (DataLocalManager.getInt(Utils.NUMB_PROJECT) == indexDefault)
+            DataLocalManager.setInt(1, Utils.NUMB_PROJECT);
         else {
-            int count = DataLocalManager.getInt(Utils.PROJECT) + 1;
-            DataLocalManager.setInt(count, Utils.PROJECT);
+            int count = DataLocalManager.getInt(Utils.NUMB_PROJECT) + 1;
+            DataLocalManager.setInt(count, Utils.NUMB_PROJECT);
         }
-        nameFolder = Utils.PROJECT + "_" + DataLocalManager.getInt(Utils.PROJECT);
+        nameFolder = Utils.NUMB_PROJECT + "_" + DataLocalManager.getInt(Utils.NUMB_PROJECT);
         Utils.makeFolder(this, nameFolder);
         nameFolderBackground = nameFolder + "/" + Utils.BACKGROUND;
         Utils.makeFolder(this, nameFolderBackground);
@@ -281,6 +283,8 @@ public class EditActivity extends BaseActivity {
             public void onStickerAdded(@NonNull Sticker sticker) {
                 stickerOld = sticker;
                 vSticker.hideBorderAndIcon(1);
+
+                if (matrix != null) sticker.setMatrix(matrix);
                 vSticker.invalidate();
 
                 setMatrix(sticker);
@@ -380,6 +384,7 @@ public class EditActivity extends BaseActivity {
                         drawableSticker.getTemplateModel().setMatrix(sticker.getMatrix());
                         break;
                 }
+                Log.d("2tdp", "setMatrix: 3");
             }
         }
     }
@@ -590,9 +595,18 @@ public class EditActivity extends BaseActivity {
 
         rlExport.setOnClickListener(vCancel -> dialog.cancel());
         llSavePhoto.setOnClickListener(vSave -> {
-            Utils.saveImage(this, UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(vMain),
-                    vSticker.saveImage(this)), "remiTextArt");
+            if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
             dialog.cancel();
+            new Thread(() -> {
+                if (!isColor)
+                    Utils.saveImage(EditActivity.this, UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(vMain, false),
+                            vSticker.saveImage(EditActivity.this)), "remiTextArt");
+                else
+                    Utils.saveImage(EditActivity.this, UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(vColor, true),
+                            vSticker.saveImage(EditActivity.this)), "remiTextArt");
+
+                handlerLoading.sendEmptyMessage(1);
+            }).start();
         });
         llRemove.setOnClickListener(vRemove -> {
             dialog.cancel();
@@ -635,6 +649,9 @@ public class EditActivity extends BaseActivity {
         } else {
             vSticker.getLayoutParams().height = (int) vColor.getH();
             vSticker.getLayoutParams().width = (int) vColor.getW();
+            vColor.getLayoutParams().width = (int) vColor.getW();
+            vColor.getLayoutParams().height = (int) vColor.getH();
+
             backgroundModel.setSizeViewColor(vColor.getSize());
 
             vMain.setAlpha(backgroundModel.getOpacity() * 255 / 100f);
@@ -1515,6 +1532,9 @@ public class EditActivity extends BaseActivity {
                 case 0:
                     Bitmap bitmap = (Bitmap) msg.obj;
                     vMain.setImageBitmap(bitmap);
+                    break;
+                case 1:
+                    Utils.showToast(EditActivity.this, getResources().getString(R.string.done));
                     break;
             }
 
@@ -5116,8 +5136,15 @@ public class EditActivity extends BaseActivity {
     }
 
     private void saveProject() {
+        if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
         ArrayList<Sticker> lstSticker = vSticker.getListStickers();
         Project project = new Project();
+        if (!isColor)
+            project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
+                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(vMain, false)), nameFolder, Utils.THUMB));
+        else
+            project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
+                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(vColor, true)), nameFolder, Utils.THUMB));
         project.setBackgroundModel(backgroundModel);
         for (Sticker sticker : lstSticker) {
             if (sticker instanceof DrawableStickerCustom) {
@@ -5141,10 +5168,31 @@ public class EditActivity extends BaseActivity {
                 project.getLstTextModel().add(textSticker.getTextModel());
             }
         }
-        ArrayList<Project> lstProject = new ArrayList<>();
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
         lstProject.add(project);
-        DataLocalManager.setListProject(lstProject, "lstProject");
-        DataLocalManager.getListProject("lstProject");
+        DataLocalManager.setListProject(this, lstProject, "lstProject");
+        handlerLoading.sendEmptyMessage(1);
+    }
+
+    private void setSticker(Project project) {
+        DrawableStickerCustom drawableSticker = null;
+        TextStickerCustom textSticker = null;
+
+        if (!project.getLstTextModel().isEmpty()) {
+            for (TextModel textModel : project.getLstTextModel()) {
+                textSticker = new TextStickerCustom(this, textModel, getId());
+                matrix = textModel.getMatrix();
+                vSticker.addSticker(textSticker);
+            }
+        }
+
+        if (!project.getLstEmojiModel().isEmpty()) {
+            for (EmojiModel emojiModel : project.getLstEmojiModel()) {
+                drawableSticker = new DrawableStickerCustom(this, emojiModel, getId(), Utils.EMOJI);
+                matrix = emojiModel.getMatrix();
+                vSticker.addSticker(drawableSticker);
+            }
+        }
     }
 
     @Override
@@ -5185,6 +5233,7 @@ public class EditActivity extends BaseActivity {
             tvDiscard.setOnClickListener(vDiscard -> {
                 super.onBackPressed();
                 Utils.setAnimExit(this);
+                new Thread(() -> Utils.delFileInFolder(this, nameFolder, "")).start();
                 dialog.cancel();
             });
             tvSave.setOnClickListener(vSave -> {
@@ -5201,23 +5250,57 @@ public class EditActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        String strPicUser = DataLocalManager.getOption("bitmap");
-        String strPicApp = DataLocalManager.getOption("bitmap_myapp");
-        ColorModel colorModel = DataLocalManager.getColor("color");
-        TemplateModel templateModel = DataLocalManager.getTemp("temp");
+        Project project = DataLocalManager.getProject(Utils.PROJECT);
+        if (project == null) {
+            String strPicUser = DataLocalManager.getOption("bitmap");
+            String strPicApp = DataLocalManager.getOption("bitmap_myapp");
+            ColorModel colorModel = DataLocalManager.getColor("color");
+            TemplateModel templateModel = DataLocalManager.getTemp("temp");
 
-        if (!strPicUser.equals("") && !strPicUser.equals(strPicUserOld)) {
-            getData(0, strPicUser, null, null, true);
-        } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
-            getData(1, strPicApp, null, null, true);
-        } else if (templateModel != null && !templateModel.getBackground().equals(templatelOld.getBackground())) {
-            getData(2, "", null, templateModel, true);
-        } else if (colorModel != null && colorModel != colorModelOld) {
-            getData(3, "", colorModel, null, true);
+            if (!strPicUser.equals("") && !strPicUser.equals(strPicUserOld)) {
+                getData(0, strPicUser, null, null, true);
+            } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
+                getData(1, strPicApp, null, null, true);
+            } else if (templateModel != null && !templateModel.getBackground().equals(templatelOld.getBackground())) {
+                getData(2, "", null, templateModel, true);
+            } else if (colorModel != null && colorModel != colorModelOld) {
+                getData(3, "", colorModel, null, true);
+            }
+            strPicUserOld = strPicUser;
+            strPicAppOld = strPicApp;
+            templatelOld = templateModel;
+            colorModelOld = colorModel;
+        } else {
+            backgroundModel = project.getBackgroundModel();
+            backgroundModel.setOverlayModel(project.getOverlayModel());
+
+            if (backgroundModel.getColorModel() == null) {
+                bmRoot = BitmapFactory.decodeFile(backgroundModel.getUriRoot());
+                if (backgroundModel.getUriOverlay().equals(""))
+                    bmMain = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+                else bmMain = BitmapFactory.decodeFile(backgroundModel.getUriOverlay());
+
+                vSticker.getLayoutParams().width = bmMain.getWidth();
+                vMain.getLayoutParams().width = bmMain.getWidth();
+                vSticker.getLayoutParams().height = bmMain.getHeight();
+                vMain.getLayoutParams().height = bmMain.getHeight();
+
+                seekAndHideViewMain(positionMain, bmMain, null, false);
+            } else {
+                colorModelOld = backgroundModel.getColorModel();
+
+                vColor.setData(colorModelOld);
+                vColor.setSize(backgroundModel.getSizeViewColor());
+                seekAndHideViewMain(positionColor, null, colorModelOld, false);
+
+//                vSticker.getLayoutParams().height = (int) vColor.getH();
+//                vSticker.getLayoutParams().width = (int) vColor.getW();
+//                vColor.getLayoutParams().width = (int) vColor.getW();
+//                vColor.getLayoutParams().height = (int) vColor.getH();
+            }
+            setSticker(project);
+
+            DataLocalManager.setProject(null, Utils.PROJECT);
         }
-        strPicUserOld = strPicUser;
-        strPicAppOld = strPicApp;
-        templatelOld = templateModel;
-        colorModelOld = colorModel;
     }
 }

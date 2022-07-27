@@ -25,8 +25,10 @@ public class ColorFragment extends Fragment {
 
     private RecyclerView rcvColor;
 
-    private final ICheckTouch clickTouch;
+    private ICheckTouch clickTouch;
     private boolean isBackground;
+
+    public ColorFragment(){}
 
     public ColorFragment(ICheckTouch clickTouch) {
         this.clickTouch = clickTouch;

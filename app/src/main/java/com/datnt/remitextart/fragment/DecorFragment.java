@@ -20,9 +20,11 @@ public class DecorFragment extends Fragment {
     private static final String NAME_DECOR = "nameDecor";
 
     private String nameDecor;
-    private final ICallBackItem callBack;
+    private ICallBackItem callBack;
 
     private RecyclerView rcvDecor;
+
+    public DecorFragment(){}
 
     public DecorFragment(ICallBackItem callBack) {
         this.callBack = callBack;
