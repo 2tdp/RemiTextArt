@@ -52,9 +52,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcvProject"
-            android:padding="@dimen/_5sdp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="@dimen/_5sdp"
             android:scrollbars="none" />
 
         <TextView

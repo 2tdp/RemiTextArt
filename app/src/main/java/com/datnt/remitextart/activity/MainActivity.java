@@ -1,6 +1,7 @@
 package com.datnt.remitextart.activity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,14 +10,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.activity.edit.EditActivity;
 import com.datnt.remitextart.activity.project.CreateProjectActivity;
 import com.datnt.remitextart.activity.project.ProjectsActivity;
 import com.datnt.remitextart.activity.template.TemplateActivity;
+import com.datnt.remitextart.adapter.ProjectAdapter;
 import com.datnt.remitextart.fragment.vip.VipOneFragment;
+import com.datnt.remitextart.model.Project;
+import com.datnt.remitextart.model.TemplateModel;
+import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
 import org.wysaid.common.Common;
@@ -24,11 +35,17 @@ import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
 
+    private ProjectAdapter projectAdapter;
+
+    private RelativeLayout rlTop;
     private ImageView ivVip;
-    private TextView tvCrePro, tvTemp, tvPro;
+    private TextView tvCrePro, tvTemp, tvPro, tvProjects, tvShowAll;
+
+    private RecyclerView rcvProject;
 
     private final CGENativeLibrary.LoadImageCallback mLoadImageCallback = new CGENativeLibrary.LoadImageCallback() {
 
@@ -72,6 +89,37 @@ public class MainActivity extends BaseActivity {
     private void init() {
         setUpLayout();
         evenClick();
+
+        setData();
+    }
+
+    private void setData() {
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+
+        projectAdapter = new ProjectAdapter(this, false, (o, pos) -> {
+            DataLocalManager.setProject((Project) o, Utils.PROJECT);
+            DataLocalManager.setInt(pos, "indexProject");
+            DataLocalManager.setColor(null, "color");
+            DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
+            DataLocalManager.setTemp(new TemplateModel(), "temp");
+
+            Intent intent = new Intent(MainActivity.this, EditActivity.class);
+            startActivity(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
+        });
+
+        if (!lstProject.isEmpty()) {
+            projectAdapter.setData(lstProject);
+            rlTop.setVisibility(View.VISIBLE);
+            tvProjects.setVisibility(View.GONE);
+        } else {
+            rlTop.setVisibility(View.GONE);
+            tvProjects.setVisibility(View.VISIBLE);
+        }
+
+        GridLayoutManager manager = new GridLayoutManager(this, 2);
+        rcvProject.setLayoutManager(manager);
+        rcvProject.setAdapter(projectAdapter);
     }
 
     private void evenClick() {
@@ -107,6 +155,8 @@ public class MainActivity extends BaseActivity {
         });
 
         ivVip.setOnClickListener(v -> clickVip());
+
+        tvShowAll.setOnClickListener(v -> Utils.setIntent(this, ProjectsActivity.class.getName()));
     }
 
     private void clickVip() {
@@ -119,5 +169,25 @@ public class MainActivity extends BaseActivity {
         tvCrePro = findViewById(R.id.tvCreate);
         tvTemp = findViewById(R.id.tvTemp);
         tvPro = findViewById(R.id.tvPro);
+
+        rlTop = findViewById(R.id.rlTop);
+        tvProjects = findViewById(R.id.tvProjects);
+        rcvProject = findViewById(R.id.rcvProject);
+        tvShowAll = findViewById(R.id.tvShowAll);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        if (!lstProject.isEmpty()) {
+            projectAdapter.setData(lstProject);
+            rlTop.setVisibility(View.VISIBLE);
+            tvProjects.setVisibility(View.GONE);
+        } else {
+            rlTop.setVisibility(View.GONE);
+            tvProjects.setVisibility(View.VISIBLE);
+        }
     }
 }

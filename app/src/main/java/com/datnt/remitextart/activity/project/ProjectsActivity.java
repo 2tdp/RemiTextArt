@@ -16,12 +16,15 @@ import com.datnt.remitextart.activity.setting.Settings;
 import com.datnt.remitextart.activity.base.BaseActivity;
 import com.datnt.remitextart.adapter.ProjectAdapter;
 import com.datnt.remitextart.model.Project;
+import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
 import java.util.ArrayList;
 
 public class ProjectsActivity extends BaseActivity {
+
+    private ProjectAdapter projectAdapter;
 
     private ImageView ivBack, ivSettings;
     private TextView tvProjects;
@@ -58,8 +61,13 @@ public class ProjectsActivity extends BaseActivity {
     private void setData() {
         ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
 
-        ProjectAdapter projectAdapter = new ProjectAdapter(this, (o, pos) -> {
+        projectAdapter = new ProjectAdapter(this, true, (o, pos) -> {
             DataLocalManager.setProject((Project) o, Utils.PROJECT);
+            DataLocalManager.setInt(pos, "indexProject");
+            DataLocalManager.setColor(null, "color");
+            DataLocalManager.setOption("", "bitmap");
+            DataLocalManager.setOption("", "bitmap_myapp");
+            DataLocalManager.setTemp(new TemplateModel(), "temp");
 
             Intent intent = new Intent(ProjectsActivity.this, EditActivity.class);
             startActivity(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
@@ -73,5 +81,16 @@ public class ProjectsActivity extends BaseActivity {
         GridLayoutManager manager = new GridLayoutManager(this, 2);
         rcvProject.setLayoutManager(manager);
         rcvProject.setAdapter(projectAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        if (!lstProject.isEmpty()) {
+            projectAdapter.setData(lstProject);
+            tvProjects.setVisibility(View.GONE);
+        } else tvProjects.setVisibility(View.VISIBLE);
     }
 }

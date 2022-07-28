@@ -24,7 +24,7 @@ public class ImageModel extends EditSticker implements Serializable {
     private ShadowModel shadowModel;
     private int opacity;
     private int posBlend;
-    private Matrix matrix;
+    private float[] matrix;
 
     public ImageModel(ImageModel imageModel) {
         this.uri = imageModel.getUri();
@@ -37,7 +37,7 @@ public class ImageModel extends EditSticker implements Serializable {
         this.matrix = imageModel.getMatrix();
     }
 
-    public ImageModel(String uri, String uriRoot, String pathShape, int posFilter, ShadowModel shadowModel, int opacity, int posBlend, Matrix matrix) {
+    public ImageModel(String uri, String uriRoot, String pathShape, int posFilter, ShadowModel shadowModel, int opacity, int posBlend, float[] matrix) {
         this.uri = uri;
         this.uriRoot = uriRoot;
         this.pathShape = pathShape;
@@ -104,11 +104,11 @@ public class ImageModel extends EditSticker implements Serializable {
         this.posBlend = posBlend;
     }
 
-    public Matrix getMatrix() {
+    public float[] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
+    public void setMatrix(float[] matrix) {
         this.matrix = matrix;
     }
 

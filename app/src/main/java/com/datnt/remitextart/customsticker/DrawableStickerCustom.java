@@ -208,7 +208,6 @@ public class DrawableStickerCustom extends Sticker {
     @Override
     public void draw(@NonNull Canvas canvas) {
         Matrix matrix = getMatrix();
-        Log.d("2tdp", "draw: 2" + matrix);
         if (isShadow && (this.typeSticker.equals(Utils.IMAGE)
                 || this.typeSticker.equals(Utils.DECOR)
                 || this.typeSticker.equals(Utils.TEMPLATE))) {
@@ -263,21 +262,6 @@ public class DrawableStickerCustom extends Sticker {
             drawable.setBounds((int) realBounds.left, (int) realBounds.top, (int) realBounds.right, (int) realBounds.bottom);
         drawable.draw(canvas);
         canvas.restore();
-    }
-
-    private Matrix getMatrixSticker() {
-        switch (this.typeSticker) {
-            case Utils.EMOJI:
-                return this.emojiModel.getMatrix();
-            case Utils.IMAGE:
-                return this.imageModel.getMatrix();
-            case Utils.DECOR:
-                return this.decorModel.getMatrix();
-            case Utils.TEMPLATE:
-                return this.templateModel.getMatrix();
-            default:
-                return getMatrix();
-        }
     }
 
     @Override

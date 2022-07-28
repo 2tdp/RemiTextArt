@@ -6,15 +6,10 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -102,12 +97,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.wysaid.common.Common;
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -117,6 +110,7 @@ public class EditActivity extends BaseActivity {
     private String nameFolderImage = "";
     private String nameFolder = "";
     private final int indexDefault = -1;
+    private int indexMatrix = 0, indexProject = -1;
     private final int positionCrop = 0, positionMain = 1, positionColor = 2;
     private final int positionOriginal = 0, position1_1 = 1, position9_16 = 2, position4_5 = 3,
             position16_9 = 4;
@@ -235,7 +229,7 @@ public class EditActivity extends BaseActivity {
     private ColorView vColor;
     private StickerView vSticker;
 
-    private Matrix matrix = null;
+    private Project project;
     private Sticker stickerOld = null;
     private ViewPager2 vpEmoji;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
@@ -284,10 +278,10 @@ public class EditActivity extends BaseActivity {
                 stickerOld = sticker;
                 vSticker.hideBorderAndIcon(1);
 
-                if (matrix != null) sticker.setMatrix(matrix);
-                vSticker.invalidate();
+                if (project != null)
+                    checkMatrixStickerProject(sticker);
 
-                setMatrix(sticker);
+                setMatrixToModel(sticker);
             }
 
             @Override
@@ -309,7 +303,7 @@ public class EditActivity extends BaseActivity {
                 vSticker.invalidate();
 
                 checkTypeSticker(sticker);
-                setMatrix(sticker);
+                setMatrixToModel(sticker);
             }
 
             @Override
@@ -321,7 +315,7 @@ public class EditActivity extends BaseActivity {
                 vSticker.hideBorderAndIcon(1);
                 vSticker.invalidate();
 
-                setMatrix(sticker);
+                setMatrixToModel(sticker);
             }
 
             @Override
@@ -361,30 +355,78 @@ public class EditActivity extends BaseActivity {
         } else if (layerAdapter != null) layerAdapter.setCurrent(vSticker.getIndexStickerCurrent());
     }
 
-    private void setMatrix(Sticker sticker) {
+    private void checkMatrixStickerProject(Sticker sticker) {
+        if (!checkCurrentSticker(sticker)) return;
+
+        Matrix matrix = new Matrix();
+        if (sticker instanceof TextStickerCustom) {
+            TextStickerCustom textSticker = (TextStickerCustom) sticker;
+            matrix.setValues(textSticker.getTextModel().getMatrix());
+            sticker.setMatrix(matrix);
+
+            indexMatrix++;
+            setMatrixText(indexMatrix);
+        } else {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    matrix.setValues(drawableSticker.getEmojiModel().getMatrix());
+                    sticker.setMatrix(matrix);
+
+                    indexMatrix++;
+                    setMatrixEmoji(indexMatrix);
+                    break;
+                case Utils.IMAGE:
+                    matrix.setValues(drawableSticker.getImageModel().getMatrix());
+                    sticker.setMatrix(matrix);
+
+                    indexMatrix++;
+                    setMatrixImage(indexMatrix);
+                    break;
+                case Utils.DECOR:
+                    matrix.setValues(drawableSticker.getDecorModel().getMatrix());
+                    sticker.setMatrix(matrix);
+
+                    indexMatrix++;
+                    setMatrixDecor(indexMatrix);
+                    break;
+                case Utils.TEMPLATE:
+                    matrix.setValues(drawableSticker.getTemplateModel().getMatrix());
+                    sticker.setMatrix(matrix);
+
+                    indexMatrix++;
+                    setMatrixTemp(indexMatrix);
+                    break;
+            }
+        }
+        vSticker.invalidate();
+    }
+
+    private void setMatrixToModel(Sticker sticker) {
         if (checkCurrentSticker(sticker)) {
+            float[] matrix = new float[9];
+            sticker.getMatrix().getValues(matrix);
+
             if (sticker instanceof TextStickerCustom) {
                 TextStickerCustom textSticker = (TextStickerCustom) sticker;
-                textSticker.getTextModel().setMatrix(sticker.getMatrix());
+                textSticker.getTextModel().setMatrix(matrix);
             }
             if (sticker instanceof DrawableStickerCustom) {
                 DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-
                 switch (drawableSticker.getTypeSticker()) {
                     case Utils.EMOJI:
-                        drawableSticker.getEmojiModel().setMatrix(sticker.getMatrix());
+                        drawableSticker.getEmojiModel().setMatrix(matrix);
                         break;
                     case Utils.IMAGE:
-                        drawableSticker.getImageModel().setMatrix(sticker.getMatrix());
+                        drawableSticker.getImageModel().setMatrix(matrix);
                         break;
                     case Utils.DECOR:
-                        drawableSticker.getDecorModel().setMatrix(sticker.getMatrix());
+                        drawableSticker.getDecorModel().setMatrix(matrix);
                         break;
                     case Utils.TEMPLATE:
-                        drawableSticker.getTemplateModel().setMatrix(sticker.getMatrix());
+                        drawableSticker.getTemplateModel().setMatrix(matrix);
                         break;
                 }
-                Log.d("2tdp", "setMatrix: 3");
             }
         }
     }
@@ -396,7 +438,7 @@ public class EditActivity extends BaseActivity {
         ivExport.setOnClickListener(v -> exportPhoto());
 
         rlMain.setOnClickListener(v -> {
-            if (rlExpandEditOverlay.getVisibility() == View.GONE) {
+            if (rlExpandEditOverlay.getVisibility() == View.GONE && vCrop.getVisibility() == View.GONE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             }
@@ -414,7 +456,7 @@ public class EditActivity extends BaseActivity {
                 seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionEmoji);
         });
-        rlCancelEditImage.setOnClickListener(V -> {
+        rlCancelEditImage.setOnClickListener(v -> {
             if (vEditImage.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
@@ -658,6 +700,7 @@ public class EditActivity extends BaseActivity {
             seekAndHideViewMain(positionColor, bmRoot, backgroundModel.getColorModel(), false);
         }
 
+//        setMatrixStickerCurrent();
         lockSticker(false);
     }
 
@@ -4415,7 +4458,9 @@ public class EditActivity extends BaseActivity {
                         ivColorText.setImageDrawable(createGradientDrawable(new ColorModel(Color.BLACK, Color.BLACK, 0, false)));
                 break;
             case positionSize:
-                seekAndHideViewMain(positionCrop, bmRoot, colorModelOld, true);
+                if (!isColor)
+                    seekAndHideViewMain(positionCrop, bmRoot, colorModelOld, true);
+                else seekAndHideViewMain(positionColor, bmRoot, colorModelOld, true);
                 break;
             default:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -5169,31 +5214,145 @@ public class EditActivity extends BaseActivity {
             }
         }
         ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
-        lstProject.add(project);
+        if (indexProject == -1) lstProject.add(project);
+        else lstProject.set(indexProject, project);
         DataLocalManager.setListProject(this, lstProject, "lstProject");
         handlerLoading.sendEmptyMessage(1);
     }
 
-    private void setSticker(Project project) {
-        DrawableStickerCustom drawableSticker = null;
-        TextStickerCustom textSticker = null;
+    private void addDataProject() {
+        if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
 
         if (!project.getLstTextModel().isEmpty()) {
-            for (TextModel textModel : project.getLstTextModel()) {
-                textSticker = new TextStickerCustom(this, textModel, getId());
-                matrix = textModel.getMatrix();
-                vSticker.addSticker(textSticker);
-            }
-        }
+            indexMatrix = 0;
+            setMatrixText(indexMatrix);
+        } else if (!project.getLstEmojiModel().isEmpty()) {
+            indexMatrix = 0;
+            setMatrixEmoji(indexMatrix);
+        } else if (!project.getLstImageModel().isEmpty()) {
+            indexMatrix = 0;
+            setMatrixImage(indexMatrix);
+        } else if (!project.getLstDecorModel().isEmpty()) {
+            indexMatrix = 0;
+            setMatrixDecor(indexMatrix);
+        } else if (!project.getLstTempModel().isEmpty()) {
+            indexMatrix = 0;
+            setMatrixTemp(indexMatrix);
+        } else project = null;
 
-        if (!project.getLstEmojiModel().isEmpty()) {
-            for (EmojiModel emojiModel : project.getLstEmojiModel()) {
-                drawableSticker = new DrawableStickerCustom(this, emojiModel, getId(), Utils.EMOJI);
-                matrix = emojiModel.getMatrix();
-                vSticker.addSticker(drawableSticker);
-            }
-        }
+        if (ivLoading.getVisibility() == View.VISIBLE) ivLoading.setVisibility(View.GONE);
     }
+
+    private void setMatrixText(int index) {
+        if (index >= project.getLstTextModel().size()) {
+            if (!project.getLstEmojiModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixEmoji(indexMatrix);
+            } else if (!project.getLstImageModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixImage(indexMatrix);
+            } else if (!project.getLstDecorModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixDecor(indexMatrix);
+            } else if (!project.getLstTempModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixTemp(indexMatrix);
+            } else project = null;
+            return;
+        }
+        TextModel textModel = project.getLstTextModel().get(index);
+        TextStickerCustom textSticker = new TextStickerCustom(this, textModel, getId());
+        vSticker.addSticker(textSticker);
+    }
+
+    private void setMatrixEmoji(int index) {
+        if (index >= project.getLstEmojiModel().size()) {
+            if (!project.getLstImageModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixImage(indexMatrix);
+            } else if (!project.getLstDecorModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixDecor(indexMatrix);
+            } else if (!project.getLstTempModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixTemp(indexMatrix);
+            } else project = null;
+            return;
+        }
+        EmojiModel emoji = project.getLstEmojiModel().get(index);
+        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, emoji, getId(), Utils.EMOJI);
+        vSticker.addSticker(drawableSticker);
+    }
+
+    private void setMatrixImage(int index) {
+        if (index >= project.getLstImageModel().size()) {
+            if (!project.getLstDecorModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixDecor(indexMatrix);
+            } else if (!project.getLstTempModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixTemp(indexMatrix);
+            } else project = null;
+            return;
+        }
+        ImageModel image = project.getLstImageModel().get(index);
+        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, image, getId(), Utils.IMAGE);
+        vSticker.addSticker(drawableSticker);
+    }
+
+    private void setMatrixDecor(int index) {
+        if (index >= project.getLstDecorModel().size()) {
+            if (!project.getLstTempModel().isEmpty()) {
+                indexMatrix = 0;
+                setMatrixTemp(indexMatrix);
+            } else project = null;
+            return;
+        }
+        DecorModel decor = project.getLstDecorModel().get(index);
+        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, decor, getId(), Utils.DECOR);
+        vSticker.addSticker(drawableSticker);
+    }
+
+    private void setMatrixTemp(int index) {
+        if (index == project.getLstTempModel().size()) {
+            project = null;
+            return;
+        }
+        TemplateModel temp = project.getLstTempModel().get(index);
+        DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, temp, getId(), Utils.TEMPLATE);
+        vSticker.addSticker(drawableSticker);
+    }
+
+
+//    private void setMatrixStickerCurrent() {
+//        ArrayList<Sticker> lstSticker = vSticker.getListStickers();
+//        if (!lstSticker.isEmpty())
+//            for (Sticker sticker : lstSticker) {
+//                if (sticker instanceof TextStickerCustom) {
+//                    TextStickerCustom textSticker = (TextStickerCustom) sticker;
+//                    if (matrix != null) textSticker.setMatrix(textSticker.getMatrix());
+//                }
+//                if (sticker instanceof DrawableStickerCustom) {
+//                    DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+//                    switch (drawableSticker.getTypeSticker()) {
+//                        case Utils.EMOJI:
+//                            sticker.setMatrix(drawableSticker.getEmojiModel().getMatrix());
+//                            break;
+//                        case Utils.IMAGE:
+//                            sticker.setMatrix(drawableSticker.getImageModel().getMatrix());
+//                            break;
+//                        case Utils.DECOR:
+//                            sticker.setMatrix(drawableSticker.getDecorModel().getMatrix());
+//                            break;
+//                        case Utils.TEMPLATE:
+//                            sticker.setMatrix(drawableSticker.getTemplateModel().getMatrix());
+//                            break;
+//                    }
+//                }
+//            }
+//
+//        vSticker.invalidate();
+//    }
 
     @Override
     public void onBackPressed() {
@@ -5250,7 +5409,7 @@ public class EditActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        Project project = DataLocalManager.getProject(Utils.PROJECT);
+        project = DataLocalManager.getProject(Utils.PROJECT);
         if (project == null) {
             String strPicUser = DataLocalManager.getOption("bitmap");
             String strPicApp = DataLocalManager.getOption("bitmap_myapp");
@@ -5271,6 +5430,7 @@ public class EditActivity extends BaseActivity {
             templatelOld = templateModel;
             colorModelOld = colorModel;
         } else {
+            indexProject = DataLocalManager.getInt("indexProject");
             backgroundModel = project.getBackgroundModel();
             backgroundModel.setOverlayModel(project.getOverlayModel());
 
@@ -5289,18 +5449,47 @@ public class EditActivity extends BaseActivity {
             } else {
                 colorModelOld = backgroundModel.getColorModel();
 
-                vColor.setData(colorModelOld);
                 vColor.setSize(backgroundModel.getSizeViewColor());
-                seekAndHideViewMain(positionColor, null, colorModelOld, false);
 
-//                vSticker.getLayoutParams().height = (int) vColor.getH();
-//                vSticker.getLayoutParams().width = (int) vColor.getW();
-//                vColor.getLayoutParams().width = (int) vColor.getW();
-//                vColor.getLayoutParams().height = (int) vColor.getH();
+                int w = (int) calculatorSizeColor(backgroundModel.getSizeViewColor())[0];
+                int h = (int) calculatorSizeColor(backgroundModel.getSizeViewColor())[1];
+                vSticker.getLayoutParams().height = h;
+                vSticker.getLayoutParams().width = w;
+                vColor.getLayoutParams().width = w;
+                vColor.getLayoutParams().height = h;
+
+                seekAndHideViewMain(positionColor, null, colorModelOld, false);
             }
-            setSticker(project);
+            addDataProject();
 
             DataLocalManager.setProject(null, Utils.PROJECT);
         }
+    }
+
+    private float[] calculatorSizeColor(int position) {
+        float w = getResources().getDisplayMetrics().widthPixels;
+        float h = (getResources().getDisplayMetrics().heightPixels - getResources().getDimension(com.intuit.sdp.R.dimen._245sdp));
+
+        float scale;
+        switch (position) {
+            case 1:
+                scale = 1f;
+                break;
+            case 2:
+                scale = 9 / 16f;
+                break;
+            case 3:
+                scale = 4 / 5f;
+                break;
+            case 4:
+                scale = 16 / 9f;
+                break;
+            default:
+                scale = w / h;
+                break;
+        }
+
+        if (w / h >= scale) return new float[]{scale * w, h};
+        else return new float[]{w, w / scale};
     }
 }

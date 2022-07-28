@@ -21,7 +21,7 @@ public class EmojiModel extends EditSticker implements Serializable {
     private boolean flipX;
     private boolean flipY;
     private boolean isSelected;
-    private Matrix matrix;
+    private float[] matrix;
 
     public EmojiModel(EmojiModel emojiModel) {
         this.nameEmoji = emojiModel.getNameEmoji();
@@ -34,7 +34,7 @@ public class EmojiModel extends EditSticker implements Serializable {
     }
 
     public EmojiModel(String nameEmoji, String folder, int opacity,
-                      boolean flipX, boolean flipY, boolean isSelected, Matrix matrix) {
+                      boolean flipX, boolean flipY, boolean isSelected, float[] matrix) {
         this.nameEmoji = nameEmoji;
         this.folder = folder;
         this.opacity = opacity;
@@ -92,11 +92,11 @@ public class EmojiModel extends EditSticker implements Serializable {
         isSelected = selected;
     }
 
-    public Matrix getMatrix() {
+    public float[] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
+    public void setMatrix(float[] matrix) {
         this.matrix = matrix;
     }
 

@@ -23,7 +23,7 @@ public class TemplateModel extends EditSticker implements Serializable {
     private int opacity;
     private boolean flipX;
     private boolean flipY;
-    private Matrix matrix;
+    private float[] matrix;
 
     public TemplateModel() {
     }
@@ -41,7 +41,7 @@ public class TemplateModel extends EditSticker implements Serializable {
     }
 
     public TemplateModel(String text, String background, ArrayList<String> lstPathDataText,
-                         ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX, boolean flipY, Matrix matrix) {
+                         ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX, boolean flipY, float[] matrix) {
         this.text = text;
         this.background = background;
         this.lstPathDataText = lstPathDataText;
@@ -117,11 +117,11 @@ public class TemplateModel extends EditSticker implements Serializable {
         this.flipY = flipY;
     }
 
-    public Matrix getMatrix() {
+    public float[] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
+    public void setMatrix(float[] matrix) {
         this.matrix = matrix;
     }
 

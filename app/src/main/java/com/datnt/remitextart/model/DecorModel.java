@@ -26,7 +26,7 @@ public class DecorModel extends EditSticker implements Serializable {
     private boolean flipX;
     private boolean flipY;
     private boolean isSelected;
-    private Matrix matrix;
+    private float[] matrix;
 
     public DecorModel(DecorModel decorModel) {
         this.nameDecor = decorModel.getNameDecor();
@@ -43,7 +43,7 @@ public class DecorModel extends EditSticker implements Serializable {
 
     public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData,
                       ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX,
-                      boolean flipY, boolean isSelected, Matrix matrix) {
+                      boolean flipY, boolean isSelected, float[] matrix) {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;
         this.lstPathData = lstPathData;
@@ -128,11 +128,11 @@ public class DecorModel extends EditSticker implements Serializable {
         isSelected = selected;
     }
 
-    public Matrix getMatrix() {
+    public float[] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
+    public void setMatrix(float[] matrix) {
         this.matrix = matrix;
     }
 

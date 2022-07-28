@@ -77,7 +77,6 @@ public class ColorView extends View {
 
     public void setData(ColorModel color) {
         this.color = color;
-        invalidate();
     }
 
     public void setSize(int size) {
@@ -110,7 +109,6 @@ public class ColorView extends View {
                 height = h;
                 break;
         }
-        invalidate();
     }
 
     private void setPath(float scale) {

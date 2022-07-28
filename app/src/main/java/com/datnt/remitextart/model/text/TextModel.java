@@ -24,11 +24,11 @@ public class TextModel extends EditSticker implements Serializable {
     private int typeAlign;
     private boolean flipX, flipY;
     private int opacity;
-    private Matrix matrix;
+    private float[] matrix;
 
     public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, ColorModel colorModel,
                      ShadowModel shadowModel, ShearTextModel shearTextModel,
-                     int typeAlign, boolean flipX, boolean flipY, int opacity, Matrix matrix) {
+                     int typeAlign, boolean flipX, boolean flipY, int opacity, float[] matrix) {
         this.content = content;
         this.quoteModel = quoteModel;
         this.fontModel = fontModel;
@@ -122,11 +122,11 @@ public class TextModel extends EditSticker implements Serializable {
         this.opacity = opacity;
     }
 
-    public Matrix getMatrix() {
+    public float[] getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix matrix) {
+    public void setMatrix(float[] matrix) {
         this.matrix = matrix;
     }
 
