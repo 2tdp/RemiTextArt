@@ -8,16 +8,12 @@ public class FontModel implements Serializable {
     private ArrayList<TypeFontModel> lstType;
     private boolean isSelected;
     private boolean isFavorite;
-    private boolean isYourFont;
-    private boolean isNewFont;
 
-    public FontModel(String nameFont, ArrayList<TypeFontModel> lstType, boolean isSelected, boolean isFavorite, boolean isYourFont, boolean isNewFont) {
+    public FontModel(String nameFont, ArrayList<TypeFontModel> lstType, boolean isSelected, boolean isFavorite) {
         this.nameFont = nameFont;
         this.lstType = lstType;
         this.isSelected = isSelected;
         this.isFavorite = isFavorite;
-        this.isYourFont = isYourFont;
-        this.isNewFont = isNewFont;
     }
 
     public String getNameFont() {
@@ -50,21 +46,5 @@ public class FontModel implements Serializable {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
-    }
-
-    public boolean isYourFont() {
-        return isYourFont;
-    }
-
-    public void setYourFont(boolean yourFont) {
-        isYourFont = yourFont;
-    }
-
-    public boolean isNewFont() {
-        return isNewFont;
-    }
-
-    public void setNewFont(boolean newFont) {
-        isNewFont = newFont;
     }
 }

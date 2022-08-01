@@ -22,6 +22,17 @@ public class Project implements Serializable {
     public Project() {
     }
 
+    public Project(Project project) {
+        this.uriThumb = project.getUriThumb();
+        this.backgroundModel = project.getBackgroundModel();
+        this.overlayModel = project.getOverlayModel();
+        this.lstTextModel = project.getLstTextModel();
+        this.lstEmojiModel = project.getLstEmojiModel();
+        this.lstImageModel = project.getLstImageModel();
+        this.lstDecorModel = project.getLstDecorModel();
+        this.lstTempModel = project.getLstTempModel();
+    }
+
     public Project(String uriThumb, BackgroundModel backgroundModel, OverlayModel overlayModel, ArrayList<TextModel> lstTextModel,
                    ArrayList<EmojiModel> lstEmojiModel, ArrayList<ImageModel> lstImageModel,
                    ArrayList<DecorModel> lstDecorModel, ArrayList<TemplateModel> lstTempModel) {

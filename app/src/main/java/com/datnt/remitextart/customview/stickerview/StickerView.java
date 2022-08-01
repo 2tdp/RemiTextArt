@@ -26,8 +26,10 @@ import androidx.core.view.MotionEventCompat;
 import androidx.core.view.ViewCompat;
 
 import com.datnt.remitextart.R;
+import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.model.LayerModel;
+import com.datnt.remitextart.utils.Utils;
 import com.datnt.remitextart.utils.UtilsBitmap;
 
 import org.jetbrains.annotations.NotNull;
@@ -198,6 +200,7 @@ public class StickerView extends FrameLayout {
             invalidate();
         }
     }
+
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -615,10 +618,33 @@ public class StickerView extends FrameLayout {
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
 
+        Matrix matrix = new Matrix();
         for (int i = 0; i < stickers.size(); i++) {
             Sticker sticker = stickers.get(i);
             if (sticker != null) {
-                transformSticker(sticker);
+                if (sticker instanceof TextStickerCustom) {
+                    TextStickerCustom textSticker = (TextStickerCustom) sticker;
+                    matrix.setValues(textSticker.getTextModel().getMatrix());
+                } else if (sticker instanceof DrawableStickerCustom) {
+                    DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+                    switch (drawableSticker.getTypeSticker()) {
+                        case Utils.EMOJI:
+                            matrix.setValues(drawableSticker.getEmojiModel().getMatrix());
+                            break;
+                        case Utils.IMAGE:
+                            matrix.setValues(drawableSticker.getImageModel().getMatrix());
+                            break;
+                        case Utils.DECOR:
+                            matrix.setValues(drawableSticker.getDecorModel().getMatrix());
+                            break;
+                        case Utils.TEMPLATE:
+                            matrix.setValues(drawableSticker.getTemplateModel().getMatrix());
+                            break;
+                    }
+                }
+                sticker.setMatrix(matrix);
+                invalidate();
+//                transformSticker(sticker, oldW - w, oldH - h);
             }
         }
     }
@@ -629,7 +655,7 @@ public class StickerView extends FrameLayout {
      * step 1：let the center of the sticker image is coincident with the center of the View.
      * step 2：Calculate the zoom and zoom
      **/
-    protected void transformSticker(@Nullable Sticker sticker) {
+    protected void transformSticker(@Nullable Sticker sticker, int changeW, int changeH) {
         if (sticker == null) {
             Log.e(TAG, "transformSticker: the bitmapSticker is null or the bitmapSticker bitmap is null");
             return;
@@ -866,19 +892,6 @@ public class StickerView extends FrameLayout {
         }
         invalidate();
     }
-
-//    public void addSticker(Sticker sticker, Matrix matrix) {
-//        if (sticker != null) {
-//            stickers.add(sticker);
-//
-//            if (onStickerOperationListener != null) {
-//                sticker.setMatrix(matrix);
-//                onStickerOperationListener.onStickerAdded(sticker);
-//            }
-//        }
-//        handlingSticker = sticker;
-//        invalidate();
-//    }
 
     @NonNull
     public StickerView addSticker(@NonNull Sticker sticker) {

@@ -1,4 +1,4 @@
-package com.datnt.remitextart.data;
+package com.datnt.remitextart.data.text;
 
 import android.content.Context;
 
@@ -15,7 +15,7 @@ public class DataFont {
         try {
             String[] f = context.getAssets().list("fonts");
             for (String s : f) {
-                lstFont.add(new FontModel(s, getDataTypeFont(context, s), false, false, false, false));
+                lstFont.add(new FontModel(s, getDataTypeFont(context, s), false, false));
             }
         } catch (IOException e) {
             e.printStackTrace();

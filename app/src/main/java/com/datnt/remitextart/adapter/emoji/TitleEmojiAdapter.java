@@ -80,8 +80,8 @@ public class TitleEmojiAdapter extends RecyclerView.Adapter<TitleEmojiAdapter.Ti
     public void setCurrent(int pos) {
         for (int i = 0; i < lstEmoji.size(); i++) {
             lstEmoji.get(i).setSelected(i == pos);
-            notifyItemChanged(i);
         }
+        changeNotify();
     }
 
     @SuppressLint("NotifyDataSetChanged")

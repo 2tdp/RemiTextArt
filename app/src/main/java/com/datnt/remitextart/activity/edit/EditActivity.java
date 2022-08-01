@@ -234,7 +234,6 @@ public class EditActivity extends BaseActivity {
     private ViewPager2 vpEmoji;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
     private Animation animation;
-    private Bitmap bmMain, bmRoot;
     private BackgroundModel backgroundModel;
     private ArrayList<FilterModel> lstFilter;
     private ArrayList<BlendModel> lstBlend;
@@ -611,10 +610,7 @@ public class EditActivity extends BaseActivity {
         rlLook.setOnClickListener(v -> lookLayer(vSticker.getCurrentSticker()));
 
         //size
-        rlCrop.setOnClickListener(v -> {
-            lockSticker(true);
-            seekAndHideOperation(positionSize);
-        });
+        rlCrop.setOnClickListener(v -> seekAndHideOperation(positionSize));
         ivOriginal.setOnClickListener(v -> checkSize(positionOriginal));
         iv1_1.setOnClickListener(v -> checkSize(position1_1));
         iv9_16.setOnClickListener(v -> checkSize(position9_16));
@@ -663,6 +659,7 @@ public class EditActivity extends BaseActivity {
         float scaleScreen = (float) wMain / hMain;
 
         if (!isColor) {
+            Bitmap bmMain;
             Bitmap bm = vCrop.getCroppedImage();
             if ((float) bm.getWidth() / bm.getHeight() > scaleScreen)
                 bmMain = Bitmap.createScaledBitmap(bm, wMain, wMain * bm.getHeight() / bm.getWidth(), false);
@@ -670,8 +667,6 @@ public class EditActivity extends BaseActivity {
                 bmMain = Bitmap.createScaledBitmap(bm, hMain * bm.getWidth() / bm.getHeight(), hMain, false);
 
             backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(this, bmMain,
-                    nameFolderBackground, Utils.BACKGROUND_ROOT));
-            backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmMain,
                     nameFolderBackground, Utils.BACKGROUND));
 
             if (!backgroundModel.getUriOverlayRoot().equals(""))
@@ -697,23 +692,7 @@ public class EditActivity extends BaseActivity {
             backgroundModel.setSizeViewColor(vColor.getSize());
 
             vMain.setAlpha(backgroundModel.getOpacity() * 255 / 100f);
-            seekAndHideViewMain(positionColor, bmRoot, backgroundModel.getColorModel(), false);
-        }
-
-//        setMatrixStickerCurrent();
-        lockSticker(false);
-    }
-
-    private void lockSticker(boolean isLock) {
-        ArrayList<Sticker> lstSticker = vSticker.getListStickers();
-        if (isLock) {
-            for (Sticker sticker : lstSticker) {
-                sticker.setLock(true);
-            }
-        } else {
-            for (Sticker sticker : lstSticker) {
-                sticker.setLock(false);
-            }
+            seekAndHideViewMain(positionColor, null, backgroundModel.getColorModel(), false);
         }
     }
 
@@ -1573,7 +1552,10 @@ public class EditActivity extends BaseActivity {
                 ivLoading.setVisibility(View.GONE);
             switch (msg.what) {
                 case 0:
-                    Bitmap bitmap = (Bitmap) msg.obj;
+                    Bitmap bitmap;
+                    if (backgroundModel.getOverlayModel() != null)
+                        bitmap = BitmapFactory.decodeFile(backgroundModel.getUriOverlay());
+                    else bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
                     vMain.setImageBitmap(bitmap);
                     break;
                 case 1:
@@ -1768,7 +1750,6 @@ public class EditActivity extends BaseActivity {
 
     //Background
     private void replaceBackground() {
-        lockSticker(true);
         Intent intent = new Intent();
         intent.putExtra("pickBG", true);
         intent.setComponent(new ComponentName(getPackageName(), CreateProjectActivity.class.getName()));
@@ -1859,10 +1840,7 @@ public class EditActivity extends BaseActivity {
                 if (backgroundModel.getOverlayModel() != null)
                     addOverlay(backgroundModel.getOverlayModel());
                 else {
-                    Message message = new Message();
-                    message.what = 0;
-                    message.obj = bitmap;
-                    handlerLoading.sendMessage(message);
+                    handlerLoading.sendEmptyMessage(0);
                 }
             }).start();
         });
@@ -2434,29 +2412,54 @@ public class EditActivity extends BaseActivity {
 
     private void adjust(AdjustModel adjust, boolean fulReset) {
         if (!fulReset) {
-            if (adjust.getBrightness() != 0f)
+            if (adjust.getBrightness() != 0f) {
                 bitmap = UtilsAdjust.adjustBrightness(bmAdjust, adjust.getBrightness());
-            if (adjust.getContrast() != 0f)
+                Log.d("2tdpp", "adjust: brightness - " + adjust.getBrightness());
+            }
+            if (adjust.getContrast() != 0f) {
                 bitmap = UtilsAdjust.adjustContrast(bmAdjust, adjust.getContrast());
-            if (adjust.getExposure() != 0f)
+                Log.d("2tdpp", "adjust: contrast - " + adjust.getContrast());
+            }
+            if (adjust.getExposure() != 0f) {
                 bitmap = UtilsAdjust.adjustExposure(bmAdjust, adjust.getExposure());
-            if (adjust.getHighlight() != 0f)
+                Log.d("2tdpp", "adjust: exposure - " + adjust.getExposure());
+            }
+            if (adjust.getHighlight() != 0f) {
                 bitmap = UtilsAdjust.adjustHighLight(bmAdjust, adjust.getHighlight());
-            if (adjust.getShadows() != 0f)
+                Log.d("2tdpp", "adjust: highlight - " + adjust.getHighlight());
+            }
+            if (adjust.getShadows() != 0f) {
                 bitmap = UtilsAdjust.adjustShadow(bmAdjust, adjust.getShadows());
-            if (adjust.getBlacks() != 0f)
+                Log.d("2tdpp", "adjust: shadow - " + adjust.getShadows());
+            }
+            if (adjust.getBlacks() != 0f) {
                 bitmap = UtilsAdjust.adjustBlacks(bmAdjust, adjust.getBlacks());
-            if (adjust.getWhites() != 0f)
+                Log.d("2tdpp", "adjust: blacks - " + adjust.getBlacks());
+            }
+            if (adjust.getWhites() != 0f) {
                 bitmap = UtilsAdjust.adjustWhites(bmAdjust, adjust.getWhites());
-            if (adjust.getSaturation() != 0f)
+                Log.d("2tdpp", "adjust: whites - " + adjust.getWhites());
+            }
+            if (adjust.getSaturation() != 0f) {
                 bitmap = UtilsAdjust.adjustSaturation(bmAdjust, adjust.getSaturation());
-            if (adjust.getHue() != 0f) bitmap = UtilsAdjust.adjustHue(bmAdjust, adjust.getHue());
-            if (adjust.getWarmth() != 0f)
+                Log.d("2tdpp", "adjust: saturation - " + adjust.getSaturation());
+            }
+            if (adjust.getHue() != 0f) {
+                bitmap = UtilsAdjust.adjustHue(bmAdjust, adjust.getHue());
+                Log.d("2tdpp", "adjust: hue - " + adjust.getHue());
+            }
+            if (adjust.getWarmth() != 0f) {
                 bitmap = UtilsAdjust.adjustWarmth(bmAdjust, adjust.getWarmth());
-            if (adjust.getVibrance() != 0f)
+                Log.d("2tdpp", "adjust: warmth - " + adjust.getWarmth());
+            }
+            if (adjust.getVibrance() != 0f) {
                 bitmap = UtilsAdjust.adjustVibrance(bmAdjust, adjust.getVibrance());
-            if (adjust.getVignette() != 0f)
+                Log.d("2tdpp", "adjust: vibrance - " + adjust.getVibrance());
+            }
+            if (adjust.getVignette() != 0f) {
                 bitmap = UtilsAdjust.adjustVignette(bmAdjust, adjust.getVignette());
+                Log.d("2tdpp", "adjust: vignette - " + adjust.getVignette());
+            }
 
             if (bitmap != null) vMain.setImageBitmap(bitmap);
         } else {
@@ -3090,7 +3093,6 @@ public class EditActivity extends BaseActivity {
     }
 
     private void setUpTitleEmoji() {
-
 
         titleEmojiAdapter = new TitleEmojiAdapter(this, (o, pos) -> {
             titleEmojiAdapter.setCurrent(pos);
@@ -3754,26 +3756,30 @@ public class EditActivity extends BaseActivity {
     }
 
     public void getData(int position, String strPic, ColorModel color, TemplateModel template, boolean isNewData) {
+        Bitmap bmRoot;
         switch (position) {
             case 0:
                 try {
                     bmRoot = UtilsBitmap.modifyOrientation(this, UtilsBitmap.getBitmapFromUri(this, Uri.parse(strPic)), Uri.parse(strPic));
+                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
+                    seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
                 break;
             case 1:
                 bmRoot = UtilsBitmap.getBitmapFromAsset(this, "offline_myapp", strPic, false, false);
+                backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
                 seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
                 break;
             case 2:
                 bmRoot = UtilsBitmap.getBitmapFromAsset(this, "template/template_background", template.getBackground(), false, false);
+                backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
                 seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
                 break;
             case 3:
                 backgroundModel.setColorModel(color);
-                seekAndHideViewMain(positionColor, bmRoot, color, isNewData);
+                seekAndHideViewMain(positionColor, null, color, isNewData);
                 break;
         }
     }
@@ -4458,9 +4464,10 @@ public class EditActivity extends BaseActivity {
                         ivColorText.setImageDrawable(createGradientDrawable(new ColorModel(Color.BLACK, Color.BLACK, 0, false)));
                 break;
             case positionSize:
+                Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriRoot());
                 if (!isColor)
-                    seekAndHideViewMain(positionCrop, bmRoot, colorModelOld, true);
-                else seekAndHideViewMain(positionColor, bmRoot, colorModelOld, true);
+                    seekAndHideViewMain(positionCrop, bitmap, colorModelOld, true);
+                else seekAndHideViewMain(positionColor, bitmap, colorModelOld, true);
                 break;
             default:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -4713,6 +4720,7 @@ public class EditActivity extends BaseActivity {
     }
 
     private void checkSize(int pos) {
+        Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriRoot());
         switch (pos) {
             case 0:
                 ivOriginal.setBackgroundResource(R.drawable.boder_size_check);
@@ -4728,7 +4736,7 @@ public class EditActivity extends BaseActivity {
 
                 if (!isColor) {
                     vCrop.setSize(0);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(bitmap);
                 } else vColor.setSize(0);
                 break;
             case 1:
@@ -4745,7 +4753,7 @@ public class EditActivity extends BaseActivity {
 
                 if (!isColor) {
                     vCrop.setSize(1);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(bitmap);
                 } else vColor.setSize(1);
                 break;
             case 2:
@@ -4762,7 +4770,7 @@ public class EditActivity extends BaseActivity {
 
                 if (!isColor) {
                     vCrop.setSize(2);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(bitmap);
                 } else vColor.setSize(2);
                 break;
             case 3:
@@ -4779,7 +4787,7 @@ public class EditActivity extends BaseActivity {
 
                 if (!isColor) {
                     vCrop.setSize(3);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(bitmap);
                 } else vColor.setSize(3);
                 break;
             case 4:
@@ -4797,7 +4805,7 @@ public class EditActivity extends BaseActivity {
 
                 if (!isColor) {
                     vCrop.setSize(4);
-                    vCrop.setData(bmRoot);
+                    vCrop.setData(bitmap);
                 } else vColor.setSize(4);
                 break;
         }
@@ -5213,10 +5221,10 @@ public class EditActivity extends BaseActivity {
                 project.getLstTextModel().add(textSticker.getTextModel());
             }
         }
-        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
         if (indexProject == -1) lstProject.add(project);
         else lstProject.set(indexProject, project);
-        DataLocalManager.setListProject(this, lstProject, "lstProject");
+        DataLocalManager.setListProject(this, lstProject, Utils.LIST_PROJECT);
         handlerLoading.sendEmptyMessage(1);
     }
 
@@ -5323,37 +5331,6 @@ public class EditActivity extends BaseActivity {
         vSticker.addSticker(drawableSticker);
     }
 
-
-//    private void setMatrixStickerCurrent() {
-//        ArrayList<Sticker> lstSticker = vSticker.getListStickers();
-//        if (!lstSticker.isEmpty())
-//            for (Sticker sticker : lstSticker) {
-//                if (sticker instanceof TextStickerCustom) {
-//                    TextStickerCustom textSticker = (TextStickerCustom) sticker;
-//                    if (matrix != null) textSticker.setMatrix(textSticker.getMatrix());
-//                }
-//                if (sticker instanceof DrawableStickerCustom) {
-//                    DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-//                    switch (drawableSticker.getTypeSticker()) {
-//                        case Utils.EMOJI:
-//                            sticker.setMatrix(drawableSticker.getEmojiModel().getMatrix());
-//                            break;
-//                        case Utils.IMAGE:
-//                            sticker.setMatrix(drawableSticker.getImageModel().getMatrix());
-//                            break;
-//                        case Utils.DECOR:
-//                            sticker.setMatrix(drawableSticker.getDecorModel().getMatrix());
-//                            break;
-//                        case Utils.TEMPLATE:
-//                            sticker.setMatrix(drawableSticker.getTemplateModel().getMatrix());
-//                            break;
-//                    }
-//                }
-//            }
-//
-//        vSticker.invalidate();
-//    }
-
     @Override
     public void onBackPressed() {
         if (vSize.getVisibility() == View.VISIBLE)
@@ -5435,7 +5412,7 @@ public class EditActivity extends BaseActivity {
             backgroundModel.setOverlayModel(project.getOverlayModel());
 
             if (backgroundModel.getColorModel() == null) {
-                bmRoot = BitmapFactory.decodeFile(backgroundModel.getUriRoot());
+                Bitmap bmMain;
                 if (backgroundModel.getUriOverlay().equals(""))
                     bmMain = BitmapFactory.decodeFile(backgroundModel.getUriCache());
                 else bmMain = BitmapFactory.decodeFile(backgroundModel.getUriOverlay());

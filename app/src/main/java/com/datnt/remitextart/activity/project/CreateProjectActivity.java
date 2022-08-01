@@ -117,9 +117,9 @@ public class CreateProjectActivity extends BaseActivity {
     private void setUpViewPager() {
         ViewPagerAddFragmentsAdapter fragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
 
-        recentFragment = RecentFragment.newInstance(isBackground, folder -> tvRecent.setText(folder), isBG -> onBackPressed());
-        MyAppFragment myAppFragment = MyAppFragment.newInstance(isBackground, isBG -> onBackPressed());
-        ColorFragment colorFragment = ColorFragment.newInstance(isBackground, isBG -> onBackPressed());
+        recentFragment = RecentFragment.newInstance(isBackground, folder -> tvRecent.setText(folder), isBG -> finish());
+        MyAppFragment myAppFragment = MyAppFragment.newInstance(isBackground, isBG -> finish());
+        ColorFragment colorFragment = ColorFragment.newInstance(isBackground, isBG -> finish());
 
         fragmentsAdapter.addFrag(recentFragment);
         fragmentsAdapter.addFrag(myAppFragment);

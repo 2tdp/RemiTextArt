@@ -60,6 +60,7 @@ import java.io.RandomAccessFile;
 public class Utils {
 
     public static final String PROJECT = "project";
+    public static final String LIST_PROJECT = "lstProject";
     public static final String NUMB_PROJECT = "numbProject";
     public static final String THUMB = "thumb";
 

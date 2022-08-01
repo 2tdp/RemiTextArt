@@ -75,7 +75,8 @@ public class FontsAdapter extends RecyclerView.Adapter<FontsAdapter.FontHolder> 
                     + font.getNameFont().toLowerCase() + "_"
                     + font.getLstType().get(0).getName().toLowerCase().trim() + ".ttf"));
 
-            if (font.isSelected()) tvFont.setTextColor(context.getResources().getColor(R.color.pink));
+            if (font.isSelected())
+                tvFont.setTextColor(context.getResources().getColor(R.color.pink));
             else tvFont.setTextColor(context.getResources().getColor(R.color.black));
 
             if (checkFavorite(font.getNameFont()))
@@ -98,14 +99,8 @@ public class FontsAdapter extends RecyclerView.Adapter<FontsAdapter.FontHolder> 
             case 0:
                 for (int i = 0; i < lstFont.size(); i++) {
                     if (i != pos) {
-                        if (lstFont.get(i).isSelected()) {
-                            lstFont.get(i).setSelected(false);
-                            notifyItemChanged(i);
-                        }
-                    } else {
-                        lstFont.get(i).setSelected(true);
-                        notifyItemChanged(i);
-                    }
+                        if (lstFont.get(i).isSelected()) lstFont.get(i).setSelected(false);
+                    } else lstFont.get(i).setSelected(true);
                 }
                 break;
             case 1:
@@ -116,9 +111,9 @@ public class FontsAdapter extends RecyclerView.Adapter<FontsAdapter.FontHolder> 
                     lstFont.get(pos).setFavorite(true);
                     addFavorite(lstFont.get(pos));
                 }
-                notifyItemChanged(pos);
                 break;
         }
+        changeNotify();
     }
 
     private boolean checkFavorite(String fontMame) {
@@ -130,6 +125,7 @@ public class FontsAdapter extends RecyclerView.Adapter<FontsAdapter.FontHolder> 
         }
         return false;
     }
+
 
     private void addFavorite(FontModel font) {
         boolean check = false;

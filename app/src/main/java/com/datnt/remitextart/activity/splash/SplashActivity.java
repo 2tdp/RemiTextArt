@@ -2,84 +2,92 @@ package com.datnt.remitextart.activity.splash;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import androidx.viewpager2.widget.ViewPager2;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
-import com.datnt.remitextart.activity.permission.RequestPermissionActivity;
-import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
-import com.datnt.remitextart.fragment.SplashFragment;
-import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends BaseActivity {
 
-    private ViewPager2 viewPager2;
-    private DotsIndicator indicator;
-    private TextView tvSplash;
+    private ImageView ivBeat1, ivBeat2, ivBeat3;
 
-    private final ViewPager2.OnPageChangeCallback onPageChangeCallback = new ViewPager2.OnPageChangeCallback() {
-        @Override
-        public void onPageSelected(int position) {
-            if (position == 2) tvSplash.setText(Utils.underLine(getString(R.string.start)));
-            else tvSplash.setText(Utils.underLine(getString(R.string.next)));
-        }
-    };
+    private int size;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_activity);
+        setContentView(R.layout.activity_splash);
 
         init();
-
-        FirstInstall();
     }
 
     private void init() {
-        viewPager2 = findViewById(R.id.vpSplash);
-        indicator = findViewById(R.id.dots_indicator);
-        tvSplash = findViewById(R.id.tvSplash);
+        ivBeat1 = findViewById(R.id.ivBeat1);
+        ivBeat2 = findViewById(R.id.ivBeat2);
+        ivBeat3 = findViewById(R.id.ivBeat3);
 
-        setUpViewPager();
+        size = getResources().getDisplayMetrics().widthPixels / 2;
 
-        tvSplash.setOnClickListener(view -> {
-            if (viewPager2.getCurrentItem() == 2) {
-                DataLocalManager.setFirstInstall("first", true);
-                Utils.setIntent(this, RequestPermissionActivity.class.getName());
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Utils.setIntent(SplashActivity.this, TipsActivity.class.getName());
                 finish();
-            } else {
-                viewPager2.setCurrentItem(viewPager2.getCurrentItem() + 1, true);
+            }
+        }, 2500);
+
+        setUpSplashBeat();
+    }
+
+    private void setUpSplashBeat() {
+
+        ivBeat1.getLayoutParams().width = size;
+        size = size + size / 4;
+        ivBeat2.getLayoutParams().width = size;
+        size = size + size / 4;
+        ivBeat3.getLayoutParams().width = size;
+
+        ivBeat1.getLayoutParams().height = size;
+        size = size + size / 4;
+        ivBeat2.getLayoutParams().height = size;
+        size = size + size / 4;
+        ivBeat3.getLayoutParams().height = size;
+
+        runAnimation();
+    }
+
+    private void runAnimation() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_scale_out);
+        ivBeat2.setAnimation(animation);
+        ivBeat3.setAnimation(animation);
+
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                ivBeat1.clearAnimation();
+                ivBeat2.clearAnimation();
+                ivBeat3.clearAnimation();
+
+                setUpSplashBeat();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
             }
         });
-    }
-
-    private void setUpViewPager() {
-        ViewPagerAddFragmentsAdapter viewPagerAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
-
-        SplashFragment oneSplashFragment = SplashFragment.newInstance(R.drawable.splash_1, getResources().getText(R.string.splash_1).toString());
-        SplashFragment twoSplashFragment = SplashFragment.newInstance(R.drawable.splash_2, getResources().getText(R.string.splash_2).toString());
-        SplashFragment threeSplashFragment = SplashFragment.newInstance(R.drawable.splash_3, getResources().getText(R.string.splash_3).toString());
-
-        viewPagerAdapter.addFrag(oneSplashFragment);
-        viewPagerAdapter.addFrag(twoSplashFragment);
-        viewPagerAdapter.addFrag(threeSplashFragment);
-
-        viewPager2.unregisterOnPageChangeCallback(onPageChangeCallback);
-        viewPager2.registerOnPageChangeCallback(onPageChangeCallback);
-
-        viewPager2.setAdapter(viewPagerAdapter);
-        indicator.setViewPager2(viewPager2);
-    }
-
-    private void FirstInstall() {
-        if (DataLocalManager.getFirstInstall("first")) {
-            Utils.setIntent(this, RequestPermissionActivity.class.getName());
-            finish();
-        }
     }
 }

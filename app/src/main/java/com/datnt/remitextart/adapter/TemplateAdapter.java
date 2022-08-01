@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,11 +60,14 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.Templa
 
         RoundedImageView ivTemp;
         CustomViewPathData ivTempText;
+        ImageView ivMore;
 
         public TemplateHolder(@NonNull View itemView) {
             super(itemView);
             ivTemp = itemView.findViewById(R.id.ivTemp);
             ivTempText = itemView.findViewById(R.id.ivTempText);
+            ivMore = itemView.findViewById(R.id.ivMore);
+            ivMore.setVisibility(View.GONE);
         }
 
         public void onBind(int position) {

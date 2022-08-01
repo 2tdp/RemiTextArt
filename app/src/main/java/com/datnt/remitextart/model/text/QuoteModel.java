@@ -1,22 +1,25 @@
 package com.datnt.remitextart.model.text;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class QuoteModel implements Serializable {
-    private String content;
+    private ArrayList<String> lstQuote;
     private String typeQuote;
+    private boolean isSelected;
 
-    public QuoteModel(String content, String typeQuote) {
-        this.content = content;
+    public QuoteModel(ArrayList<String> lstQuote, String typeQuote, boolean isSelected) {
+        this.lstQuote = lstQuote;
         this.typeQuote = typeQuote;
+        this.isSelected = isSelected;
     }
 
-    public String getContent() {
-        return content;
+    public ArrayList<String> getLstQuote() {
+        return lstQuote;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setLstQuote(ArrayList<String> lstQuote) {
+        this.lstQuote = lstQuote;
     }
 
     public String getTypeQuote() {
@@ -25,5 +28,13 @@ public class QuoteModel implements Serializable {
 
     public void setTypeQuote(String typeQuote) {
         this.typeQuote = typeQuote;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

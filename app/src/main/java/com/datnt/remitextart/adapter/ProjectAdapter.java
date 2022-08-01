@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.view.ContextThemeWrapper;
@@ -17,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.callback.ICallBackItem;
 import com.datnt.remitextart.model.Project;
+import com.datnt.remitextart.sharepref.DataLocalManager;
+import com.datnt.remitextart.utils.Utils;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
@@ -27,6 +32,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     private final boolean isHomeProject;
     private ArrayList<Project> lstProject;
     private final ICallBackItem callBack;
+    private PopupWindow myPopup;
 
     public ProjectAdapter(Context context, boolean isHomeProject, ICallBackItem callBack) {
         this.context = context;
@@ -61,6 +67,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
         private final RoundedImageView ivProject;
         private final ImageView ivMore;
+        private TextView tvDuplicate, tvDel;
 
         public ProjectHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,6 +77,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             if (isHomeProject) ivMore.setVisibility(View.VISIBLE);
             else ivMore.setVisibility(View.GONE);
+
+            setPopUpWindow();
         }
 
         public void onBind(int position) {
@@ -78,13 +87,32 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             ivProject.setImageBitmap(BitmapFactory.decodeFile(project.getUriThumb()));
 
-            ivMore.setOnClickListener(v -> {
-                Context wrapper = new ContextThemeWrapper(context, R.style.myPopup);
-                PopupMenu popup = new PopupMenu(wrapper, ivMore, Gravity.START);
-
-                popup.show();
+            ivMore.setOnClickListener(v -> myPopup.showAsDropDown(v, -155, 0));
+            tvDuplicate.setOnClickListener(v -> {
+                Project p = new Project(project);
+                lstProject.add(p);
+                DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);
+                changeNotify();
+                myPopup.dismiss();
+            });
+            tvDel.setOnClickListener(v -> {
+                lstProject.remove(position);
+                DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);
+                changeNotify();
+                myPopup.dismiss();
             });
             itemView.setOnClickListener(v -> callBack.callBackItem(project, position));
+        }
+
+        private void setPopUpWindow() {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            @SuppressLint("InflateParams")
+            View view = inflater.inflate(R.layout.pop_up_project, null);
+
+            tvDuplicate = view.findViewById(R.id.duplicateProject);
+            tvDel = view.findViewById(R.id.delProject);
+
+            myPopup = new PopupWindow(view, 255, LinearLayout.LayoutParams.WRAP_CONTENT, true);
         }
     }
 

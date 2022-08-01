@@ -221,18 +221,18 @@
         android:background="#F5F5F5"
         android:padding="@dimen/_10sdp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcvQuotes"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpQuotes"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/rcvQuotesTitle"
-            android:scrollbars="none" />
+            android:layout_marginBottom="@dimen/_5sdp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcvQuotesTitle"
+            android:id="@+id/rcvTitleQuotes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:padding="@dimen/_5sdp"
             android:scrollbars="none" />
 
     </RelativeLayout>
@@ -276,7 +276,7 @@
                 android:textSize="@dimen/_10ssp" />
 
             <TextView
-                android:id="@+id/tvYourFont"
+                android:id="@+id/tvFont"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
@@ -287,21 +287,6 @@
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/your_font"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10ssp" />
-
-            <TextView
-                android:id="@+id/tvNewFonts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_weight="1"
-                android:background="@drawable/border_unclick_font"
-                android:gravity="center"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/new_font"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
         </LinearLayout>

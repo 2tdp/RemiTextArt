@@ -16,6 +16,7 @@ import android.graphics.Shader;
 import android.util.Log;
 
 import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.background.AdjustModel;
 
 import org.wysaid.nativePort.CGENativeLibrary;
 
@@ -70,12 +71,19 @@ public class UtilsAdjust {
 
     public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {
         Log.d(TAG, "adjustBrightness: " + brightness);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust brightness 0.5", brightness / 100f);
+        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust brightness 0.5".replace("0.5", String.valueOf(brightness / 100f)), 1.0f);
     }
 
     public static Bitmap adjustContrast(Bitmap bmp, float contrast) {
         Log.d(TAG, "adjustContrast: " + contrast);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2", contrast / 100f);
+        if (contrast < -25.0f)
+            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf((contrast + 25f) / 25.0f)), 1.0f);
+        else if (contrast == 25.0f)
+            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", "0"), 1.0f);
+        else if (contrast < 0f)
+            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf(contrast / -75.0f)), 1.0f);
+        else
+            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf(contrast / 75.0f)), 1.0f);
     }
 
     public static Bitmap adjustExposure(Bitmap bmp, float exposure) {

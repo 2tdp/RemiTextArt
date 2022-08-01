@@ -2,6 +2,7 @@ package com.datnt.remitextart.activity.edit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -16,15 +17,28 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.activity.base.BaseActivity;
+import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
+import com.datnt.remitextart.adapter.emoji.TitleEmojiAdapter;
 import com.datnt.remitextart.adapter.textadapter.FontsAdapter;
+import com.datnt.remitextart.adapter.textadapter.QuotesAdapter;
+import com.datnt.remitextart.adapter.textadapter.TitleQuotesAdapter;
 import com.datnt.remitextart.adapter.textadapter.TypeFontAdapter;
-import com.datnt.remitextart.data.DataFont;
+import com.datnt.remitextart.data.DataEmoji;
+import com.datnt.remitextart.data.text.DataFont;
+import com.datnt.remitextart.data.text.DataQuotes;
+import com.datnt.remitextart.fragment.EmojiFragment;
+import com.datnt.remitextart.fragment.QuotesFragment;
+import com.datnt.remitextart.model.ColorModel;
+import com.datnt.remitextart.model.EmojiModel;
 import com.datnt.remitextart.model.text.FontModel;
+import com.datnt.remitextart.model.text.QuoteModel;
 import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.model.text.TypeFontModel;
+import com.datnt.remitextart.sharepref.DataLocalManager;
 import com.datnt.remitextart.utils.Utils;
 
 import java.util.ArrayList;
@@ -32,15 +46,18 @@ import java.util.ArrayList;
 public class AddTextActivity extends BaseActivity {
 
     private ImageView ivBack, ivTick, ivLeft, ivCenter, ivRight;
-    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvYourFont, tvNewFonts, tvClear;
+    private TextView tvQuotes, tvFonts, tvStyle, tvFavorite, tvFont, tvClear;
     private EditText etText;
-    private RecyclerView rcvQuotes, rcvQuotesTitle, rcvFonts, rcvStyleFont;
+    private ViewPager2 vpQuotes;
+    private RecyclerView rcvTitleQuotes, rcvFonts, rcvStyleFont;
     private RelativeLayout rlFonts, rlQuotes, rlText;
     private LinearLayout llStyleFont;
     private Animation animation;
     private FontModel font;
     private TextModel textModel;
     private TypeFontAdapter typeFontAdapter;
+    private FontsAdapter fontsAdapter;
+    private TitleQuotesAdapter titleQuotesAdapter;
     private ArrayList<FontModel> lstFont;
     private int positionStyleFont, positionFont, posGravity;
     private boolean check, isEditText;
@@ -72,6 +89,19 @@ public class AddTextActivity extends BaseActivity {
         tvFonts.setOnClickListener(v -> changeStateText(1));
         tvStyle.setOnClickListener(v -> changeStateText(2));
 
+        tvFavorite.setOnClickListener(v -> {
+            changePickFont(0);
+            ArrayList<FontModel> lstFavorite = DataLocalManager.getListFont("lstFavoriteFont");
+            if (fontsAdapter != null && !lstFavorite.isEmpty())
+                fontsAdapter.setData(lstFavorite);
+            else if (fontsAdapter != null) fontsAdapter.setData(new ArrayList<>());
+        });
+
+        tvFont.setOnClickListener(v -> {
+            changePickFont(1);
+            if (fontsAdapter != null) fontsAdapter.setData(lstFont);
+        });
+
         ivTick.setOnClickListener(v -> clickTick());
     }
 
@@ -82,8 +112,8 @@ public class AddTextActivity extends BaseActivity {
         } else {
             Intent returnIntent = new Intent();
             if (!isEditText) {
-                textModel = new TextModel(text, null, font, null, null,
-                        null, posGravity, false, false, 255, null);
+                textModel = new TextModel(text, font, null, null, null,
+                        posGravity, false, false, 255, null);
                 returnIntent.putExtra("isAdd", true);
             } else {
                 textModel.setContent(text);
@@ -100,10 +130,39 @@ public class AddTextActivity extends BaseActivity {
 
     private void setUpQuotes() {
 
+        titleQuotesAdapter = new TitleQuotesAdapter(this, (o, pos) -> {
+            titleQuotesAdapter.setCurrent(pos);
+            vpQuotes.setCurrentItem(pos, true);
+        });
+
+        titleQuotesAdapter.setData(DataQuotes.getListTitleQuote(this));
+        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rcvTitleQuotes.setLayoutManager(manager);
+        rcvTitleQuotes.setAdapter(titleQuotesAdapter);
+
+        ViewPagerAddFragmentsAdapter addFragmentsAdapter = new ViewPagerAddFragmentsAdapter(getSupportFragmentManager(), getLifecycle());
+        String[] titleQuotes = new String[]{"celebrate", "death", "knowledge", "love", "morning", "motivation", "sad"};
+
+        for (String s : titleQuotes) {
+            QuotesFragment quotesFragment = QuotesFragment.newInstance(s, (o, pos) -> {
+                String oldStr = etText.getText().toString();
+                etText.setText(oldStr.concat(o.toString()));
+            });
+            addFragmentsAdapter.addFrag(quotesFragment);
+        }
+
+        vpQuotes.setAdapter(addFragmentsAdapter);
+        vpQuotes.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                titleQuotesAdapter.setCurrent(position);
+                rcvTitleQuotes.smoothScrollToPosition(position);
+            }
+        });
     }
 
     private void setUpFonts() {
-        FontsAdapter fontsAdapter = new FontsAdapter(this, (o, pos) -> {
+        fontsAdapter = new FontsAdapter(this, (o, pos) -> {
             font = (FontModel) o;
             etText.setTypeface(Utils.getTypeFace(font.getNameFont(), font.getLstType().get(0).getName(), this));
             font.getLstType().get(0).setSelected(true);
@@ -117,6 +176,7 @@ public class AddTextActivity extends BaseActivity {
         rcvFonts.setLayoutManager(manager);
         rcvFonts.setAdapter(fontsAdapter);
         rcvFonts.scrollToPosition(positionFont);
+        changePickFont(1);
     }
 
     private void setUpStyle() {
@@ -148,6 +208,25 @@ public class AddTextActivity extends BaseActivity {
                     }
                 }
             }
+        }
+    }
+
+    private void changePickFont(int pos) {
+        switch (pos) {
+            case 0:
+                tvFavorite.setBackgroundResource(R.drawable.border_click_font);
+                tvFavorite.setTextColor(Color.WHITE);
+
+                tvFont.setBackgroundResource(R.drawable.border_unclick_font);
+                tvFont.setTextColor(Color.BLACK);
+                break;
+            case 1:
+                tvFavorite.setBackgroundResource(R.drawable.border_unclick_font);
+                tvFavorite.setTextColor(Color.BLACK);
+
+                tvFont.setBackgroundResource(R.drawable.border_click_font);
+                tvFont.setTextColor(Color.WHITE);
+                break;
         }
     }
 
@@ -300,14 +379,13 @@ public class AddTextActivity extends BaseActivity {
         ivCenter = findViewById(R.id.ivCenter);
         ivRight = findViewById(R.id.ivRight);
         tvQuotes = findViewById(R.id.tvQuotes);
+        vpQuotes = findViewById(R.id.vpQuotes);
+        rcvTitleQuotes = findViewById(R.id.rcvTitleQuotes);
         tvFonts = findViewById(R.id.tvFonts);
         tvStyle = findViewById(R.id.tvStyle);
         tvFavorite = findViewById(R.id.tvFavorite);
-        tvYourFont = findViewById(R.id.tvYourFont);
-        tvNewFonts = findViewById(R.id.tvNewFonts);
+        tvFont = findViewById(R.id.tvFont);
         rcvFonts = findViewById(R.id.rcvFonts);
-        rcvQuotesTitle = findViewById(R.id.rcvQuotesTitle);
-        rcvQuotes = findViewById(R.id.rcvQuotes);
         rcvStyleFont = findViewById(R.id.rcvStyleFont);
         rlFonts = findViewById(R.id.rlFonts);
         rlQuotes = findViewById(R.id.rlQuotes);
@@ -315,15 +393,15 @@ public class AddTextActivity extends BaseActivity {
         llStyleFont = findViewById(R.id.llStyleFont);
         tvClear = findViewById(R.id.tvClear);
 
+        setUpQuotes();
+
         textModel = (TextModel) getIntent().getSerializableExtra("text");
         if (textModel != null) {
             setUpText();
             isEditText = true;
         } else {
-            tvQuotes.setVisibility(View.VISIBLE);
-            tvClear.setVisibility(View.GONE);
             lstFont = DataFont.getDataFont(this);
-            font = new FontModel("poppins", DataFont.getDataTypeFont(this, "poppins"), true, false, false, false);
+            font = new FontModel("poppins", DataFont.getDataTypeFont(this, "poppins"), true, false);
             for (TypeFontModel f : font.getLstType()) {
                 if (f.getName().equals("Regular")) f.setSelected(true);
             }
@@ -334,8 +412,6 @@ public class AddTextActivity extends BaseActivity {
     }
 
     private void setUpText() {
-        tvQuotes.setVisibility(View.GONE);
-        tvClear.setVisibility(View.VISIBLE);
         etText.setText(textModel.getContent());
 
         switch (textModel.getTypeAlign()) {

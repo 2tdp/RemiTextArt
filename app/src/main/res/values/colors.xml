@@ -27,6 +27,7 @@
     <color name="text_title_dialog">#303030</color>
     <color name="text_des_dialog">#6F6F6F</color>
     <color name="surrounding_area">#B0000000</color>
+    <color name="splash">#ED7DB0</color>
 
     //lstColor
     <color name="color_1">#58585A</color>

@@ -46,6 +46,9 @@
             android:name=".activity.MainActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.splash.TipsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.splash.SplashActivity"
             android:exported="true">
             <intent-filter>

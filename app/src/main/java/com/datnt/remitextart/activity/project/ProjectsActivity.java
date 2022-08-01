@@ -59,7 +59,7 @@ public class ProjectsActivity extends BaseActivity {
     }
 
     private void setData() {
-        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
 
         projectAdapter = new ProjectAdapter(this, true, (o, pos) -> {
             DataLocalManager.setProject((Project) o, Utils.PROJECT);
@@ -87,7 +87,7 @@ public class ProjectsActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
         if (!lstProject.isEmpty()) {
             projectAdapter.setData(lstProject);
             tvProjects.setVisibility(View.GONE);

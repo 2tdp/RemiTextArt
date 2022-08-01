@@ -123,8 +123,6 @@ public class RecentFragment extends Fragment {
 
         rlExpand.getLayoutParams().height = getResources().getDisplayMetrics().heightPixels * 60 / 100;
 
-        if (getArguments() != null) isBackground = getArguments().getBoolean("isBG");
-
         setUpLayout();
         evenClick();
     }

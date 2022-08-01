@@ -16,7 +16,6 @@ import java.io.Serializable;
 public class TextModel extends EditSticker implements Serializable {
 
     private String content;
-    private QuoteModel quoteModel;
     private FontModel fontModel;
     private ColorModel colorModel;
     private ShadowModel shadowModel;
@@ -26,11 +25,10 @@ public class TextModel extends EditSticker implements Serializable {
     private int opacity;
     private float[] matrix;
 
-    public TextModel(String content, QuoteModel quoteModel, FontModel fontModel, ColorModel colorModel,
+    public TextModel(String content, FontModel fontModel, ColorModel colorModel,
                      ShadowModel shadowModel, ShearTextModel shearTextModel,
                      int typeAlign, boolean flipX, boolean flipY, int opacity, float[] matrix) {
         this.content = content;
-        this.quoteModel = quoteModel;
         this.fontModel = fontModel;
         this.colorModel = colorModel;
         this.shadowModel = shadowModel;
@@ -48,14 +46,6 @@ public class TextModel extends EditSticker implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public QuoteModel getQuoteModel() {
-        return quoteModel;
-    }
-
-    public void setQuoteModel(QuoteModel quoteModel) {
-        this.quoteModel = quoteModel;
     }
 
     public FontModel getFontModel() {
@@ -136,8 +126,8 @@ public class TextModel extends EditSticker implements Serializable {
         if (shadowModel != null)
             shadow = new ShadowModel(shadowModel);
 
-        TextModel textModel = new TextModel(content, quoteModel, fontModel, colorModel, shadow,
-                shearTextModel, typeAlign, flipX, flipY, opacity, matrix);
+        TextModel textModel = new TextModel(content, fontModel, colorModel, shadow, shearTextModel,
+                typeAlign, flipX, flipY, opacity, matrix);
 
         return new TextStickerCustom(context, textModel, id);
     }
