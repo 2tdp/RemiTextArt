@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -125,6 +126,7 @@ public class MainActivity extends BaseActivity {
     private void evenClick() {
         tvCrePro.setOnClickListener(v -> {
             View view = LayoutInflater.from(this).inflate(R.layout.dialog_click_create, null);
+
             ImageView ivUseTemp = view.findViewById(R.id.ivUseTemp);
             ImageView ivCreate = view.findViewById(R.id.ivCreate);
             TextView tvCancel = view.findViewById(R.id.tvCancel);

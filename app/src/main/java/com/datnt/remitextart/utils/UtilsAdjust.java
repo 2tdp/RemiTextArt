@@ -69,54 +69,139 @@ public class UtilsAdjust {
         return new int[]{};
     }
 
-    public static Bitmap adjustBrightness(Bitmap bmp, float brightness) {
-        Log.d(TAG, "adjustBrightness: " + brightness);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust brightness 0.5".replace("0.5", String.valueOf(brightness / 100f)), 1.0f);
+    public static Bitmap adjust(Bitmap bitmap, AdjustModel adjust) {
+        if (adjust.getBrightness() != 0f) return adjustBrightness(bitmap, adjust);
+        else if (adjust.getContrast() != 0f) return adjustContrast(bitmap, adjust);
+        else if (adjust.getExposure() != 0f) return adjustExposure(bitmap, adjust);
+        else if (adjust.getHighlight() != 0f) return adjustHighLight(bitmap, adjust);
+        else if (adjust.getShadows() != 0f) return adjustShadow(bitmap, adjust);
+        else if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustContrast(Bitmap bmp, float contrast) {
-        Log.d(TAG, "adjustContrast: " + contrast);
-        if (contrast < -25.0f)
-            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf((contrast + 25f) / 25.0f)), 1.0f);
-        else if (contrast == 25.0f)
-            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", "0"), 1.0f);
-        else if (contrast < 0f)
-            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf(contrast / -75.0f)), 1.0f);
-        else
-            return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust contrast 2".replace("2", String.valueOf(contrast / 75.0f)), 1.0f);
+    public static Bitmap adjustBrightness(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustBrightness: " + adjust.getBrightness());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust brightness 0.5", adjust.getBrightness() / 100f);
+
+        if (adjust.getContrast() != 0f) return adjustContrast(bitmap, adjust);
+        else if (adjust.getExposure() != 0f) return adjustExposure(bitmap, adjust);
+        else if (adjust.getHighlight() != 0f) return adjustHighLight(bitmap, adjust);
+        else if (adjust.getShadows() != 0f) return adjustShadow(bitmap, adjust);
+        else if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustExposure(Bitmap bmp, float exposure) {
-        Log.d(TAG, "adjustExposure: " + exposure);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust exposure 0.62", exposure / 100f);
+    public static Bitmap adjustContrast(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustContrast: " + adjust.getContrast());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust contrast 2", adjust.getContrast() / 100f);
+
+        if (adjust.getExposure() != 0f) return adjustExposure(bitmap, adjust);
+        else if (adjust.getHighlight() != 0f) return adjustHighLight(bitmap, adjust);
+        else if (adjust.getShadows() != 0f) return adjustShadow(bitmap, adjust);
+        else if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustHighLight(Bitmap bmp, float highLight) {
-        Log.d(TAG, "adjustHighLight: " + highLight);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust shadowhighlight 0 200", highLight / 100);
+    public static Bitmap adjustExposure(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustExposure: " + adjust.getExposure());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust exposure 0.62", adjust.getExposure() / 100f);
+
+        if (adjust.getHighlight() != 0f) return adjustHighLight(bitmap, adjust);
+        else if (adjust.getShadows() != 0f) return adjustShadow(bitmap, adjust);
+        else if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustShadow(Bitmap bmp, float shadow) {
-        Log.d(TAG, "adjustShadow: " + shadow);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust shadowhighlight -99 0", shadow / 100);
+    public static Bitmap adjustHighLight(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustHighLight: " + adjust.getHighlight());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust shadowhighlight 0 200", adjust.getHighlight() / 100);
+
+        if (adjust.getShadows() != 0f) return adjustShadow(bitmap, adjust);
+        else if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustBlacks(Bitmap bmp, float blacks) {
-        Log.d(TAG, "adjustBlacks: " + blacks);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@selcolor black(-50, -50, -50, -50)", -blacks / 100f);
+    public static Bitmap adjustShadow(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustShadow: " + adjust.getShadows());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust shadowhighlight -99 0", adjust.getShadows() / 100);
+
+        if (adjust.getBlacks() != 0f) return adjustBlacks(bitmap, adjust);
+        else if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustWhites(Bitmap bmp, float whites) {
-        Log.d(TAG, "adjustWhites: " + whites);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@selcolor white(62, 62, 62, 62)", -whites / 100f);
+    public static Bitmap adjustBlacks(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustBlacks: " + adjust.getBlacks());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@selcolor black(-50, -50, -50, -50)", -adjust.getBlacks() / 100f);
+
+        if (adjust.getWhites() != 0f) return adjustWhites(bitmap, adjust);
+        else if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustSaturation(Bitmap bmp, float saturation) {
-        Log.d(TAG, "adjustSaturation: " + saturation);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust saturation 2", saturation / 100f);
+    public static Bitmap adjustWhites(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustWhites: " + adjust.getWhites());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@selcolor white(62, 62, 62, 62)", -adjust.getWhites() / 100f);
+
+        if (adjust.getSaturation() != 0f) return adjustSaturation(bitmap, adjust);
+        else if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustHue(Bitmap bmp, float hue) {
+    public static Bitmap adjustSaturation(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustSaturation: " + adjust.getSaturation());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust saturation 2", adjust.getSaturation() / 100f);
+
+        if (adjust.getHue() != 0f) return adjustHue(bitmap, adjust);
+        else if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
+    }
+
+    public static Bitmap adjustHue(Bitmap bitmap, AdjustModel adjust) {
 //        value = cleanValue(value, 360f) / 360f * (float) Math.PI;
 //        if (value == 0) {
 //            return bmp;
@@ -140,23 +225,35 @@ public class UtilsAdjust {
 //        canvas.drawBitmap(bmp, 0, 0, paint);
 //
 //        return ret;
-        Log.d(TAG, "adjustHue: " + hue);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust hsl -0.66 0.34 0.15", hue / 100f);
+        Log.d(TAG, "adjustHue: " + adjust.getHue());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust hsl -0.66 0.34 0.15", adjust.getHue() / 100f);
+
+        if (adjust.getWarmth() != 0f) return adjustWarmth(bitmap, adjust);
+        else if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustWarmth(Bitmap bmp, float warmth) {
-        Log.d(TAG, "adjustWarmth: " + warmth);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust colorbalance 0.34 0.2 -0.49", warmth / 100f);
+    public static Bitmap adjustWarmth(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustWarmth: " + adjust.getWarmth());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust colorbalance 0.34 0.2 -0.49", adjust.getWarmth() / 100f);
+
+        if (adjust.getVibrance() != 0f) return adjustVibrance(bitmap, adjust);
+        else if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustVibrance(Bitmap bmp, float vibrance) {
-        Log.d(TAG, "adjustVibrance: " + vibrance);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@adjust saturation 0 @adjust level 0 0.83921 0.8772", -vibrance / 100f);
+    public static Bitmap adjustVibrance(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustVibrance: " + adjust.getVibrance());
+        bitmap = CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@adjust saturation 0 @adjust level 0 0.83921 0.8772", -adjust.getVibrance() / 100f);
+
+        if (adjust.getVignette() != 0f) return adjustVignette(bitmap, adjust);
+        else return bitmap;
     }
 
-    public static Bitmap adjustVignette(Bitmap bmp, float vignette) {
-        Log.d(TAG, "adjustVignette: " + vignette);
-        return CGENativeLibrary.filterImage_MultipleEffects(bmp, "@vignette 0.1 0.9", -vignette / 100f);
+    public static Bitmap adjustVignette(Bitmap bitmap, AdjustModel adjust) {
+        Log.d(TAG, "adjustVignette: " + adjust.getVignette());
+        return CGENativeLibrary.filterImage_MultipleEffects(bitmap, "@vignette 0.1 0.9", -adjust.getVignette() / 100f);
     }
 
     protected static float cleanValue(float p_val, float p_limit) {

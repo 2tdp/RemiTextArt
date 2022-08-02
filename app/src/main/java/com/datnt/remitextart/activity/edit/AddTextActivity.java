@@ -169,6 +169,7 @@ public class AddTextActivity extends BaseActivity {
             if (typeFontAdapter != null) typeFontAdapter.setCurrent(0);
             positionStyleFont = 0;
             check = true;
+            positionFont = pos;
         });
         fontsAdapter.setData(lstFont);
         if (!check) getCurrentStyleFont(lstFont);

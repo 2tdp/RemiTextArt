@@ -437,7 +437,7 @@ public class EditActivity extends BaseActivity {
         ivExport.setOnClickListener(v -> exportPhoto());
 
         rlMain.setOnClickListener(v -> {
-            if (rlExpandEditOverlay.getVisibility() == View.GONE && vCrop.getVisibility() == View.GONE) {
+            if (vCrop.getVisibility() == View.GONE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             }
@@ -448,7 +448,7 @@ public class EditActivity extends BaseActivity {
                 seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionAddText);
         });
-        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(positionEmoji));
+        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditEmoji.setOnClickListener(v -> {
             if (llEditEmoji.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
@@ -467,21 +467,21 @@ public class EditActivity extends BaseActivity {
                 seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionBackground);
         });
-        rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(positionOverlay));
+        rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditOverlay.setOnClickListener(v -> {
             if (llEditOverlay.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionOverlay);
         });
-        rlCancelPickDecor.setOnClickListener(v -> seekAndHideOperation(positionDecor));
+        rlCancelPickDecor.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditDecor.setOnClickListener(v -> {
             if (vEditDecor.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             } else seekAndHideOperation(positionDecor);
         });
-        rlCancelPickTemp.setOnClickListener(v -> seekAndHideOperation(positionTemp));
+        rlCancelPickTemp.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditTemp.setOnClickListener(v -> {
             if (vEditTemp.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
@@ -555,7 +555,7 @@ public class EditActivity extends BaseActivity {
         });
         rlDelOverlay.setOnClickListener(v -> delOverlay());
         rlReplaceOverlay.setOnClickListener(v -> pickOverlay());
-        rlOpacityOverlay.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlOpacityOverlay.setOnClickListener(v -> opacityOverlay());
         rlFlipXOverlay.setOnClickListener(v -> flipOverlay(true));
         rlFlipYOverlay.setOnClickListener(v -> flipOverlay(false));
 
@@ -1579,19 +1579,22 @@ public class EditActivity extends BaseActivity {
         new Thread(() -> {
             Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
 
-            Bitmap bmOverlay = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
-                    strOverlay.replace("image", overlay.getNameOverlay()), 0.8f);
+            Bitmap bm;
+            if (backgroundModel.getOverlayModel() != null)
+                bm = UtilsBitmap.setOpacityBitmap(UtilsBitmap.getBitmapFromAsset(EditActivity.this,
+                        overlay.getNameFolder(), overlay.getNameOverlay(), false, false), backgroundModel.getOverlayModel().getOpacity());
+            else
+                bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
 
-            backgroundModel.setUriOverlayRoot(UtilsBitmap.saveBitmapToApp(EditActivity.this,
-                    UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false),
+            backgroundModel.setUriOverlayRoot(UtilsBitmap.saveBitmapToApp(EditActivity.this, bm,
                     nameFolderBackground, Utils.OVERLAY_ROOT));
+
+            Bitmap bmOverlay = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                    strOverlay.replace("image", backgroundModel.getUriOverlayRoot()), 0.8f);
 
             backgroundModel.setUriOverlay(UtilsBitmap.saveBitmapToApp(EditActivity.this, bmOverlay, nameFolderBackground, Utils.BACKGROUND_OVERLAY_CACHE));
 
-            Message message = new Message();
-            message.what = 0;
-            message.obj = bmOverlay;
-            handlerLoading.sendMessage(message);
+            handlerLoading.sendEmptyMessage(0);
         }).start();
     }
 
@@ -1603,6 +1606,9 @@ public class EditActivity extends BaseActivity {
 
             seekAndHideOperation(positionOverlay);
             if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
+            if (backgroundModel.getOverlayModel() != null)
+                overlay.setOpacity(backgroundModel.getOverlayModel().getOpacity());
+
             backgroundModel.setOverlayModel(overlay);
             addOverlay(overlay);
         });
@@ -1632,35 +1638,68 @@ public class EditActivity extends BaseActivity {
     }
 
     //Opacity Overlay
-//    private void opacityOverlay(DrawableStickerCustom drawableSticker) {
-//        seekAndHideViewOverlay(0);
-//
-//        int opacityOld = drawableSticker.getOverlayModel().getOpacity() * 100 / 255;
-//        sbOpacityOverlay.setProgress(opacityOld);
-//        tvResetEditOverlay.setOnClickListener(v -> {
-//            sbOpacityOverlay.setProgress(opacityOld);
-//            drawableSticker.getOverlayModel().setOpacity(opacityOld * 255 / 100);
-//            vSticker.replace(drawableSticker.getOverlayModel().opacity(EditActivity.this, drawableSticker), true);
-//        });
-//
-//        sbOpacityOverlay.setOnSeekbarResult(new OnSeekbarResult() {
-//            @Override
-//            public void onDown(View v) {
-//
-//            }
-//
-//            @Override
-//            public void onMove(View v, int value) {
-//                drawableSticker.getOverlayModel().setOpacity(value * 255 / 100);
-//                vSticker.replace(drawableSticker.getOverlayModel().opacity(EditActivity.this, drawableSticker), true);
-//            }
-//
-//            @Override
-//            public void onUp(View v, int value) {
-//
-//            }
-//        });
-//    }
+    private void opacityOverlay() {
+        seekAndHideViewOverlay(0);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
+        Bitmap bmOverlay = BitmapFactory.decodeFile(backgroundModel.getUriOverlayRoot());
+
+        int opacityOld = backgroundModel.getOverlayModel().getOpacity() * 100 / 255;
+        sbOpacityOverlay.setProgress(opacityOld);
+        tvResetEditOverlay.setOnClickListener(v -> {
+            if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
+
+            new Thread(() -> {
+                sbOpacityOverlay.setProgress(opacityOld);
+                backgroundModel.getOverlayModel().setOpacity(opacityOld * 255 / 100);
+
+                Bitmap bmOverlayOpacity = UtilsBitmap.setOpacityBitmap(bmOverlay, backgroundModel.getOverlayModel().getOpacity());
+
+                backgroundModel.setUriOverlayRoot(UtilsBitmap.saveBitmapToApp(EditActivity.this, bmOverlayOpacity,
+                        nameFolderBackground, Utils.OVERLAY_ROOT));
+
+                Bitmap overlay = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                        strOverlay.replace("image", backgroundModel.getUriOverlayRoot()), 0.8f);
+
+                backgroundModel.setUriOverlay(UtilsBitmap.saveBitmapToApp(EditActivity.this, overlay,
+                        nameFolderBackground, Utils.BACKGROUND_OVERLAY_CACHE));
+
+                handlerLoading.sendEmptyMessage(0);
+            }).start();
+        });
+
+        sbOpacityOverlay.setOnSeekbarResult(new OnSeekbarResult() {
+            @Override
+            public void onDown(View v) {
+
+            }
+
+            @Override
+            public void onMove(View v, int value) {
+            }
+
+            @Override
+            public void onUp(View v, int value) {
+                if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
+
+                new Thread(() -> {
+                    backgroundModel.getOverlayModel().setOpacity(value * 255 / 100);
+
+                    Bitmap bmOverlayOpacity = UtilsBitmap.setOpacityBitmap(bmOverlay, backgroundModel.getOverlayModel().getOpacity());
+                    backgroundModel.setUriOverlayRoot(UtilsBitmap.saveBitmapToApp(EditActivity.this, bmOverlayOpacity,
+                            nameFolderBackground, Utils.OVERLAY_ROOT));
+
+                    Bitmap overlay = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                            strOverlay.replace("image", backgroundModel.getUriOverlayRoot()), 0.8f);
+
+                    backgroundModel.setUriOverlay(UtilsBitmap.saveBitmapToApp(EditActivity.this, overlay,
+                            nameFolderBackground, Utils.BACKGROUND_OVERLAY_CACHE));
+
+                    handlerLoading.sendEmptyMessage(0);
+                }).start();
+            }
+        });
+    }
 
     private void flipOverlay(boolean flipX) {
         if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
@@ -1675,10 +1714,7 @@ public class EditActivity extends BaseActivity {
 
             backgroundModel.setUriOverlay(UtilsBitmap.saveBitmapToApp(EditActivity.this, bmOverlay, nameFolderBackground, Utils.BACKGROUND_OVERLAY_CACHE));
 
-            Message message = new Message();
-            message.what = 0;
-            message.obj = bmOverlay;
-            handlerLoading.sendMessage(message);
+            handlerLoading.sendEmptyMessage(0);
         }).start();
     }
 
@@ -2412,54 +2448,7 @@ public class EditActivity extends BaseActivity {
 
     private void adjust(AdjustModel adjust, boolean fulReset) {
         if (!fulReset) {
-            if (adjust.getBrightness() != 0f) {
-                bitmap = UtilsAdjust.adjustBrightness(bmAdjust, adjust.getBrightness());
-                Log.d("2tdpp", "adjust: brightness - " + adjust.getBrightness());
-            }
-            if (adjust.getContrast() != 0f) {
-                bitmap = UtilsAdjust.adjustContrast(bmAdjust, adjust.getContrast());
-                Log.d("2tdpp", "adjust: contrast - " + adjust.getContrast());
-            }
-            if (adjust.getExposure() != 0f) {
-                bitmap = UtilsAdjust.adjustExposure(bmAdjust, adjust.getExposure());
-                Log.d("2tdpp", "adjust: exposure - " + adjust.getExposure());
-            }
-            if (adjust.getHighlight() != 0f) {
-                bitmap = UtilsAdjust.adjustHighLight(bmAdjust, adjust.getHighlight());
-                Log.d("2tdpp", "adjust: highlight - " + adjust.getHighlight());
-            }
-            if (adjust.getShadows() != 0f) {
-                bitmap = UtilsAdjust.adjustShadow(bmAdjust, adjust.getShadows());
-                Log.d("2tdpp", "adjust: shadow - " + adjust.getShadows());
-            }
-            if (adjust.getBlacks() != 0f) {
-                bitmap = UtilsAdjust.adjustBlacks(bmAdjust, adjust.getBlacks());
-                Log.d("2tdpp", "adjust: blacks - " + adjust.getBlacks());
-            }
-            if (adjust.getWhites() != 0f) {
-                bitmap = UtilsAdjust.adjustWhites(bmAdjust, adjust.getWhites());
-                Log.d("2tdpp", "adjust: whites - " + adjust.getWhites());
-            }
-            if (adjust.getSaturation() != 0f) {
-                bitmap = UtilsAdjust.adjustSaturation(bmAdjust, adjust.getSaturation());
-                Log.d("2tdpp", "adjust: saturation - " + adjust.getSaturation());
-            }
-            if (adjust.getHue() != 0f) {
-                bitmap = UtilsAdjust.adjustHue(bmAdjust, adjust.getHue());
-                Log.d("2tdpp", "adjust: hue - " + adjust.getHue());
-            }
-            if (adjust.getWarmth() != 0f) {
-                bitmap = UtilsAdjust.adjustWarmth(bmAdjust, adjust.getWarmth());
-                Log.d("2tdpp", "adjust: warmth - " + adjust.getWarmth());
-            }
-            if (adjust.getVibrance() != 0f) {
-                bitmap = UtilsAdjust.adjustVibrance(bmAdjust, adjust.getVibrance());
-                Log.d("2tdpp", "adjust: vibrance - " + adjust.getVibrance());
-            }
-            if (adjust.getVignette() != 0f) {
-                bitmap = UtilsAdjust.adjustVignette(bmAdjust, adjust.getVignette());
-                Log.d("2tdpp", "adjust: vignette - " + adjust.getVignette());
-            }
+            bitmap = UtilsAdjust.adjust(bmAdjust, adjust);
 
             if (bitmap != null) vMain.setImageBitmap(bitmap);
         } else {

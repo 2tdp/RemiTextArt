@@ -109,11 +109,6 @@ public class OverlayModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker opacity(Context context, @NonNull Sticker sticker) {
-        if (sticker instanceof DrawableStickerCustom) {
-            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
-            drawableSticker.setAlpha(opacity);
-            return sticker;
-        }
         return null;
     }
 

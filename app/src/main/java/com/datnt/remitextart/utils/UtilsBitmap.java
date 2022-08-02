@@ -225,4 +225,14 @@ public class UtilsBitmap {
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
+
+    public static Bitmap setOpacityBitmap(Bitmap bitmap, int opacity) {
+        Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(newBitmap);
+        Paint alphaPaint = new Paint();
+        alphaPaint.setAlpha(opacity);
+        canvas.drawBitmap(bitmap, 0, 0, alphaPaint);
+
+        return newBitmap;
+    }
 }
