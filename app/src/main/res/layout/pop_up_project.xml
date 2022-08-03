@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/duplicateProject"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_5sdp"
@@ -18,7 +18,7 @@
         android:padding="@dimen/_5sdp"
         android:text="@string/duplicate"
         android:textColor="@color/black"
-        android:textSize="@dimen/_13ssp" />
+        android:textSize="@dimen/_10ssp" />
 
     <View
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/delProject"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_5sdp"
@@ -36,6 +36,6 @@
         android:padding="@dimen/_5sdp"
         android:text="@string/del"
         android:textColor="@color/red"
-        android:textSize="@dimen/_13ssp" />
+        android:textSize="@dimen/_10ssp" />
 
 </LinearLayout>

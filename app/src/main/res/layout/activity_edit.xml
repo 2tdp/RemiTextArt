@@ -206,7 +206,6 @@
             android:layout_above="@+id/llOptionLayer"
             android:layout_below="@+id/rlCancelLayer"
             android:layout_marginStart="@dimen/_5sdp"
-            android:padding="@dimen/_2sdp"
             android:scrollbars="none" />
 
         <LinearLayout
@@ -221,8 +220,10 @@
             <RelativeLayout
                 android:id="@+id/rlDelLayer"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -244,8 +245,10 @@
             <RelativeLayout
                 android:id="@+id/rlDuplicateLayer"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -267,8 +270,10 @@
             <RelativeLayout
                 android:id="@+id/rlLook"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -291,8 +296,10 @@
             <RelativeLayout
                 android:id="@+id/rlLock"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_55sdp"
+                android:layout_height="@dimen/_50sdp"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -622,8 +629,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlDelTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -644,8 +653,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlReplaceTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -666,8 +677,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlDuplicateTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -688,8 +701,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlColorTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -711,8 +726,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlBackgroundTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -733,8 +750,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlShadowTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -755,8 +774,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlOpacityTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -777,8 +798,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFlipXTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -799,8 +822,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFlipYTemp"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1748,8 +1773,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlBrightness"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1772,8 +1800,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlContrast"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1796,8 +1827,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlExposure"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1820,8 +1854,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlHighLight"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1844,8 +1881,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlShadows"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1868,9 +1908,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlBlacks"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1893,9 +1935,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlWhites"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1919,9 +1963,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlSaturation"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1945,9 +1991,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlHue"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1971,9 +2019,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlWarmth"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -1997,9 +2047,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlVibrance"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -2023,9 +2075,11 @@
 
                     <RelativeLayout
                         android:id="@+id/rlVignette"
-                        android:layout_width="@dimen/_55sdp"
+                        android:layout_width="@dimen/_65sdp"
                         android:layout_height="@dimen/_64sdp"
                         android:layout_weight="1"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:foreground="?android:attr/selectableItemBackground">
 
                         <ImageView
@@ -2066,8 +2120,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlDelBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2088,8 +2145,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlReplaceBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2110,8 +2169,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlAdjustBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2132,8 +2194,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFilterBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2154,8 +2219,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlOpacityBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2176,9 +2244,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFlipYBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -2199,9 +2269,11 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFlipXBackground"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_60sdp"
                     android:layout_height="@dimen/_84sdp"
                     android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3459,8 +3531,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlDelText"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3481,8 +3555,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlET"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3503,8 +3579,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlDuplicateText"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3525,8 +3603,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlFontSize"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3547,8 +3627,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlColor"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3570,8 +3652,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlTransform"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3592,8 +3676,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlShadow"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3614,8 +3700,10 @@
 
                 <RelativeLayout
                     android:id="@+id/rlOpacity"
-                    android:layout_width="@dimen/_55sdp"
+                    android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_84sdp"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -3658,7 +3746,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlAddText"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3688,7 +3776,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlStick"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3718,7 +3806,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlImage"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3748,7 +3836,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlBackground"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3778,7 +3866,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlBlend"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3808,7 +3896,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlDecor"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3838,7 +3926,7 @@
 
             <RelativeLayout
                 android:id="@+id/rlCrop"
-                android:layout_width="@dimen/_84sdp"
+                android:layout_width="@dimen/_90sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
@@ -3892,7 +3980,10 @@
             <RelativeLayout
                 android:layout_width="@dimen/_64sdp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp">
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/ivOriginal"
@@ -3921,7 +4012,10 @@
             <RelativeLayout
                 android:layout_width="@dimen/_84sdp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp">
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/iv1_1"
@@ -3950,7 +4044,10 @@
             <RelativeLayout
                 android:layout_width="@dimen/_54sdp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp">
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/iv9_16"
@@ -3979,7 +4076,10 @@
             <RelativeLayout
                 android:layout_width="@dimen/_64sdp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/_10sdp">
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/iv4_5"
@@ -4007,7 +4107,10 @@
 
             <RelativeLayout
                 android:layout_width="@dimen/_84sdp"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
                     android:id="@+id/iv16_9"

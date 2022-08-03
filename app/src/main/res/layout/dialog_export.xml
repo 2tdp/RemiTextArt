@@ -40,6 +40,8 @@
         android:id="@+id/llSavePhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:padding="@dimen/_5sdp">
@@ -68,6 +70,8 @@
         android:id="@+id/llRemovePhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:padding="@dimen/_5sdp">
@@ -76,7 +80,7 @@
             android:layout_width="@dimen/_32sdp"
             android:layout_height="@dimen/_32sdp"
             android:layout_gravity="center"
-            android:padding="@dimen/_8sdp"
+            android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_vip" />
 
         <TextView

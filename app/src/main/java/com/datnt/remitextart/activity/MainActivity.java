@@ -182,7 +182,7 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
+        ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
         if (!lstProject.isEmpty()) {
             projectAdapter.setData(lstProject);
             rlTop.setVisibility(View.VISIBLE);

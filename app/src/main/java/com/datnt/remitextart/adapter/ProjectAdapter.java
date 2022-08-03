@@ -3,6 +3,7 @@ package com.datnt.remitextart.adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,10 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     @Override
     public void onBindViewHolder(@NonNull ProjectHolder holder, int position) {
         holder.onBind(position);
+        holder.ivMore.setOnClickListener(v -> {
+            holder.setPopUpWindow(position);
+            myPopup.showAsDropDown(v, -155, 0);
+        });
     }
 
     @Override
@@ -67,7 +72,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
         private final RoundedImageView ivProject;
         private final ImageView ivMore;
-        private TextView tvDuplicate, tvDel;
 
         public ProjectHolder(@NonNull View itemView) {
             super(itemView);
@@ -77,8 +81,6 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             if (isHomeProject) ivMore.setVisibility(View.VISIBLE);
             else ivMore.setVisibility(View.GONE);
-
-            setPopUpWindow();
         }
 
         public void onBind(int position) {
@@ -87,32 +89,41 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             ivProject.setImageBitmap(BitmapFactory.decodeFile(project.getUriThumb()));
 
-            ivMore.setOnClickListener(v -> myPopup.showAsDropDown(v, -155, 0));
-            tvDuplicate.setOnClickListener(v -> {
-                Project p = new Project(project);
-                lstProject.add(p);
-                DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);
-                changeNotify();
-                myPopup.dismiss();
-            });
-            tvDel.setOnClickListener(v -> {
-                lstProject.remove(position);
-                DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);
-                changeNotify();
-                myPopup.dismiss();
-            });
             itemView.setOnClickListener(v -> callBack.callBackItem(project, position));
         }
 
-        private void setPopUpWindow() {
+        private void setPopUpWindow(int position) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             @SuppressLint("InflateParams")
             View view = inflater.inflate(R.layout.pop_up_project, null);
 
-            tvDuplicate = view.findViewById(R.id.duplicateProject);
-            tvDel = view.findViewById(R.id.delProject);
+            TextView tvDuplicate = view.findViewById(R.id.duplicateProject);
+            TextView tvDel = view.findViewById(R.id.delProject);
 
             myPopup = new PopupWindow(view, 255, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+
+            tvDuplicate.setOnClickListener(v -> {
+                editListProject(position, 1);
+                myPopup.dismiss();
+            });
+            tvDel.setOnClickListener(v -> {
+                editListProject(position, 0);
+                myPopup.dismiss();
+            });
+        }
+
+        private void editListProject(int index, int numCase) {
+            switch (numCase) {
+                case 0:
+                    lstProject.remove(index);
+                    break;
+                case 1:
+                    Project project = new Project(lstProject.get(index));
+                    lstProject.add(project);
+                    break;
+            }
+            DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);
+            changeNotify();
         }
     }
 

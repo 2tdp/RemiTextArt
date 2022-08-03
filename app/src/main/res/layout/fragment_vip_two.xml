@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:focusable="true"
     android:clickable="true"
+    android:focusable="true"
     tools:context=".fragment.vip.VipTwoFragment">
 
     <RelativeLayout
@@ -131,6 +131,9 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_34sdp"
             android:background="@drawable/border_unclick_font"
+            android:clickable="true"
+            android:focusable="true"
+            android:theme="@android:style/ThemeOverlay.Material.Dark"
             android:foreground="?android:attr/selectableItemBackground">
 
             <ImageView
@@ -171,6 +174,9 @@
             android:layout_height="@dimen/_34sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/border_unclick_font"
+            android:clickable="true"
+            android:focusable="true"
+            android:theme="@android:style/ThemeOverlay.Material.Dark"
             android:foreground="?android:attr/selectableItemBackground">
 
             <ImageView
@@ -211,6 +217,9 @@
             android:layout_height="@dimen/_34sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/border_unclick_font"
+            android:clickable="true"
+            android:focusable="true"
+            android:theme="@android:style/ThemeOverlay.Material.Dark"
             android:foreground="?android:attr/selectableItemBackground">
 
             <ImageView
@@ -267,6 +276,7 @@
             android:textColor="@color/white" />
 
         <TextView
+            android:id="@+id/tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"

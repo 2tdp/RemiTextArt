@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -17,7 +18,8 @@ public class VipTwoFragment extends Fragment {
     private ImageView ivBack, ivMonth, ivYear, ivLifetime;
     private RelativeLayout rlMonth, rlYear, rlLifeTime;
 
-    public VipTwoFragment(){}
+    public VipTwoFragment() {
+    }
 
     public static VipTwoFragment newInstance() {
         return new VipTwoFragment();
@@ -77,5 +79,7 @@ public class VipTwoFragment extends Fragment {
         rlMonth = view.findViewById(R.id.rlMonth);
         rlYear = view.findViewById(R.id.rlYear);
         rlLifeTime = view.findViewById(R.id.rlLifeTime);
+        TextView tv = view.findViewById(R.id.tv);
+        tv.setText(Utils.underLine(getResources().getString(R.string.des_vip_1)));
     }
 }

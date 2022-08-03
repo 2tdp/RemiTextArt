@@ -66,8 +66,10 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.Templa
             super(itemView);
             ivTemp = itemView.findViewById(R.id.ivTemp);
             ivTempText = itemView.findViewById(R.id.ivTempText);
-            ivMore = itemView.findViewById(R.id.ivMore);
-            ivMore.setVisibility(View.GONE);
+            if (layoutResource != R.layout.item_template_text) {
+                ivMore = itemView.findViewById(R.id.ivMore);
+                ivMore.setVisibility(View.GONE);
+            }
         }
 
         public void onBind(int position) {

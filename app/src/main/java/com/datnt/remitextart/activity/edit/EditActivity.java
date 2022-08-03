@@ -238,7 +238,7 @@ public class EditActivity extends BaseActivity {
     private ArrayList<FilterModel> lstFilter;
     private ArrayList<BlendModel> lstBlend;
     private ArrayList<ColorModel> lstColor;
-    private boolean isColor, isBackground;
+    private boolean isColor, isBackground, isReplaceBackground;
     private String strPicUserOld = "old", strPicAppOld = "old";
     private ColorModel colorModelOld = null;
     private TemplateModel templatelOld = new TemplateModel();
@@ -465,7 +465,8 @@ public class EditActivity extends BaseActivity {
             if (vEditBackground.getVisibility() == View.VISIBLE) {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionBackground);
+            } else
+                seekAndHideOperation(positionBackground);
         });
         rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(indexDefault));
         rlCancelEditOverlay.setOnClickListener(v -> {
@@ -538,7 +539,7 @@ public class EditActivity extends BaseActivity {
         //background
         rlBackground.setOnClickListener(v -> seekAndHideOperation(positionBackground));
         rlDelBackground.setOnClickListener(v -> {
-            getData(2, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), null, false);
+            getData(3, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), null, false);
             Utils.showToast(this, getResources().getString(R.string.del));
         });
         rlReplaceBackground.setOnClickListener(v -> replaceBackground());
@@ -610,7 +611,10 @@ public class EditActivity extends BaseActivity {
         rlLook.setOnClickListener(v -> lookLayer(vSticker.getCurrentSticker()));
 
         //size
-        rlCrop.setOnClickListener(v -> seekAndHideOperation(positionSize));
+        rlCrop.setOnClickListener(v -> {
+            isReplaceBackground = true;
+            seekAndHideOperation(positionSize);
+        });
         ivOriginal.setOnClickListener(v -> checkSize(positionOriginal));
         iv1_1.setOnClickListener(v -> checkSize(position1_1));
         iv9_16.setOnClickListener(v -> checkSize(position9_16));
@@ -669,8 +673,10 @@ public class EditActivity extends BaseActivity {
             backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(this, bmMain,
                     nameFolderBackground, Utils.BACKGROUND));
 
-            if (!backgroundModel.getUriOverlayRoot().equals(""))
+            if (!backgroundModel.getUriOverlayRoot().equals("")) {
+                if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
                 addOverlay(backgroundModel.getOverlayModel());
+            }
 
             //setSize
             vSticker.getLayoutParams().width = bmMain.getWidth();
@@ -1786,8 +1792,9 @@ public class EditActivity extends BaseActivity {
 
     //Background
     private void replaceBackground() {
+        isReplaceBackground = true;
         Intent intent = new Intent();
-        intent.putExtra("pickBG", true);
+        intent.putExtra("pickBG", isReplaceBackground);
         intent.setComponent(new ComponentName(getPackageName(), CreateProjectActivity.class.getName()));
         startActivity(intent, ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
     }
@@ -2452,6 +2459,7 @@ public class EditActivity extends BaseActivity {
 
             if (bitmap != null) vMain.setImageBitmap(bitmap);
         } else {
+            bitmap = null;
             backgroundModel.setAdjustModel(new AdjustModel(0f, 0f, 0f,
                     0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f));
             vMain.setImageBitmap(bmAdjust);
@@ -2490,7 +2498,9 @@ public class EditActivity extends BaseActivity {
                     rlEditFilterBackground.setAnimation(animation);
                     rlEditFilterBackground.setVisibility(View.VISIBLE);
                 }
-                setUpDataFilter(BitmapFactory.decodeFile(backgroundModel.getUriCache()));
+                if (backgroundModel.getOverlayModel() == null)
+                    setUpDataFilter(BitmapFactory.decodeFile(backgroundModel.getUriCache()));
+                else setUpDataFilter(BitmapFactory.decodeFile(backgroundModel.getUriOverlay()));
 
                 tvTitleEditBackground.setText(R.string.filter);
                 break;
@@ -4445,12 +4455,14 @@ public class EditActivity extends BaseActivity {
                     vEditText.setAnimation(animation);
                     vEditText.setVisibility(View.VISIBLE);
                 }
-                TextStickerCustom textSticker = (TextStickerCustom) vSticker.getCurrentSticker();
-                if (textSticker != null)
-                    if (textSticker.getTextModel().getColorModel() != null)
-                        ivColorText.setImageDrawable(createGradientDrawable(textSticker.getTextModel().getColorModel()));
-                    else
-                        ivColorText.setImageDrawable(createGradientDrawable(new ColorModel(Color.BLACK, Color.BLACK, 0, false)));
+                if (vSticker.getCurrentSticker() instanceof TextStickerCustom) {
+                    TextStickerCustom textSticker = (TextStickerCustom) vSticker.getCurrentSticker();
+                    if (textSticker != null)
+                        if (textSticker.getTextModel().getColorModel() != null)
+                            ivColorText.setImageDrawable(createGradientDrawable(textSticker.getTextModel().getColorModel()));
+                        else
+                            ivColorText.setImageDrawable(createGradientDrawable(new ColorModel(Color.BLACK, Color.BLACK, 0, false)));
+                }
                 break;
             case positionSize:
                 Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriRoot());
@@ -4673,9 +4685,11 @@ public class EditActivity extends BaseActivity {
                 if (vCrop.getVisibility() == View.VISIBLE) vCrop.setVisibility(View.GONE);
                 if (vColor.getVisibility() == View.VISIBLE) vColor.setVisibility(View.GONE);
 
-                DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, templatelOld, getId(), Utils.TEMPLATE);
-                vSticker.addSticker(drawableSticker);
-                seekAndHideOperation(positionTemp);
+                if (!isReplaceBackground) {
+                    DrawableStickerCustom drawableSticker = new DrawableStickerCustom(this, templatelOld, getId(), Utils.TEMPLATE);
+                    vSticker.addSticker(drawableSticker);
+                    seekAndHideOperation(positionTemp);
+                }
                 break;
             case positionColor:
                 isColor = true;
