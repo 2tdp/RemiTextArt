@@ -164,7 +164,7 @@
     <RelativeLayout
         android:id="@+id/rlExpandLayer"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_145sdp"
+        android:layout_height="@dimen/_150sdp"
         android:layout_alignParentBottom="true"
         android:background="@drawable/boder_layout_radius_top"
         android:visibility="gone">
@@ -220,7 +220,7 @@
             <RelativeLayout
                 android:id="@+id/rlDelLayer"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_50sdp"
+                android:layout_height="@dimen/_55sdp"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
@@ -229,7 +229,8 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:src="@drawable/ic_trash" />
 
                 <TextView
@@ -245,7 +246,7 @@
             <RelativeLayout
                 android:id="@+id/rlDuplicateLayer"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_50sdp"
+                android:layout_height="@dimen/_55sdp"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
@@ -254,7 +255,8 @@
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:src="@drawable/ic_duplicate" />
 
                 <TextView
@@ -270,7 +272,7 @@
             <RelativeLayout
                 android:id="@+id/rlLook"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_50sdp"
+                android:layout_height="@dimen/_55sdp"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
@@ -280,7 +282,8 @@
                     android:id="@+id/ivLook"
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:src="@drawable/ic_unlook" />
 
                 <TextView
@@ -296,7 +299,7 @@
             <RelativeLayout
                 android:id="@+id/rlLock"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/_50sdp"
+                android:layout_height="@dimen/_55sdp"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
@@ -306,7 +309,8 @@
                     android:id="@+id/ivLock"
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:src="@drawable/ic_unlock" />
 
                 <TextView
@@ -3746,16 +3750,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlAddText"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvAddText"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3769,6 +3773,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/add_text"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3776,16 +3781,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlStick"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvSticker"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3799,6 +3804,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/sticker"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3806,16 +3812,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlImage"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvImage"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3829,6 +3835,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/image"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3836,16 +3843,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlBackground"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvBackground"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3859,6 +3866,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/background"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3866,16 +3874,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlBlend"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvBlend"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3889,6 +3897,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/overlay"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3896,16 +3905,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlDecor"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvDecor"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3919,6 +3928,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/decor"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
@@ -3926,16 +3936,16 @@
 
             <RelativeLayout
                 android:id="@+id/rlCrop"
-                android:layout_width="@dimen/_90sdp"
+                android:layout_width="@dimen/_84sdp"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
                 android:foreground="?android:attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp">
+                android:padding="@dimen/_2sdp">
 
                 <ImageView
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_width="@dimen/_28sdp"
+                    android:layout_height="@dimen/_28sdp"
                     android:layout_above="@+id/tvSize"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="@dimen/_15sdp"
@@ -3949,6 +3959,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:fontFamily="@font/poppins_regular"
+                    android:gravity="center"
                     android:text="@string/size"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />

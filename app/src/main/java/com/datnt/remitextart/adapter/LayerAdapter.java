@@ -106,13 +106,22 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             else itemView.setBackgroundResource(R.drawable.border_item_layer_unselected);
 
 
-            if (layer.getSticker().isLock())
+            if (layer.getSticker().isLock() && layer.getSticker().isLook()) {
+                ivLock.setVisibility(View.GONE);
+                ivLook.setVisibility(View.VISIBLE);
+                ivLook.setImageResource(R.drawable.ic_lock1);
+            } else if (layer.getSticker().isLock()) {
                 ivLock.setVisibility(View.VISIBLE);
-            else ivLock.setVisibility(View.GONE);
+                ivLock.setImageResource(R.drawable.ic_lock1);
+                ivLook.setVisibility(View.VISIBLE);
+                ivLook.setImageResource(R.drawable.ic_look1);
+            } else if (layer.getSticker().isLook()) ivLook.setVisibility(View.GONE);
+            else {
+                ivLock.setVisibility(View.GONE);
+                ivLook.setVisibility(View.VISIBLE);
+                ivLook.setImageResource(R.drawable.ic_look1);
+            }
 
-            if (layer.getSticker().isLook())
-                ivLook.setVisibility(View.GONE);
-            else ivLook.setVisibility(View.VISIBLE);
 
             if (layer.getSticker() instanceof DrawableStickerCustom) {
                 DrawableStickerCustom drawableSticker = (DrawableStickerCustom) layer.getSticker();

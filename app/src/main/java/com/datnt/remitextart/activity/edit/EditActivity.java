@@ -5234,6 +5234,14 @@ public class EditActivity extends BaseActivity {
     private void addDataProject() {
         if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
 
+        if (!project.getLstTextModel().isEmpty()
+                || !project.getLstEmojiModel().isEmpty()
+                || !project.getLstImageModel().isEmpty()
+                || !project.getLstDecorModel().isEmpty()
+                || !project.getLstTempModel().isEmpty())
+            ivLayer.setImageResource(R.drawable.ic_layer);
+        else ivLayer.setImageResource(R.drawable.ic_layer_uncheck);
+
         if (!project.getLstTextModel().isEmpty()) {
             indexMatrix = 0;
             setMatrixText(indexMatrix);
@@ -5360,6 +5368,11 @@ public class EditActivity extends BaseActivity {
         } else {
             @SuppressLint("InflateParams")
             View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit, null);
+
+            LinearLayout rlBack = v.findViewById(R.id.rlBack);
+            rlBack.getLayoutParams().width = (int) (getResources().getDisplayMetrics().widthPixels
+                    - getResources().getDimension(com.intuit.sdp.R.dimen._20sdp));
+
             TextView tvCancel = v.findViewById(R.id.tvCancel);
             TextView tvDiscard = v.findViewById(R.id.tvDiscard);
             TextView tvSave = v.findViewById(R.id.tvSave);

@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/trans"
-    android:padding="@dimen/_5sdp">
+    android:background="@color/trans">
 
     <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/ivPic"
+        android:id="@+id/ivProject"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_84sdp"
+        android:layout_height="@dimen/_105sdp"
         android:scaleType="centerCrop"
-        app:riv_border_width="0.5dp"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp"
         app:riv_border_color="@color/gray_2"
-        app:riv_corner_radius="@dimen/_10sdp" />
+        app:riv_border_width="0.5dp"
+        app:riv_corner_radius="@dimen/_15sdp" />
 </RelativeLayout>

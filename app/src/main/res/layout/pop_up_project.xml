@@ -1,41 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:background="@drawable/boder_dialog"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/_5sdp"
-    android:paddingBottom="@dimen/_5sdp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/duplicateProject"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/ivDialog"
+        android:layout_width="@dimen/_13sdp"
+        android:layout_height="@dimen/_13sdp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/_14sdp"
+        android:src="@drawable/iv_dialog_project" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        android:fontFamily="@font/poppins_regular"
-        android:padding="@dimen/_5sdp"
-        android:text="@string/duplicate"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_10ssp" />
+        android:layout_marginTop="@dimen/_8sdp"
+        android:background="@drawable/boder_dialog"
+        android:orientation="vertical"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:background="@color/gray" />
+        <TextView
+            android:id="@+id/duplicateProject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:fontFamily="@font/poppins_regular"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/duplicate"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11ssp" />
 
-    <TextView
-        android:id="@+id/delProject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        android:fontFamily="@font/poppins_regular"
-        android:padding="@dimen/_5sdp"
-        android:text="@string/del"
-        android:textColor="@color/red"
-        android:textSize="@dimen/_10ssp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:background="@color/gray" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/delProject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:fontFamily="@font/poppins_regular"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/del"
+            android:textColor="@color/red"
+            android:textSize="@dimen/_11ssp" />
+    </LinearLayout>
+
+</RelativeLayout>

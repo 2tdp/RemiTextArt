@@ -97,7 +97,7 @@ public class MainActivity extends BaseActivity {
     private void setData() {
         ArrayList<Project> lstProject = DataLocalManager.getListProject(this, "lstProject");
 
-        projectAdapter = new ProjectAdapter(this, false, (o, pos) -> {
+        projectAdapter = new ProjectAdapter(this, R.layout.item_project_home, (o, pos) -> {
             DataLocalManager.setProject((Project) o, Utils.PROJECT);
             DataLocalManager.setInt(pos, "indexProject");
             DataLocalManager.setColor(null, "color");

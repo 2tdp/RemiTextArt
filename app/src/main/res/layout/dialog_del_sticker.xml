@@ -7,7 +7,10 @@
     android:layout_marginEnd="@dimen/_20sdp"
     android:background="@drawable/boder_dialog"
     android:orientation="vertical"
-    android:padding="@dimen/_10sdp">
+    android:paddingStart="@dimen/_10sdp"
+    android:paddingTop="@dimen/_10sdp"
+    android:paddingEnd="@dimen/_10sdp"
+    android:paddingBottom="@dimen/_5sdp">
 
     <TextView
         android:id="@+id/tvDes"
@@ -29,7 +32,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/_5sdp">
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_5sdp">
 
         <TextView
             android:id="@+id/tvNo"
@@ -40,7 +45,6 @@
             android:fontFamily="@font/poppins_medium"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:padding="@dimen/_5sdp"
             android:text="@string/no"
             android:textColor="@color/green"
             android:textSize="@dimen/_15ssp" />
@@ -48,8 +52,8 @@
         <View
             android:layout_width="0.5dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:background="#AFAFAF" />
 
         <TextView
@@ -61,7 +65,6 @@
             android:fontFamily="@font/poppins_regular"
             android:foreground="?android:attr/selectableItemBackground"
             android:gravity="center"
-            android:padding="@dimen/_5sdp"
             android:text="@string/yes"
             android:textColor="@color/black"
             android:textSize="@dimen/_15ssp" />

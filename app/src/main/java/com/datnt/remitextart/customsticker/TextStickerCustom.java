@@ -371,7 +371,7 @@ public class TextStickerCustom extends Sticker {
         String text = getText();
 
         if (text != null) {
-            int line = 1, max = 0;
+            int line, max = 0;
 
             String[] temp = text.split("\n");
             line = temp.length;
@@ -384,11 +384,6 @@ public class TextStickerCustom extends Sticker {
             textPaint.getTextBounds(text, 0, text.length(), textRect);
 
             GradientDrawable drawable = new GradientDrawable();
-//            if (text.length() < 20)
-//                drawable.setSize((int) (textRect.width() * 1.2f), (int) (textRect.height() * 2f));
-//            else
-//                drawable.setSize((int) context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp), (int) (textRect.height() * 2f));
-
 
             if (text.length() > 20 && line != 1)
                 drawable.setSize((int) (textRect.width() * 1.1f * max / text.length()), (int) (textRect.height() * 1.2f * line));
@@ -411,9 +406,7 @@ public class TextStickerCustom extends Sticker {
     @Override
     public void release() {
         super.release();
-        if (drawable != null) {
-            drawable = null;
-        }
+        if (drawable != null) drawable = null;
     }
 
     public int getId() {

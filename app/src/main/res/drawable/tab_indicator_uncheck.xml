@@ -4,7 +4,7 @@
     <item android:gravity="center">
         <shape>
             <size
-                android:width="@dimen/_75sdp"
+                android:width="@dimen/_80sdp"
                 android:height="@dimen/_34sdp" />
             <corners android:radius="@dimen/_20sdp" />
             <solid android:color="@color/trans" />

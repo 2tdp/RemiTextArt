@@ -5,8 +5,7 @@
     android:layout_gravity="center"
     android:background="@drawable/tab_indicator_uncheck"
     android:gravity="center"
-    android:orientation="horizontal"
-    android:padding="@dimen/_5sdp">
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/tvColor"

@@ -30,14 +30,14 @@ import java.util.ArrayList;
 public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectHolder> {
 
     private Context context;
-    private final boolean isHomeProject;
     private ArrayList<Project> lstProject;
     private final ICallBackItem callBack;
+    private final int layoutResource;
     private PopupWindow myPopup;
 
-    public ProjectAdapter(Context context, boolean isHomeProject, ICallBackItem callBack) {
+    public ProjectAdapter(Context context, int layoutResource, ICallBackItem callBack) {
         this.context = context;
-        this.isHomeProject = isHomeProject;
+        this.layoutResource = layoutResource;
         this.callBack = callBack;
         lstProject = new ArrayList<>();
     }
@@ -50,16 +50,17 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     @NonNull
     @Override
     public ProjectHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ProjectHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_template, parent, false));
+        return new ProjectHolder(LayoutInflater.from(parent.getContext()).inflate(layoutResource, parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ProjectHolder holder, int position) {
         holder.onBind(position);
-        holder.ivMore.setOnClickListener(v -> {
-            holder.setPopUpWindow(position);
-            myPopup.showAsDropDown(v, -155, 0);
-        });
+        if (holder.ivMore != null)
+            holder.ivMore.setOnClickListener(v -> {
+                holder.setPopUpWindow(position);
+                myPopup.showAsDropDown(v, -184, -15);
+            });
     }
 
     @Override
@@ -71,16 +72,15 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
     class ProjectHolder extends RecyclerView.ViewHolder {
 
         private final RoundedImageView ivProject;
-        private final ImageView ivMore;
+        private ImageView ivMore;
 
         public ProjectHolder(@NonNull View itemView) {
             super(itemView);
 
-            ivProject = itemView.findViewById(R.id.ivTemp);
-            ivMore = itemView.findViewById(R.id.ivMore);
-
-            if (isHomeProject) ivMore.setVisibility(View.VISIBLE);
-            else ivMore.setVisibility(View.GONE);
+            if (layoutResource == R.layout.item_template) {
+                ivProject = itemView.findViewById(R.id.ivTemp);
+                ivMore = itemView.findViewById(R.id.ivMore);
+            } else ivProject = itemView.findViewById(R.id.ivProject);
         }
 
         public void onBind(int position) {
@@ -100,7 +100,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
             TextView tvDuplicate = view.findViewById(R.id.duplicateProject);
             TextView tvDel = view.findViewById(R.id.delProject);
 
-            myPopup = new PopupWindow(view, 255, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+            myPopup = new PopupWindow(view, 284, LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
             tvDuplicate.setOnClickListener(v -> {
                 editListProject(position, 1);

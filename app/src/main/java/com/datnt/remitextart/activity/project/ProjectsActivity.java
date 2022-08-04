@@ -61,7 +61,7 @@ public class ProjectsActivity extends BaseActivity {
     private void setData() {
         ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
 
-        projectAdapter = new ProjectAdapter(this, true, (o, pos) -> {
+        projectAdapter = new ProjectAdapter(this, R.layout.item_template, (o, pos) -> {
             DataLocalManager.setProject((Project) o, Utils.PROJECT);
             DataLocalManager.setInt(pos, "indexProject");
             DataLocalManager.setColor(null, "color");
