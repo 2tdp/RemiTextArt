@@ -31,229 +31,231 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/rlTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rlTop"
         android:orientation="vertical"
-        android:padding="@dimen/_5sdp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_semi_bold"
-                android:text="@string/write_on_photo_pro"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_15ssp" />
-
-            <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_4sdp"
-                android:src="@drawable/ic_vip" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_regular"
-            android:text="@string/unlock_all_feature_and_content"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_10ssp" />
-    </LinearLayout>
-
-    <HorizontalScrollView
-        android:id="@+id/vLock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/rlTitle"
-        android:paddingStart="@dimen/_5sdp"
-        android:paddingEnd="@dimen/_5sdp"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/ivNoWaterMark"
-                android:layout_width="@dimen/_55sdp"
-                android:layout_height="@dimen/_55sdp"
-                android:src="@drawable/iv_vip_pic_1" />
-
-            <ImageView
-                android:id="@+id/ivProTextDesign"
-                android:layout_width="@dimen/_55sdp"
-                android:layout_height="@dimen/_55sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/iv_vip_pic_2" />
-
-            <ImageView
-                android:id="@+id/ivUnlockAllFont"
-                android:layout_width="@dimen/_55sdp"
-                android:layout_height="@dimen/_55sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/iv_vip_pic_3" />
-
-            <ImageView
-                android:id="@+id/ivUnderLinePro"
-                android:layout_width="@dimen/_55sdp"
-                android:layout_height="@dimen/_55sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/iv_vip_pic_4" />
-
-            <ImageView
-                android:id="@+id/TemplatePro"
-                android:layout_width="@dimen/_55sdp"
-                android:layout_height="@dimen/_55sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/iv_vip_pic_5" />
-        </LinearLayout>
-    </HorizontalScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/vLock"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:orientation="vertical"
         android:padding="@dimen/_10sdp">
 
-        <RelativeLayout
-            android:id="@+id/rlMonth"
+        <LinearLayout
+            android:id="@+id/rlTitle"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_34sdp"
-            android:background="@drawable/border_unclick_font"
-            android:clickable="true"
-            android:focusable="true"
-            android:theme="@android:style/ThemeOverlay.Material.Dark"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/iv1"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_un_choose" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:gravity="center_vertical"
+                    android:text="@string/write_on_photo_pro"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_15ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:src="@drawable/ic_vip" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_toEndOf="@+id/iv1"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/month"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13ssp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
                 android:fontFamily="@font/poppins_regular"
-                android:text="@string/des_month"
+                android:text="@string/unlock_all_feature_and_content"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_10ssp" />
-        </RelativeLayout>
+        </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/rlYear"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_34sdp"
+        <HorizontalScrollView
+            android:id="@+id/vLock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/border_unclick_font"
-            android:clickable="true"
-            android:focusable="true"
-            android:theme="@android:style/ThemeOverlay.Material.Dark"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:scrollbars="none">
 
-            <ImageView
-                android:id="@+id/iv2"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_choose" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_toEndOf="@+id/iv2"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/year"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13ssp" />
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="@string/des_year"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10ssp" />
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/ivNoWaterMark"
+                    android:layout_width="@dimen/_65sdp"
+                    android:layout_height="@dimen/_65sdp"
+                    android:src="@drawable/iv_vip_pic_1" />
 
-        <RelativeLayout
-            android:id="@+id/rlLifeTime"
+                <ImageView
+                    android:id="@+id/ivProTextDesign"
+                    android:layout_width="@dimen/_65sdp"
+                    android:layout_height="@dimen/_65sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:src="@drawable/iv_vip_pic_2" />
+
+                <ImageView
+                    android:id="@+id/ivUnlockAllFont"
+                    android:layout_width="@dimen/_65sdp"
+                    android:layout_height="@dimen/_65sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:src="@drawable/iv_vip_pic_3" />
+
+                <ImageView
+                    android:id="@+id/ivUnderLinePro"
+                    android:layout_width="@dimen/_65sdp"
+                    android:layout_height="@dimen/_65sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:src="@drawable/iv_vip_pic_4" />
+
+                <ImageView
+                    android:id="@+id/TemplatePro"
+                    android:layout_width="@dimen/_65sdp"
+                    android:layout_height="@dimen/_65sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:src="@drawable/iv_vip_pic_5" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_34sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@drawable/border_unclick_font"
-            android:clickable="true"
-            android:focusable="true"
-            android:theme="@android:style/ThemeOverlay.Material.Dark"
-            android:foreground="?android:attr/selectableItemBackground">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/iv3"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_un_choose" />
+            <RelativeLayout
+                android:id="@+id/rlMonth"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp"
+                android:background="@drawable/border_unclick_font"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:theme="@android:style/ThemeOverlay.Material.Dark">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_toEndOf="@+id/iv3"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/lifetime"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13ssp" />
+                <ImageView
+                    android:id="@+id/iv1"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@drawable/ic_un_choose" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="@string/des_lifetime"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_10ssp" />
-        </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_toEndOf="@+id/iv1"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/month"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13ssp" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/des_month"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10ssp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlYear"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/border_unclick_font"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:theme="@android:style/ThemeOverlay.Material.Dark">
+
+                <ImageView
+                    android:id="@+id/iv2"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@drawable/ic_choose" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_toEndOf="@+id/iv2"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/year"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13ssp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/des_year"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10ssp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlLifeTime"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_45sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/border_unclick_font"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:theme="@android:style/ThemeOverlay.Material.Dark">
+
+                <ImageView
+                    android:id="@+id/iv3"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
+                    android:src="@drawable/ic_un_choose" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_toEndOf="@+id/iv3"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="@string/lifetime"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13ssp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/des_lifetime"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10ssp" />
+            </RelativeLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

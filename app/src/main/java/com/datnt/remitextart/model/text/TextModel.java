@@ -126,7 +126,7 @@ public class TextModel extends EditSticker implements Serializable {
         if (shadowModel != null)
             shadow = new ShadowModel(shadowModel);
 
-        TextModel textModel = new TextModel(content, fontModel, colorModel, shadow, shearTextModel,
+        TextModel textModel = new TextModel(content, fontModel, colorModel, shadow, null,
                 typeAlign, flipX, flipY, opacity, matrix);
 
         return new TextStickerCustom(context, textModel, id);

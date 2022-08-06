@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -33,6 +34,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -51,6 +53,8 @@ import com.datnt.remitextart.adapter.OverlayAdapter;
 import com.datnt.remitextart.adapter.ViewPagerAddFragmentsAdapter;
 import com.datnt.remitextart.adapter.emoji.TitleEmojiAdapter;
 import com.datnt.remitextart.adapter.image.CropImageAdapter;
+import com.datnt.remitextart.callback.ItemTouchHelperAdapter;
+import com.datnt.remitextart.callback.SimpleItemTouchHelperCallback;
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.customsticker.imgpro.actions.Blend;
@@ -103,6 +107,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class EditActivity extends BaseActivity {
 
@@ -501,7 +506,7 @@ public class EditActivity extends BaseActivity {
         rlDuplicateText.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
         rlFontSize.setOnClickListener(v -> fontSizeText(vSticker.getCurrentSticker()));
         rlColorText.setOnClickListener(v -> colorText(vSticker.getCurrentSticker()));
-//        rlTransformText.setOnClickListener(v -> transformText(vSticker.getCurrentSticker()));
+        rlTransformText.setOnClickListener(v -> transformText(vSticker.getCurrentSticker()));
         rlShadowText.setOnClickListener(v -> shadowText(vSticker.getCurrentSticker()));
         rlOpacityText.setOnClickListener(v -> opacityText(vSticker.getCurrentSticker()));
 
@@ -1121,6 +1126,8 @@ public class EditActivity extends BaseActivity {
     private void layer() {
         seekAndHideOperation(positionLayer);
 
+        ArrayList<LayerModel> lstLayer = vSticker.getListLayer();
+
         layerAdapter = new LayerAdapter(this, (o, pos) -> {
             LayerModel layer = (LayerModel) o;
             Sticker sticker = layer.getSticker();
@@ -1135,15 +1142,42 @@ public class EditActivity extends BaseActivity {
             else setUpLayoutLookLayer(1);
         });
 
-        layerAdapter.setData(vSticker.getListLayer());
+
+        layerAdapter.setData(lstLayer);
         if (!vSticker.getListLayer().isEmpty()) {
             layerAdapter.setCurrent(0);
-            vSticker.setCurrentSticker(vSticker.getListLayer().get(0).getSticker());
+            vSticker.setCurrentSticker(lstLayer.get(0).getSticker());
         }
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rcvLayer.setLayoutManager(manager);
         rcvLayer.setAdapter(layerAdapter);
+
+        ItemTouchHelper touchHelper = new ItemTouchHelper(new SimpleItemTouchHelperCallback(new ItemTouchHelperAdapter() {
+            @Override
+            public void onItemMove(int fromPosition, int toPosition) {
+                if (fromPosition < toPosition)
+                    for (int i = fromPosition; i < toPosition; i++) {
+                        Collections.swap(lstLayer, i, i + 1);
+                    }
+                else
+                    for (int i = fromPosition; i > toPosition; i--) {
+                        Collections.swap(lstLayer, i, i - 1);
+                    }
+
+                vSticker.swapLayers(fromPosition, toPosition);
+
+                layerAdapter.notifyItemMoved(fromPosition, toPosition);
+            }
+
+            @Override
+            public void onItemDismiss(int position) {
+
+            }
+        }));
+        touchHelper.attachToRecyclerView(rcvLayer);
+
+
     }
 
     //lock
@@ -3592,9 +3626,9 @@ public class EditActivity extends BaseActivity {
                 vSticker.invalidate();
                 break;
             case 2:
-                int shearX = (int) shearTextModel.getShearX() * 100;
-                int shearY = (int) shearTextModel.getShearY() * 100;
-                int stretch = (int) shearTextModel.getStretch() * 100;
+                int shearX = (int) (shearTextModel.getShearX() * 100);
+                int shearY = (int) (shearTextModel.getShearY() * 100);
+                int stretch = (int) (shearTextModel.getStretch() * 100);
 
                 tvShearX.setText(String.valueOf(shearX));
                 sbShearX.setProgress(shearX);
@@ -3760,8 +3794,9 @@ public class EditActivity extends BaseActivity {
             case 0:
                 try {
                     bmRoot = UtilsBitmap.modifyOrientation(this, UtilsBitmap.getBitmapFromUri(this, Uri.parse(strPic)), Uri.parse(strPic));
-                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
-                    seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
+                    Bitmap bm = Bitmap.createScaledBitmap(bmRoot, 1080, 1080 * bmRoot.getHeight() / bmRoot.getWidth(), false);
+                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bm, nameFolderBackground, Utils.BACKGROUND_ROOT));
+                    seekAndHideViewMain(positionCrop, bm, color, isNewData);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

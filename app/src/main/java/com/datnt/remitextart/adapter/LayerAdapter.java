@@ -1,25 +1,39 @@
 package com.datnt.remitextart.adapter;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.callback.ICallBackItem;
+import com.datnt.remitextart.callback.ItemTouchHelperAdapter;
+import com.datnt.remitextart.callback.SimpleItemTouchHelperCallback;
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.customview.CustomViewPathData;
@@ -30,6 +44,7 @@ import com.datnt.remitextart.utils.UtilsBitmap;
 import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder> {
 
@@ -61,7 +76,7 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
     }
 
     public void setData(ArrayList<LayerModel> lstLayer) {
-        this.lstLayer = new ArrayList<>(lstLayer);
+        this.lstLayer = lstLayer;
         changeNotify();
     }
 
@@ -82,7 +97,7 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
         return 0;
     }
 
-    class LayerHolder extends RecyclerView.ViewHolder {
+    public class LayerHolder extends RecyclerView.ViewHolder {
 
         private final RoundedImageView ivLayer;
         private final CustomViewPathData ivPath;
@@ -97,14 +112,16 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             ivLook = itemView.findViewById(R.id.ivLook);
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         public void onBind(int position) {
             LayerModel layer = lstLayer.get(position);
             if (layer == null) return;
 
+            itemView.setTag(String.valueOf(position));
+
             if (layer.isSelected())
                 itemView.setBackgroundResource(R.drawable.border_item_layer_selected);
             else itemView.setBackgroundResource(R.drawable.border_item_layer_unselected);
-
 
             if (layer.getSticker().isLock() && layer.getSticker().isLook()) {
                 ivLock.setVisibility(View.GONE);
@@ -121,7 +138,6 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
                 ivLook.setVisibility(View.VISIBLE);
                 ivLook.setImageResource(R.drawable.ic_look1);
             }
-
 
             if (layer.getSticker() instanceof DrawableStickerCustom) {
                 DrawableStickerCustom drawableSticker = (DrawableStickerCustom) layer.getSticker();
@@ -166,6 +182,13 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             }
 
             itemView.setOnClickListener(v -> callBack.callBackItem(layer, position));
+//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    setCurrent(position);
+//                    return true;
+//                }
+//            });
         }
     }
 

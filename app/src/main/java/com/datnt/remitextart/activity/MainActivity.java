@@ -87,6 +87,8 @@ public class MainActivity extends BaseActivity {
         CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
     }
 
+
+
     private void init() {
         setUpLayout();
         evenClick();
