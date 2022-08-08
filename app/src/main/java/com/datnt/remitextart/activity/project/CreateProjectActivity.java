@@ -150,7 +150,7 @@ public class CreateProjectActivity extends BaseActivity {
                 case 0:
                     vRecent.setBackgroundResource(R.drawable.tab_indicator_uncheck);
                     tvRecent.setTextColor(getResources().getColor(R.color.black));
-                    ivRecent.setImageResource(R.drawable.ic_bottom);
+                    ivRecent.setImageResource(R.drawable.ic_bottom_black);
                     recentFragment.setExpand(null, "");
                     break;
                 case 1:

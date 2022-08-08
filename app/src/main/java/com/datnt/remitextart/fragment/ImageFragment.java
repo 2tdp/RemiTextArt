@@ -23,7 +23,8 @@ public class ImageFragment extends Fragment {
 
     private ICallBackItem callBack;
 
-    public ImageFragment(){}
+    public ImageFragment() {
+    }
 
     public ImageFragment(ICallBackItem callBack) {
         this.callBack = callBack;
@@ -66,5 +67,9 @@ public class ImageFragment extends Fragment {
     private void init(View view) {
         ivBack = view.findViewById(R.id.ivBack);
         rcvPickImage = view.findViewById(R.id.rcvPickImage);
+    }
+
+    public boolean getBack() {
+        return rcvPickImage.getVisibility() == View.VISIBLE;
     }
 }

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,7 +60,8 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
         if (holder.ivMore != null)
             holder.ivMore.setOnClickListener(v -> {
                 holder.setPopUpWindow(position);
-                myPopup.showAsDropDown(v, -184, -15);
+                myPopup.showAsDropDown(v, (int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._60sdp)) * -1,
+                        (int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._10sdp)) * -1);
             });
     }
 
@@ -89,7 +91,9 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
 
             ivProject.setImageBitmap(BitmapFactory.decodeFile(project.getUriThumb()));
 
-            itemView.setOnClickListener(v -> callBack.callBackItem(project, position));
+            itemView.setOnClickListener(v -> {
+                 callBack.callBackItem(project, position);
+            });
         }
 
         private void setPopUpWindow(int position) {
@@ -100,7 +104,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
             TextView tvDuplicate = view.findViewById(R.id.duplicateProject);
             TextView tvDel = view.findViewById(R.id.delProject);
 
-            myPopup = new PopupWindow(view, 284, LinearLayout.LayoutParams.WRAP_CONTENT, true);
+            myPopup = new PopupWindow(view, (int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._100sdp)), LinearLayout.LayoutParams.WRAP_CONTENT, true);
 
             tvDuplicate.setOnClickListener(v -> {
                 editListProject(position, 1);

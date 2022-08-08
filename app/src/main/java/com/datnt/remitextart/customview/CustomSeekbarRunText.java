@@ -30,23 +30,23 @@ public class CustomSeekbarRunText extends View {
 
     public CustomSeekbarRunText(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public CustomSeekbarRunText(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public CustomSeekbarRunText(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
 
-    private void init() {
-        sizeThumb = 30f;
-        sizeBg = 10f;
-        sizePos = 13f;
+    private void init(Context context) {
+        sizeThumb = context.getResources().getDimension(com.intuit.sdp.R.dimen._10sdp);
+        sizeBg = context.getResources().getDimension(com.intuit.sdp.R.dimen._3sdp);
+        sizePos = context.getResources().getDimension(com.intuit.sdp.R.dimen._5sdp);
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintProgress = new Paint(Paint.ANTI_ALIAS_FLAG);

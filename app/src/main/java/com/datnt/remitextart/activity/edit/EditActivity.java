@@ -197,6 +197,7 @@ public class EditActivity extends BaseActivity {
     private RecyclerView rcvCropImage, rcvEditFilterImage, rcvEditBlendImage;
     private FilterImageAdapter filterImageAdapter;
     private BlendImageAdapter blendImageAdapter;
+    private ImageFragment imageFragment;
     private boolean isReplaceImage;
 
     //emoji
@@ -437,194 +438,356 @@ public class EditActivity extends BaseActivity {
 
     private void evenClick() {
         //toolbar
-        ivTick.setOnClickListener(v -> clickTick());
-        ivBack.setOnClickListener(v -> onBackPressed());
-        ivExport.setOnClickListener(v -> exportPhoto());
+        ivTick.setOnClickListener(v -> {
+            if (!checkLoading()) clickTick();
+        });
+        ivBack.setOnClickListener(v -> {
+            if (!checkLoading()) onBackPressed();
+        });
+        ivExport.setOnClickListener(v -> {
+            if (!checkLoading()) exportPhoto();
+        });
 
         rlMain.setOnClickListener(v -> {
-            if (vCrop.getVisibility() == View.GONE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            }
+            if (!checkLoading())
+                if (vCrop.getVisibility() == View.GONE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                }
         });
         rlEditText.setOnClickListener(v -> {
-            if (vEditText.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionAddText);
+            if (!checkLoading())
+                if (vEditText.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionAddText);
         });
-        rlCancelPickEmoji.setOnClickListener(v -> seekAndHideOperation(indexDefault));
+        rlCancelPickEmoji.setOnClickListener(v -> {
+            if (!checkLoading()) seekAndHideOperation(indexDefault);
+        });
         rlCancelEditEmoji.setOnClickListener(v -> {
-            if (llEditEmoji.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionEmoji);
+            if (!checkLoading())
+                if (llEditEmoji.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionEmoji);
         });
         rlCancelEditImage.setOnClickListener(v -> {
-            if (vEditImage.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionImage);
+            if (!checkLoading())
+                if (vEditImage.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionImage);
         });
         rlCancelEditBackground.setOnClickListener(v -> {
-            if (vEditBackground.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else
-                seekAndHideOperation(positionBackground);
+            if (!checkLoading())
+                if (vEditBackground.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else
+                    seekAndHideOperation(positionBackground);
         });
-        rlCancelPickOverlay.setOnClickListener(v -> seekAndHideOperation(indexDefault));
+        rlCancelPickOverlay.setOnClickListener(v -> {
+            if (!checkLoading())
+                seekAndHideOperation(indexDefault);
+        });
         rlCancelEditOverlay.setOnClickListener(v -> {
-            if (llEditOverlay.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionOverlay);
+            if (!checkLoading())
+                if (llEditOverlay.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionOverlay);
         });
-        rlCancelPickDecor.setOnClickListener(v -> seekAndHideOperation(indexDefault));
+        rlCancelPickDecor.setOnClickListener(v -> {
+            if (!checkLoading())
+                seekAndHideOperation(indexDefault);
+        });
         rlCancelEditDecor.setOnClickListener(v -> {
-            if (vEditDecor.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionDecor);
+            if (!checkLoading())
+                if (vEditDecor.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionDecor);
         });
-        rlCancelPickTemp.setOnClickListener(v -> seekAndHideOperation(indexDefault));
+        rlCancelPickTemp.setOnClickListener(v -> {
+            if (!checkLoading())
+                seekAndHideOperation(indexDefault);
+        });
         rlCancelEditTemp.setOnClickListener(v -> {
-            if (vEditTemp.getVisibility() == View.VISIBLE) {
-                vSticker.setCurrentSticker(null);
-                seekAndHideOperation(indexDefault);
-            } else seekAndHideOperation(positionTemp);
+            if (!checkLoading())
+                if (vEditTemp.getVisibility() == View.VISIBLE) {
+                    vSticker.setCurrentSticker(null);
+                    seekAndHideOperation(indexDefault);
+                } else seekAndHideOperation(positionTemp);
         });
-        rlCancelLayer.setOnClickListener(v -> seekAndHideOperation(indexDefault));
+        rlCancelLayer.setOnClickListener(v -> {
+            if (!checkLoading())
+                seekAndHideOperation(indexDefault);
+        });
 
         //addSticker
         rlAddText.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AddTextActivity.class);
-            launcherEditText.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
+            if (!checkLoading()) {
+                Intent intent = new Intent(this, AddTextActivity.class);
+                launcherEditText.launch(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left));
+            }
         });
-        rlDelText.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlET.setOnClickListener(v -> replaceText(vSticker.getCurrentSticker()));
-        rlDuplicateText.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
-        rlFontSize.setOnClickListener(v -> fontSizeText(vSticker.getCurrentSticker()));
-        rlColorText.setOnClickListener(v -> colorText(vSticker.getCurrentSticker()));
-        rlTransformText.setOnClickListener(v -> transformText(vSticker.getCurrentSticker()));
-        rlShadowText.setOnClickListener(v -> shadowText(vSticker.getCurrentSticker()));
-        rlOpacityText.setOnClickListener(v -> opacityText(vSticker.getCurrentSticker()));
+        rlDelText.setOnClickListener(v -> {
+            if (!checkLoading()) delStick(vSticker.getCurrentSticker());
+        });
+        rlET.setOnClickListener(v -> {
+            if (!checkLoading()) replaceText(vSticker.getCurrentSticker());
+        });
+        rlDuplicateText.setOnClickListener(v -> {
+            if (!checkLoading()) duplicate(vSticker.getCurrentSticker());
+        });
+        rlFontSize.setOnClickListener(v -> {
+            if (!checkLoading()) fontSizeText(vSticker.getCurrentSticker());
+        });
+        rlColorText.setOnClickListener(v -> {
+            if (!checkLoading()) colorText(vSticker.getCurrentSticker());
+        });
+        rlTransformText.setOnClickListener(v -> {
+            if (!checkLoading()) transformText(vSticker.getCurrentSticker());
+        });
+        rlShadowText.setOnClickListener(v -> {
+            if (!checkLoading()) shadowText(vSticker.getCurrentSticker());
+        });
+        rlOpacityText.setOnClickListener(v -> {
+            if (!checkLoading()) opacityText(vSticker.getCurrentSticker());
+        });
 
         //emoji
         rlEmoji.setOnClickListener(v -> {
-            pickEmoji();
-            isReplaceEmoji = false;
+            if (!checkLoading()) {
+                pickEmoji();
+                isReplaceEmoji = false;
+            }
         });
-        rlDelEmoji.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlReplaceEmoji.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
-        rlOpacityEmoji.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlDelEmoji.setOnClickListener(v -> {
+            if (!checkLoading()) delStick(vSticker.getCurrentSticker());
+        });
+        rlReplaceEmoji.setOnClickListener(v -> {
+            if (!checkLoading()) replace(vSticker.getCurrentSticker());
+        });
+        rlOpacityEmoji.setOnClickListener(v -> {
+            if (!checkLoading()) opacity(vSticker.getCurrentSticker());
+        });
         rlFlipXEmoji.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(0);
-            flip(vSticker.getCurrentSticker(), true, false);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(0);
+                flip(vSticker.getCurrentSticker(), true, false);
+            }
         });
         rlFlipYEmoji.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(1);
-            flip(vSticker.getCurrentSticker(), false, true);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(1);
+                flip(vSticker.getCurrentSticker(), false, true);
+            }
         });
 
         //image
         rlImage.setOnClickListener(v -> {
-            pickImage();
-            isReplaceImage = false;
+            if (!checkLoading()) {
+                pickImage();
+                isReplaceImage = false;
+            }
         });
-        rlDelImage.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlReplaceImage.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
-        rlDuplicateImage.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
-        rlCropImage.setOnClickListener(v -> cropImage(vSticker.getCurrentSticker()));
-        rlFilterImage.setOnClickListener(v -> filterImage(vSticker.getCurrentSticker()));
-        rlShadowImage.setOnClickListener(v -> shadowImage(vSticker.getCurrentSticker()));
-        rlOpacityImage.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
-        rlBlendImage.setOnClickListener(v -> blendImage(vSticker.getCurrentSticker()));
+        rlDelImage.setOnClickListener(v -> {
+            if (!checkLoading()) delStick(vSticker.getCurrentSticker());
+        });
+        rlReplaceImage.setOnClickListener(v -> {
+            if (!checkLoading()) replace(vSticker.getCurrentSticker());
+        });
+        rlDuplicateImage.setOnClickListener(v -> {
+            if (!checkLoading()) duplicate(vSticker.getCurrentSticker());
+        });
+        rlCropImage.setOnClickListener(v -> {
+            if (!checkLoading()) cropImage(vSticker.getCurrentSticker());
+        });
+        rlFilterImage.setOnClickListener(v -> {
+            if (!checkLoading()) filterImage(vSticker.getCurrentSticker());
+        });
+        rlShadowImage.setOnClickListener(v -> {
+            if (!checkLoading()) shadowImage(vSticker.getCurrentSticker());
+        });
+        rlOpacityImage.setOnClickListener(v -> {
+            if (!checkLoading()) opacity(vSticker.getCurrentSticker());
+        });
+        rlBlendImage.setOnClickListener(v -> {
+            if (!checkLoading()) blendImage(vSticker.getCurrentSticker());
+        });
 
         //background
-        rlBackground.setOnClickListener(v -> seekAndHideOperation(positionBackground));
-        rlDelBackground.setOnClickListener(v -> {
-            getData(3, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), null, false);
-            Utils.showToast(this, getResources().getString(R.string.del));
+        rlBackground.setOnClickListener(v -> {
+            if (!checkLoading()) seekAndHideOperation(positionBackground);
         });
-        rlReplaceBackground.setOnClickListener(v -> replaceBackground());
-        rlAdjustBackground.setOnClickListener(v -> adjustBackground());
-        rlFilterBackground.setOnClickListener(v -> filterBackground());
-        rlOpacityBackground.setOnClickListener(v -> opacityBackground());
-        rlFlipXBackground.setOnClickListener(v -> flipBackground(true));
-        rlFlipYBackground.setOnClickListener(v -> flipBackground(false));
+        rlDelBackground.setOnClickListener(v -> {
+            if (!checkLoading()) {
+                getData(3, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), null, false);
+                Utils.showToast(this, getResources().getString(R.string.del));
+            }
+        });
+        rlReplaceBackground.setOnClickListener(v -> {
+            if (!checkLoading()) replaceBackground();
+        });
+        rlAdjustBackground.setOnClickListener(v -> {
+            if (!checkLoading()) adjustBackground();
+        });
+        rlFilterBackground.setOnClickListener(v -> {
+            if (!checkLoading()) filterBackground();
+        });
+        rlOpacityBackground.setOnClickListener(v -> {
+            if (!checkLoading()) opacityBackground();
+        });
+        rlFlipXBackground.setOnClickListener(v -> {
+            if (!checkLoading()) flipBackground(true);
+        });
+        rlFlipYBackground.setOnClickListener(v -> {
+            if (!checkLoading()) flipBackground(false);
+        });
 
         //overlay
         rlOverlay.setOnClickListener(v -> {
-            if (backgroundModel.getUriOverlayRoot().equals("")) pickOverlay();
-            else seekAndHideOperation(positionOverlay);
+            if (!checkLoading()) {
+                if (backgroundModel.getUriOverlayRoot().equals("")) pickOverlay();
+                else seekAndHideOperation(positionOverlay);
+            }
         });
-        rlDelOverlay.setOnClickListener(v -> delOverlay());
-        rlReplaceOverlay.setOnClickListener(v -> pickOverlay());
-        rlOpacityOverlay.setOnClickListener(v -> opacityOverlay());
-        rlFlipXOverlay.setOnClickListener(v -> flipOverlay(true));
-        rlFlipYOverlay.setOnClickListener(v -> flipOverlay(false));
+        rlDelOverlay.setOnClickListener(v -> {
+            if (!checkLoading()) delOverlay();
+        });
+        rlReplaceOverlay.setOnClickListener(v -> {
+            if (!checkLoading()) pickOverlay();
+        });
+        rlOpacityOverlay.setOnClickListener(v -> {
+            if (!checkLoading()) opacityOverlay();
+        });
+        rlFlipXOverlay.setOnClickListener(v -> {
+            if (!checkLoading()) flipOverlay(true);
+        });
+        rlFlipYOverlay.setOnClickListener(v -> {
+            if (!checkLoading()) flipOverlay(false);
+        });
 
         //decor
         rlDecor.setOnClickListener(v -> {
-            isReplaceDecor = false;
-            pickDecor();
+            if (!checkLoading()) {
+                isReplaceDecor = false;
+                pickDecor();
+            }
         });
-        rlDelDecor.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlReplaceDecor.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
-        rlDuplicateDecor.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
-        rlColorDecor.setOnClickListener(v -> colorDecor(vSticker.getCurrentSticker()));
-        rlShadowDecor.setOnClickListener(v -> shadowDecor(vSticker.getCurrentSticker()));
-        rlOpacityDecor.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlDelDecor.setOnClickListener(v -> {
+            if (!checkLoading()) delStick(vSticker.getCurrentSticker());
+        });
+        rlReplaceDecor.setOnClickListener(v -> {
+            if (!checkLoading()) replace(vSticker.getCurrentSticker());
+        });
+        rlDuplicateDecor.setOnClickListener(v -> {
+            if (!checkLoading()) duplicate(vSticker.getCurrentSticker());
+        });
+        rlColorDecor.setOnClickListener(v -> {
+            if (!checkLoading()) colorDecor(vSticker.getCurrentSticker());
+        });
+        rlShadowDecor.setOnClickListener(v -> {
+            if (!checkLoading()) shadowDecor(vSticker.getCurrentSticker());
+        });
+        rlOpacityDecor.setOnClickListener(v -> {
+            if (!checkLoading()) opacity(vSticker.getCurrentSticker());
+        });
         rlFlipXDecor.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(0);
-            flip(vSticker.getCurrentSticker(), true, false);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(0);
+                flip(vSticker.getCurrentSticker(), true, false);
+            }
         });
         rlFlipYDecor.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(1);
-            flip(vSticker.getCurrentSticker(), false, true);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(1);
+                flip(vSticker.getCurrentSticker(), false, true);
+            }
         });
 
         //temp
-        rlDelTemp.setOnClickListener(v -> delStick(vSticker.getCurrentSticker()));
-        rlReplaceTemp.setOnClickListener(v -> replace(vSticker.getCurrentSticker()));
-        rlDuplicateTemp.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
-        rlColorTemp.setOnClickListener(v -> colorTemp(vSticker.getCurrentSticker()));
-        rlBackgroundTemp.setOnClickListener(v -> replaceBackground());
-        rlShadowTemp.setOnClickListener(v -> shadowTemp(vSticker.getCurrentSticker()));
-        rlOpacityTemp.setOnClickListener(v -> opacity(vSticker.getCurrentSticker()));
+        rlDelTemp.setOnClickListener(v -> {
+            if (!checkLoading()) delStick(vSticker.getCurrentSticker());
+        });
+        rlReplaceTemp.setOnClickListener(v -> {
+            if (!checkLoading()) replace(vSticker.getCurrentSticker());
+        });
+        rlDuplicateTemp.setOnClickListener(v -> {
+            if (!checkLoading()) duplicate(vSticker.getCurrentSticker());
+        });
+        rlColorTemp.setOnClickListener(v -> {
+            if (!checkLoading()) colorTemp(vSticker.getCurrentSticker());
+        });
+        rlBackgroundTemp.setOnClickListener(v -> {
+            if (!checkLoading()) replaceBackground();
+        });
+        rlShadowTemp.setOnClickListener(v -> {
+            if (!checkLoading()) shadowTemp(vSticker.getCurrentSticker());
+        });
+        rlOpacityTemp.setOnClickListener(v -> {
+            if (!checkLoading()) opacity(vSticker.getCurrentSticker());
+        });
         rlFlipXTemp.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(0);
-            flip(vSticker.getCurrentSticker(), true, false);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(0);
+                flip(vSticker.getCurrentSticker(), true, false);
+            }
         });
         rlFlipYTemp.setOnClickListener(v -> {
-            vSticker.flipCurrentSticker(1);
-            flip(vSticker.getCurrentSticker(), false, true);
+            if (!checkLoading()) {
+                vSticker.flipCurrentSticker(1);
+                flip(vSticker.getCurrentSticker(), false, true);
+            }
         });
 
         //layer
         ivLayer.setOnClickListener(v -> {
-            if (vSticker.getStickerCount() > 0) layer();
-            else Utils.showToast(EditActivity.this, "No Sticker");
+            if (!checkLoading()) {
+                if (vSticker.getStickerCount() > 0) layer();
+                else Utils.showToast(EditActivity.this, "No Sticker");
+            }
         });
         rlDelLayer.setOnClickListener(v -> {
-            isDelLayer = true;
-            delStick(vSticker.getCurrentSticker());
+            if (!checkLoading()) {
+                isDelLayer = true;
+                delStick(vSticker.getCurrentSticker());
+            }
         });
-        rlDuplicateLayer.setOnClickListener(v -> duplicate(vSticker.getCurrentSticker()));
-        rlLock.setOnClickListener(v -> lockLayer(vSticker.getCurrentSticker()));
-        rlLook.setOnClickListener(v -> lookLayer(vSticker.getCurrentSticker()));
+        rlDuplicateLayer.setOnClickListener(v -> {
+            if (!checkLoading()) duplicate(vSticker.getCurrentSticker());
+        });
+        rlLock.setOnClickListener(v -> {
+            if (!checkLoading()) lockLayer(vSticker.getCurrentSticker());
+        });
+        rlLook.setOnClickListener(v -> {
+            if (!checkLoading()) lookLayer(vSticker.getCurrentSticker());
+        });
 
         //size
         rlCrop.setOnClickListener(v -> {
-            isReplaceBackground = true;
-            seekAndHideOperation(positionSize);
+            if (!checkLoading()) {
+                isReplaceBackground = true;
+                seekAndHideOperation(positionSize);
+            }
         });
-        ivOriginal.setOnClickListener(v -> checkSize(positionOriginal));
-        iv1_1.setOnClickListener(v -> checkSize(position1_1));
-        iv9_16.setOnClickListener(v -> checkSize(position9_16));
-        iv4_5.setOnClickListener(v -> checkSize(position4_5));
-        iv16_9.setOnClickListener(v -> checkSize(position16_9));
+        ivOriginal.setOnClickListener(v -> {
+            if (!checkLoading()) checkSize(positionOriginal);
+        });
+        iv1_1.setOnClickListener(v -> {
+            if (!checkLoading()) checkSize(position1_1);
+        });
+        iv9_16.setOnClickListener(v -> {
+            if (!checkLoading()) checkSize(position9_16);
+        });
+        iv4_5.setOnClickListener(v -> {
+            if (!checkLoading()) checkSize(position4_5);
+        });
+        iv16_9.setOnClickListener(v -> {
+            if (!checkLoading()) checkSize(position16_9);
+        });
     }
 
     private void exportPhoto() {
@@ -2663,7 +2826,7 @@ public class EditActivity extends BaseActivity {
 
     //Image
     private void pickImage() {
-        ImageFragment imageFragment = ImageFragment.newInstance((o, pos) -> {
+        imageFragment = ImageFragment.newInstance((o, pos) -> {
             PicModel picModel = (PicModel) o;
             Message message = new Message();
             message.what = 0;
@@ -5217,6 +5380,14 @@ public class EditActivity extends BaseActivity {
         return gradientDrawable;
     }
 
+    private boolean checkLoading() {
+        if (ivLoading != null)
+            return ivLoading.getVisibility() == View.VISIBLE;
+        else if (ivLoadingFilterBackground != null)
+            return ivLoadingFilterBackground.getVisibility() == View.VISIBLE;
+        else return false;
+    }
+
     private boolean checkCurrentSticker(Sticker sticker) {
         if (sticker == null) {
             if (!isBackground)
@@ -5400,37 +5571,46 @@ public class EditActivity extends BaseActivity {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             }
-        } else {
-            @SuppressLint("InflateParams")
-            View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit, null);
+        } else if (imageFragment != null) {
+            if (imageFragment.getBack()) {
+                seekAndHideOperation(indexDefault);
+                Utils.clearBackStack(getSupportFragmentManager());
+                imageFragment = null;
+            } else showDialogBack();
+        } else showDialogBack();
 
-            LinearLayout rlBack = v.findViewById(R.id.rlBack);
-            rlBack.getLayoutParams().width = (int) (getResources().getDisplayMetrics().widthPixels
-                    - getResources().getDimension(com.intuit.sdp.R.dimen._20sdp));
+    }
 
-            TextView tvCancel = v.findViewById(R.id.tvCancel);
-            TextView tvDiscard = v.findViewById(R.id.tvDiscard);
-            TextView tvSave = v.findViewById(R.id.tvSave);
+    private void showDialogBack() {
+        @SuppressLint("InflateParams")
+        View v = LayoutInflater.from(this).inflate(R.layout.dialog_exit_edit, null);
 
-            AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
-            dialog.setView(v);
-            dialog.setCancelable(false);
-            dialog.show();
+        LinearLayout rlBack = v.findViewById(R.id.rlBack);
+        rlBack.getLayoutParams().width = (int) (getResources().getDisplayMetrics().widthPixels
+                - getResources().getDimension(com.intuit.sdp.R.dimen._20sdp));
 
-            tvDiscard.setOnClickListener(vDiscard -> {
-                super.onBackPressed();
-                Utils.setAnimExit(this);
-                new Thread(() -> Utils.delFileInFolder(this, nameFolder, "")).start();
-                dialog.cancel();
-            });
-            tvSave.setOnClickListener(vSave -> {
-                saveProject();
-                super.onBackPressed();
-                Utils.setAnimExit(this);
-                dialog.cancel();
-            });
-            tvCancel.setOnClickListener(vCancel -> dialog.cancel());
-        }
+        TextView tvCancel = v.findViewById(R.id.tvCancel);
+        TextView tvDiscard = v.findViewById(R.id.tvDiscard);
+        TextView tvSave = v.findViewById(R.id.tvSave);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.SheetDialog).create();
+        dialog.setView(v);
+        dialog.setCancelable(false);
+        dialog.show();
+
+        tvDiscard.setOnClickListener(vDiscard -> {
+            super.onBackPressed();
+            Utils.setAnimExit(this);
+            new Thread(() -> Utils.delFileInFolder(this, nameFolder, "")).start();
+            dialog.cancel();
+        });
+        tvSave.setOnClickListener(vSave -> {
+            saveProject();
+            super.onBackPressed();
+            Utils.setAnimExit(this);
+            dialog.cancel();
+        });
+        tvCancel.setOnClickListener(vCancel -> dialog.cancel());
     }
 
     @Override

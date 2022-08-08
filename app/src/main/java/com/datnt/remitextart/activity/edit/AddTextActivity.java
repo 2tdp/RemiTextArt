@@ -145,8 +145,7 @@ public class AddTextActivity extends BaseActivity {
 
         for (String s : titleQuotes) {
             QuotesFragment quotesFragment = QuotesFragment.newInstance(s, (o, pos) -> {
-                String oldStr = etText.getText().toString();
-                etText.setText(oldStr.concat(o.toString()));
+                etText.setText(o.toString());
             });
             addFragmentsAdapter.addFrag(quotesFragment);
         }

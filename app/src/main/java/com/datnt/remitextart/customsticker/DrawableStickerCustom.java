@@ -327,16 +327,18 @@ public class DrawableStickerCustom extends Sticker {
 
         shadowPath.computeBounds(rectFShadow, true);
 
-        float maxScreen = Math.max(realBounds.width(), realBounds.height());
-        float max = Math.max(rectFShadow.width(), rectFShadow.height());
-        float scale = maxScreen / max;
+        if (realBounds != null) {
+            float maxScreen = Math.max(realBounds.width(), realBounds.height());
+            float max = Math.max(rectFShadow.width(), rectFShadow.height());
+            float scale = maxScreen / max;
 
-        Matrix matrix = new Matrix();
-        matrix.preTranslate(realBounds.left, realBounds.top);
-        matrix.preScale(scale, scale);
-        shadowPath.transform(matrix);
+            Matrix matrix = new Matrix();
+            matrix.preTranslate(realBounds.left, realBounds.top);
+            matrix.preScale(scale, scale);
+            shadowPath.transform(matrix);
 
-        shadowPath.computeBounds(rectFShadow, true);
+            shadowPath.computeBounds(rectFShadow, true);
+        }
     }
 
     public void setShadow(ShadowModel shadow) {

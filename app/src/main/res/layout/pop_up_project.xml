@@ -8,7 +8,7 @@
         android:layout_width="@dimen/_13sdp"
         android:layout_height="@dimen/_13sdp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="@dimen/_14sdp"
+        android:layout_marginEnd="@dimen/_12sdp"
         android:src="@drawable/iv_dialog_project" />
 
     <LinearLayout
@@ -27,7 +27,10 @@
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:fontFamily="@font/poppins_regular"
-            android:padding="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_8sdp"
             android:text="@string/duplicate"
             android:textColor="@color/black"
             android:textSize="@dimen/_11ssp" />
@@ -45,7 +48,10 @@
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:fontFamily="@font/poppins_regular"
-            android:padding="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_8sdp"
             android:text="@string/del"
             android:textColor="@color/red"
             android:textSize="@dimen/_11ssp" />

@@ -24,4 +24,5 @@
         android:layout_marginEnd="@dimen/_2sdp"
         android:padding="@dimen/_10sdp"
         android:src="@drawable/ic_more" />
+
 </RelativeLayout>

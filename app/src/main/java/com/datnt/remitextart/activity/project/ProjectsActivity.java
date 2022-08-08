@@ -73,6 +73,7 @@ public class ProjectsActivity extends BaseActivity {
             startActivity(intent, ActivityOptionsCompat.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle());
         });
 
+
         if (!lstProject.isEmpty()) {
             projectAdapter.setData(lstProject);
             tvProjects.setVisibility(View.GONE);

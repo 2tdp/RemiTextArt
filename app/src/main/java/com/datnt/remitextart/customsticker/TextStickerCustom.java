@@ -226,12 +226,16 @@ public class TextStickerCustom extends Sticker {
             if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.TRANSPARENT);
+                this.shadowPaint.setColor(Color.TRANSPARENT);
             }
             if (shadow.getColorBlur() != 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         shadow.getColorBlur());
-            } else
+                this.shadowPaint.setColor(shadow.getColorBlur());
+            } else {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.BLACK);
+                this.shadowPaint.setColor(Color.BLACK);
+            }
         }
 
         staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
