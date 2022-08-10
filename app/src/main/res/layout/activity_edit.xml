@@ -133,6 +133,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true" />
+
+            <TextView
+                android:id="@+id/tvWaterMarkMain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignEnd="@id/vMain"
+                android:layout_alignBottom="@id/vMain"
+                android:fontFamily="@font/honeyflorist_honeyflorist"
+                android:gravity="bottom|end"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:text="@string/write_on_photo"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13ssp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvWaterMarkColor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/honeyflorist_honeyflorist"
+                android:gravity="bottom|end"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:text="@string/write_on_photo"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13ssp"
+                android:visibility="gone" />
+
         </RelativeLayout>
 
         <com.datnt.remitextart.customview.stickerview.StickerView
@@ -343,7 +375,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
@@ -357,14 +388,12 @@
                 android:textSize="@dimen/_13ssp" />
 
             <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_38sdp"
+                android:layout_height="@dimen/_38sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:background="@drawable/border_custom"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_10sdp"
                 android:src="@drawable/ic_bottom" />
         </RelativeLayout>
 
@@ -730,31 +759,6 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:id="@+id/rlBackgroundTemp"
-                    android:layout_width="@dimen/_70sdp"
-                    android:layout_height="@dimen/_90sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?android:attr/selectableItemBackground">
-
-                    <ImageView
-                        android:layout_width="@dimen/_20sdp"
-                        android:layout_height="@dimen/_20sdp"
-                        android:layout_centerInParent="true"
-                        android:src="@drawable/ic_background" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_centerHorizontal="true"
-                        android:text="@string/background"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_10ssp" />
-                </RelativeLayout>
-
-                <RelativeLayout
                     android:id="@+id/rlShadowTemp"
                     android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_90sdp"
@@ -874,7 +878,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
@@ -888,14 +891,12 @@
                 android:textSize="@dimen/_13ssp" />
 
             <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_38sdp"
+                android:layout_height="@dimen/_38sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:background="@drawable/border_custom"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_10sdp"
                 android:src="@drawable/ic_bottom" />
         </RelativeLayout>
 
@@ -1183,9 +1184,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1209,9 +1210,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1235,9 +1236,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1288,9 +1289,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1314,9 +1315,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1340,9 +1341,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1366,9 +1367,9 @@
                     android:layout_width="@dimen/_55sdp"
                     android:layout_height="@dimen/_90sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:clickable="true"
                     android:focusable="true"
-                    android:layout_weight="1"
                     android:foreground="?android:attr/selectableItemBackground">
 
                     <ImageView
@@ -1408,7 +1409,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
@@ -1422,14 +1422,12 @@
                 android:textSize="@dimen/_13ssp" />
 
             <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_38sdp"
+                android:layout_height="@dimen/_38sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:background="@drawable/border_custom"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_10sdp"
                 android:src="@drawable/ic_bottom" />
         </RelativeLayout>
 
@@ -1534,9 +1532,9 @@
                 android:layout_width="@dimen/_55sdp"
                 android:layout_height="@dimen/_90sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -1560,9 +1558,9 @@
                 android:layout_width="@dimen/_55sdp"
                 android:layout_height="@dimen/_90sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -1586,9 +1584,9 @@
                 android:layout_width="@dimen/_55sdp"
                 android:layout_height="@dimen/_90sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -1612,9 +1610,9 @@
                 android:layout_width="@dimen/_55sdp"
                 android:layout_height="@dimen/_90sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -1638,9 +1636,9 @@
                 android:layout_width="@dimen/_55sdp"
                 android:layout_height="@dimen/_90sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_weight="1"
                 android:foreground="?android:attr/selectableItemBackground">
 
                 <ImageView
@@ -2905,7 +2903,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
@@ -2920,14 +2917,12 @@
                 android:textSize="@dimen/_13ssp" />
 
             <ImageView
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
+                android:layout_width="@dimen/_38sdp"
+                android:layout_height="@dimen/_38sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
-                android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:background="@drawable/border_custom"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_10sdp"
                 android:src="@drawable/ic_bottom" />
         </RelativeLayout>
 

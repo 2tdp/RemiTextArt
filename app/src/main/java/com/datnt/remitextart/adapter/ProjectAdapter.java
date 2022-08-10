@@ -123,7 +123,7 @@ public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.ProjectH
                     break;
                 case 1:
                     Project project = new Project(lstProject.get(index));
-                    lstProject.add(project);
+                    lstProject.add(0, project);
                     break;
             }
             DataLocalManager.setListProject(context, lstProject, Utils.LIST_PROJECT);

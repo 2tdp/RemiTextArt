@@ -25,6 +25,9 @@ public class TextModel extends EditSticker implements Serializable {
     private int opacity;
     private float[] matrix;
 
+    public TextModel() {
+    }
+
     public TextModel(String content, FontModel fontModel, ColorModel colorModel,
                      ShadowModel shadowModel, ShearTextModel shearTextModel,
                      int typeAlign, boolean flipX, boolean flipY, int opacity, float[] matrix) {

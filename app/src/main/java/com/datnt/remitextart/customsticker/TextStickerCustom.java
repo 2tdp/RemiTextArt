@@ -92,12 +92,13 @@ public class TextStickerCustom extends Sticker {
     public void setData(TextModel textModel) {
         setText(textModel.getContent());
 
-        for (TypeFontModel f : textModel.getFontModel().getLstType()) {
-            if (f.isSelected()) {
-                setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), context));
-                break;
+        if (textModel.getFontModel() != null)
+            for (TypeFontModel f : textModel.getFontModel().getLstType()) {
+                if (f.isSelected()) {
+                    setTypeface(Utils.getTypeFace(textModel.getFontModel().getNameFont(), f.getName(), context));
+                    break;
+                }
             }
-        }
         if (textModel.getColorModel() != null) setTextColor(textModel.getColorModel());
 
         setAlpha((int) (textModel.getOpacity() * 255 / 100f));
@@ -389,13 +390,13 @@ public class TextStickerCustom extends Sticker {
 
             GradientDrawable drawable = new GradientDrawable();
 
-            if (text.length() > 20 && line != 1)
+            if (text.length() > 20 && line > 2)
                 drawable.setSize((int) (textRect.width() * 1.1f * max / text.length()), (int) (textRect.height() * 1.2f * line));
             else if (text.length() < 20)
-                drawable.setSize(((int) (textRect.width() * 1.2f)), (int) (textRect.height() * 2f));
+                drawable.setSize(((int) (textRect.width() * 1.2f)), (int) (textRect.height() * line * 2f));
             else {
-                drawable.setSize((int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._134sdp) + convertSpToPx(textPaint.getTextSize())),
-                        (int) (context.getResources().getDimension(com.intuit.sdp.R.dimen._150sdp) + convertSpToPx(textPaint.getTextSize())));
+                drawable.setSize((int) ((convertSpToPx(284f) + convertSpToPx(textPaint.getTextSize()))),
+                        (int) (convertSpToPx(134f) + convertSpToPx(textPaint.getTextSize())));
             }
 
             drawable.setColor(Color.TRANSPARENT);

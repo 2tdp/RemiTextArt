@@ -10,5 +10,5 @@
     <com.datnt.remitextart.customview.CustomViewPathData
         android:id="@+id/ivTempText"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_134sdp" />
+        android:layout_height="@dimen/_105sdp" />
 </RelativeLayout>

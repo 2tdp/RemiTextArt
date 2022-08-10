@@ -27,31 +27,6 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:padding="@dimen/_8sdp"
             android:src="@drawable/ic_vip" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ivVip"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/honey_florist_personal_use"
-                android:text="@string/write_on_photo"
-                android:textColor="@color/green"
-                android:textSize="@dimen/_32ssp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/decorate_your_photo"
-                android:textColor="#ED7DB0"
-                android:textSize="@dimen/_13ssp" />
-        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
@@ -82,7 +57,7 @@
                 android:id="@+id/tvTemp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_weight="1"
                 android:background="@drawable/border_text_template"
                 android:gravity="center"
@@ -95,7 +70,7 @@
                 android:id="@+id/tvPro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_weight="1"
                 android:background="@drawable/border_text_project"
                 android:gravity="center"

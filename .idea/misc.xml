@@ -11,6 +11,8 @@
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/border_title.xml" value="0.1665" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_bottom.xml" value="0.172" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_bottom_black.xml" value="0.172" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_color_decor.xml" value="0.172" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_home.xml" value="0.172" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_more.xml" value="0.188" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_sticker_flip.xml" value="0.145" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/drawable/ic_sticker_resize.xml" value="0.137" />
@@ -48,6 +50,7 @@
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_image.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_quotes.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_recent.xml" value="0.3546875" />
+        <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_share.xml" value="0.25" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_splash.xml" value="0.3546875" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_vip_one.xml" value="0.33" />
         <entry key="..\:/AndroidAppRemi/AndroidApp/RemiTextArt/app/src/main/res/layout/fragment_vip_two.xml" value="0.33" />

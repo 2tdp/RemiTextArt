@@ -78,6 +78,9 @@ public class Utils {
     public static final String BACKGROUND_OVERLAY_CACHE = "background_overlay_cache";
     public static final String OVERLAY_ROOT = "overlay_root";
     public static final String IMAGE_ROOT = "image_root";
+    public static final String INSTAGRAM_PACKAGE_NAME = "com.instagram.android";
+    public static final String FACEBOOK_PACKAGE_NAME = "com.facebook.katana";
+    public static final String TELEGRAM_PACKAGE_NAME = "org.telegram.messenger";
 
     //animation
     public static final int res = android.R.id.content;
@@ -268,6 +271,7 @@ public class Utils {
                     output = contentResolver.openOutputStream(newUri);
 
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+
                 } catch (IOException e) {
                     contentResolver.delete(newUri, null, null);
                 }
@@ -293,6 +297,7 @@ public class Utils {
                     try {
                         output = contentResolver.openOutputStream(uri);
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+
                     } catch (IOException e) {
                         if (uri != null) {
                             contentResolver.delete(uri, null, null);
@@ -303,6 +308,7 @@ public class Utils {
                 }
             }
         }
+
     }
 
     public static String makeFolder(Context c, String nameFolder) {
@@ -446,7 +452,7 @@ public class Utils {
             FileOutputStream stream = new FileOutputStream(file);
             image.compress(Bitmap.CompressFormat.PNG, 100, stream);
             stream.close();
-            uri = FileProvider.getUriForFile(context, "com.remi.datnt.borderframe", file);
+            uri = FileProvider.getUriForFile(context, "com.remi.datnt.remitextart", file);
         } catch (IOException e) {
             Log.d("TAG", "IOException while trying to write file for sharing: " + e.getMessage());
         }

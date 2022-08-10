@@ -7,30 +7,13 @@
     android:background="@color/white"
     tools:context=".activity.splash.SplashActivity">
 
-    <ImageView
-        android:id="@+id/ivBeat1"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/logo_splash_beat" />
+    <com.datnt.remitextart.customview.CustomBeatSplash
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ImageView
-        android:id="@+id/ivBeat2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/logo_splash_beat" />
-
-    <ImageView
-        android:id="@+id/ivBeat3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/logo_splash_beat" />
-
-    <ImageView
-        android:layout_centerInParent="true"
         android:layout_width="@dimen/_98sdp"
         android:layout_height="@dimen/_98sdp"
+        android:layout_centerInParent="true"
         android:src="@drawable/logo_splash" />
 </RelativeLayout>
