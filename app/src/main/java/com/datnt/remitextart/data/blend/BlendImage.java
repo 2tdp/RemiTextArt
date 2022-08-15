@@ -1,9 +1,9 @@
 package com.datnt.remitextart.data.blend;
 
 import android.graphics.Bitmap;
-
-import com.datnt.remitextart.customsticker.imgpro.actions.Blend;
 import com.datnt.remitextart.model.BlendModel;
+
+import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.util.ArrayList;
 
@@ -13,39 +13,40 @@ public class BlendImage {
         ArrayList<BlendModel> lstBlend = new ArrayList<>();
 
         String type = "";
-        Bitmap bm = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        for (Blend.Mode mode : MODES_BLEND) {
-            if (mode != Blend.Mode.NORMAL)
-                new Blend(0.5f, mode).adjustBitmap(bm);
+        Bitmap bm;
+        for (String s : BLEND_NAMES) {
+            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, "@blend lut " + s, 0.5f);
+            if (bm != null) {
 
-            if (Blend.Mode.NORMAL.equals(mode)) type = "None";
-            if (Blend.Mode.DARKEN.equals(mode)) type = "Darken";
-            if (Blend.Mode.MULTIPLY.equals(mode)) type = "Multiply";
-            if (Blend.Mode.LIGHTEN.equals(mode)) type = "Lighten";
-            if (Blend.Mode.SCREEN.equals(mode)) type = "Screen";
-            if (Blend.Mode.OVERLAY.equals(mode)) type = "Overlay";
-            if (Blend.Mode.SOFT_LIGHT.equals(mode)) type = "Soft Light";
-            if (Blend.Mode.HARD_LIGHT.equals(mode)) type = "Hard Light";
-            if (Blend.Mode.DIFFERENCE.equals(mode)) type = "Difference";
-            if (Blend.Mode.EXCLUSION.equals(mode)) type = "Exclusion";
-            if (Blend.Mode.COLOR_DOGE.equals(mode)) type = "Color Doge";
+                if (s.equals("")) type = "None";
+                if (s.equals("blend_darken.png")) type = "Darken";
+                if (s.equals("blend_multiply.png")) type = "Multiply";
+                if (s.equals("blend_lighten.png")) type = "Lighten";
+                if (s.equals("blend_screen.png")) type = "Screen";
+                if (s.equals("blend_overlay.png")) type = "Overlay";
+                if (s.equals("blend_soft_light.png")) type = "Soft Light";
+                if (s.equals("blend_hard_light.png")) type = "Hard Light";
+                if (s.equals("blend_difference.png")) type = "Difference";
+                if (s.equals("blend_exclusion.png")) type = "Exclusion";
+                if (s.equals("blend_color_doge.png")) type = "Color Doge";
 
-            lstBlend.add(new BlendModel(bm, type, mode, false));
+                lstBlend.add(new BlendModel(bm, type, s, false));
+            }
         }
         return lstBlend;
     }
 
-    public static final Blend.Mode[] MODES_BLEND = {
-            Blend.Mode.NORMAL,
-            Blend.Mode.DARKEN,
-            Blend.Mode.MULTIPLY,
-            Blend.Mode.LIGHTEN,
-            Blend.Mode.SCREEN,
-            Blend.Mode.OVERLAY,
-            Blend.Mode.SOFT_LIGHT,
-            Blend.Mode.HARD_LIGHT,
-            Blend.Mode.DIFFERENCE,
-            Blend.Mode.EXCLUSION,
-            Blend.Mode.COLOR_DOGE,
+    public static final String[] BLEND_NAMES = {
+      "",
+      "blend_darken.png",
+      "blend_multiply.png",
+      "blend_lighten.png",
+      "blend_screen.png",
+      "blend_overlay.png",
+      "blend_soft_light.png",
+      "blend_hard_light.png",
+      "blend_difference.png",
+      "blend_exclusion.png",
+      "blend_color_doge.png",
     };
 }

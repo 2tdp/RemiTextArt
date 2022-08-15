@@ -229,7 +229,7 @@
                     android:src="@drawable/ic_bottom" />
             </RelativeLayout>
 
-            <!--        filter blend-->
+            <!--        filter_blend blend-->
             <RelativeLayout
                 android:id="@+id/rlEditFilterBlend"
                 android:layout_width="match_parent"
@@ -1061,7 +1061,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <!--                    filter-->
+                    <!--                    filter_blend-->
                     <RelativeLayout
                         android:id="@+id/rlFilter"
                         android:layout_width="@dimen/_55sdp"

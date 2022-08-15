@@ -24,7 +24,7 @@ public class DataTemplate {
                 String background = "template_background" + s.split("template")[1];
                 String text = "json_temp_text" + s.split("template")[1].replace(".webp", ".json");
                 lstTemp.add(new TemplateModel(s, background, getPathDataTemp(context, text),
-                        null, null, 255, false, false, null));
+                        null, null, 255, false, false, false, true, null));
             }
         } catch (IOException e) {
             e.printStackTrace();

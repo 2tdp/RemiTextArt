@@ -19,7 +19,7 @@ public class DataDecor {
             String[] f = context.getAssets().list("decor/decor_" + name);
             for (String s : f)
                 lstDecor.add(new DecorModel(s, "decor_" + name, getPathDataDecor(context, s),
-                        null, null, 255, false, false, false, null));
+                        null, null, 255, false, false, false, false, true, null));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class DataDecor {
             String[] f = context.getAssets().list("decor/json_" + name);
             for (String s : f)
                 lstDecor.add(new DecorModel(s, "json" + name, getPathDataDecor(context, s),
-                        null, null, 255, false, false, false, null));
+                        null, null, 255, false, false, false, false, true, null));
         } catch (IOException e) {
             e.printStackTrace();
         }

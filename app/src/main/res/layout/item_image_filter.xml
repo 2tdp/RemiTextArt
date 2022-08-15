@@ -10,6 +10,7 @@
         android:id="@+id/ivPic"
         android:layout_width="@dimen/_55sdp"
         android:layout_height="@dimen/_55sdp"
+        android:padding="@dimen/_4sdp"
         android:scaleType="centerCrop"
         app:riv_border_width="2dp"
         app:riv_corner_radius="@dimen/_34sdp" />

@@ -75,6 +75,10 @@ public class ColorView extends View {
         return height;
     }
 
+    public ColorModel getData(){
+        return color;
+    }
+
     public void setData(ColorModel color) {
         this.color = color;
     }

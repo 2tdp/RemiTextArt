@@ -140,14 +140,14 @@
                 android:layout_height="match_parent"
                 android:layout_alignEnd="@id/vMain"
                 android:layout_alignBottom="@id/vMain"
-                android:fontFamily="@font/honeyflorist_honeyflorist"
+                android:fontFamily="@font/kiwimaru_medium"
                 android:gravity="bottom|end"
                 android:paddingStart="@dimen/_1sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                android:text="@string/write_on_photo"
+                android:text="@string/water_mark"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_13ssp"
+                android:textSize="@dimen/_5ssp"
                 android:visibility="gone" />
 
             <TextView
@@ -155,14 +155,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:fontFamily="@font/honeyflorist_honeyflorist"
+                android:fontFamily="@font/kiwimaru_medium"
                 android:gravity="bottom|end"
                 android:paddingStart="@dimen/_1sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                android:text="@string/write_on_photo"
+                android:text="@string/water_mark"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_13ssp"
+                android:textSize="@dimen/_5ssp"
                 android:visibility="gone" />
 
         </RelativeLayout>
@@ -1733,7 +1733,7 @@
 
         </RelativeLayout>
 
-        <!--        filter-->
+        <!--        filter_blend-->
         <RelativeLayout
             android:id="@+id/rlEditFilterBackground"
             android:layout_width="match_parent"
@@ -1742,14 +1742,6 @@
             android:layout_centerVertical="true"
             android:padding="@dimen/_5sdp"
             android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/ivLoadingFilterBackground"
-                android:layout_width="@dimen/_84sdp"
-                android:layout_height="@dimen/_84sdp"
-                android:layout_centerInParent="true"
-                android:padding="@dimen/_2sdp"
-                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvEditFilterBackground"
@@ -2578,7 +2570,7 @@
 
         </LinearLayout>
 
-        <!--        filter-->
+        <!--        filter_blend-->
         <RelativeLayout
             android:id="@+id/rlEditFilter"
             android:layout_width="match_parent"
@@ -4216,4 +4208,14 @@
             </RelativeLayout>
         </LinearLayout>
     </HorizontalScrollView>
+
+    <ImageView
+        android:id="@+id/ivLoadingFilterBackground"
+        android:layout_width="@dimen/_84sdp"
+        android:layout_height="@dimen/_84sdp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/_34sdp"
+        android:padding="@dimen/_2sdp"
+        android:visibility="gone" />
 </RelativeLayout>

@@ -75,6 +75,9 @@ public class CreateProjectActivity extends BaseActivity {
             }
         }).attach();
 
+        tabLayout.selectTab(tabLayout.getTabAt(1));
+        viewPager.setCurrentItem(1, true);
+
         setUpListenerTabLayout();
     }
 

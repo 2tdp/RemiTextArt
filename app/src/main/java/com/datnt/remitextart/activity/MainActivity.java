@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity {
             AssetManager am = getAssets();
             InputStream is;
             try {
-                is = am.open("filter/" + name);
+                is = am.open("filter_blend/" + name);
             } catch (IOException e) {
 //                Log.d("2tdp", "Loading file: can't load file");
                 Log.d("2tdp", "Loading file: " + name);
@@ -86,7 +86,6 @@ public class MainActivity extends BaseActivity {
         init();
         CGENativeLibrary.setLoadImageCallback(mLoadImageCallback, null);
     }
-
 
 
     private void init() {
@@ -185,8 +184,8 @@ public class MainActivity extends BaseActivity {
         super.onResume();
 
         ArrayList<Project> lstProject = DataLocalManager.getListProject(this, Utils.LIST_PROJECT);
+        projectAdapter.setData(lstProject);
         if (!lstProject.isEmpty()) {
-            projectAdapter.setData(lstProject);
             rlTop.setVisibility(View.VISIBLE);
             tvProjects.setVisibility(View.GONE);
         } else {

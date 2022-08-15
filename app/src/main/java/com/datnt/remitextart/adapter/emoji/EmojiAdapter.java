@@ -53,7 +53,7 @@ public class EmojiAdapter extends RecyclerView.Adapter<EmojiAdapter.EmojiHolder>
 
     class EmojiHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivEmoji;
+        private final ImageView ivEmoji;
 
         public EmojiHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,7 +69,8 @@ public class EmojiAdapter extends RecyclerView.Adapter<EmojiAdapter.EmojiHolder>
                     .load(Uri.parse("file:///android_asset/emoji/" + emoji.getFolder() + "/" + emoji.getNameEmoji()))
                     .into(ivEmoji);
 
-            itemView.setOnClickListener(v -> callBack.callBackItem(emoji, position));
+            itemView.setOnClickListener(v ->
+                    callBack.callBackItem(emoji, position));
         }
     }
 

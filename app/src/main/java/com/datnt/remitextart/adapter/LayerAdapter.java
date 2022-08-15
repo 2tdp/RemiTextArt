@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -31,6 +32,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datnt.remitextart.R;
+import com.datnt.remitextart.activity.edit.EditActivity;
 import com.datnt.remitextart.callback.ICallBackItem;
 import com.datnt.remitextart.callback.ItemTouchHelperAdapter;
 import com.datnt.remitextart.callback.SimpleItemTouchHelperCallback;
@@ -152,6 +154,11 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
                         ivPath.setVisibility(View.VISIBLE);
                         ivPath.setDataPath(drawableSticker.getTemplateModel().getLstPathDataText(), true, false);
                         break;
+                    case Utils.IMAGE:
+                        ivLayer.setVisibility(View.VISIBLE);
+                        ivPath.setVisibility(View.GONE);
+                        ivLayer.setImageBitmap(BitmapFactory.decodeFile(drawableSticker.getImageModel().getUri()));
+                        break;
                     default:
                         ivLayer.setVisibility(View.VISIBLE);
                         ivPath.setVisibility(View.GONE);
@@ -161,7 +168,8 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             } else {
                 TextStickerCustom textSticker = (TextStickerCustom) layer.getSticker();
 
-                if (bitmap == null) bitmap = UtilsBitmap.loadBitmapFromView(ivLayer, false);
+                if (bitmap == null)
+                    bitmap = UtilsBitmap.loadBitmapFromView(context, ivLayer, false);
 
                 String str = textSticker.getText();
                 paintText.setTextSize(15);
@@ -182,13 +190,6 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
             }
 
             itemView.setOnClickListener(v -> callBack.callBackItem(layer, position));
-//            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-//                @Override
-//                public boolean onLongClick(View v) {
-//                    setCurrent(position);
-//                    return true;
-//                }
-//            });
         }
     }
 

@@ -5,12 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -24,10 +22,10 @@ import androidx.core.graphics.PathParser;
 import com.datnt.remitextart.R;
 import com.datnt.remitextart.customview.stickerview.Sticker;
 import com.datnt.remitextart.data.FilterImage;
+import com.datnt.remitextart.data.blend.BlendImage;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.DecorModel;
 import com.datnt.remitextart.model.EmojiModel;
-import com.datnt.remitextart.model.OverlayModel;
 import com.datnt.remitextart.model.TemplateModel;
 import com.datnt.remitextart.model.image.ImageModel;
 import com.datnt.remitextart.model.ShadowModel;
@@ -38,6 +36,7 @@ import com.datnt.remitextart.utils.UtilsBitmap;
 import org.wysaid.nativePort.CGENativeLibrary;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class DrawableStickerCustom extends Sticker {
 
@@ -106,9 +105,10 @@ public class DrawableStickerCustom extends Sticker {
     public void setDataImage(ImageModel imageModel) {
         bitmap = BitmapFactory.decodeFile(imageModel.getUri());
 
-        this.drawable = new BitmapDrawable(context.getResources(), bitmap);
+        createDrawable();
 
         if (imageModel.getPosFilter() != 0) setFilterImage(imageModel.getPosFilter());
+        if (imageModel.getPosBlend() != 0) setBlendImage(imageModel.getPosBlend());
 
         setAlpha(imageModel.getOpacity());
 
@@ -313,7 +313,13 @@ public class DrawableStickerCustom extends Sticker {
     }
 
     public void setFilterImage(int positionFilter) {
-        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, FilterImage.EFFECT_CONFIGS[positionFilter], 0.8f);
+        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                "@adjust lut " + FilterImage.FILTER_NAMES[positionFilter], 0.5f);
+    }
+
+    public void setBlendImage(int positionBlend) {
+        bitmap = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                "@adjust lut " + BlendImage.BLEND_NAMES[positionBlend], 0.5f);
     }
 
     public void setShadowPathShape(ArrayList<String> lstPath) {
@@ -421,15 +427,24 @@ public class DrawableStickerCustom extends Sticker {
 
     private void createDrawable() {
         GradientDrawable drawable = new GradientDrawable();
-        if (this.typeSticker.equals(Utils.DECOR)) {
-            drawable.setSize((int) rectFDecor.width() + 2 * distance, (int) rectFDecor.height() + 2 * distance);
-            drawable.setColor(Color.TRANSPARENT);
-            drawable.setBounds(distance, distance, (int) rectFDecor.right - distance, (int) rectFDecor.bottom - distance);
-        } else if (this.typeSticker.equals(Utils.TEMPLATE)) {
-            drawable.setSize((int) rectFTemp.width() + 2 * distance, (int) rectFTemp.height() + 2 * distance);
-            drawable.setColor(Color.TRANSPARENT);
-            drawable.setBounds(distance, distance, (int) rectFTemp.right - distance, (int) rectFTemp.bottom - distance);
+        switch (this.typeSticker) {
+            case Utils.DECOR:
+                drawable.setSize((int) rectFDecor.width() + 2 * distance, (int) rectFDecor.height() + 2 * distance);
+                drawable.setColor(Color.TRANSPARENT);
+                drawable.setBounds(distance, distance, (int) rectFDecor.right - distance, (int) rectFDecor.bottom - distance);
+                break;
+            case Utils.TEMPLATE:
+                drawable.setSize((int) rectFTemp.width() + 2 * distance, (int) rectFTemp.height() + 2 * distance);
+                drawable.setColor(Color.TRANSPARENT);
+                drawable.setBounds(distance, distance, (int) rectFTemp.right - distance, (int) rectFTemp.bottom - distance);
+                break;
+            case Utils.IMAGE:
+                drawable.setSize(bitmap.getWidth() + distance, bitmap.getHeight() + distance);
+                drawable.setColor(Color.TRANSPARENT);
+                drawable.setBounds(distance, distance, bitmap.getWidth() + distance, bitmap.getHeight() + distance);
+                break;
         }
+
         setDrawable(drawable);
     }
 }

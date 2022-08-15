@@ -20,7 +20,7 @@ import com.datnt.remitextart.utils.Utils;
 public class ShareFragment extends Fragment {
 
     private Bitmap bitmap;
-    private ICheckTouch checkTouch;
+    private final ICheckTouch checkTouch;
 
     private ImageView ivBack, ivHome, ivSaved;
     private LinearLayout llInsta, llFb, llTelegram, llOther;

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RemiTextArt</string>
 
+    <string name="water_mark">REMI Apps</string>
     <string name="show_all">Show all ></string>
     <string name="done">Done!</string>
     <string name="no">No</string>

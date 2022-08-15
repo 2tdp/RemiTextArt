@@ -58,7 +58,6 @@ import com.datnt.remitextart.callback.ItemTouchHelperAdapter;
 import com.datnt.remitextart.callback.SimpleItemTouchHelperCallback;
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
-import com.datnt.remitextart.customsticker.imgpro.actions.Blend;
 import com.datnt.remitextart.customview.ColorView;
 import com.datnt.remitextart.customview.CropImage;
 import com.datnt.remitextart.customview.CropRatioView;
@@ -79,6 +78,7 @@ import com.datnt.remitextart.fragment.DecorFragment;
 import com.datnt.remitextart.fragment.EmojiFragment;
 import com.datnt.remitextart.fragment.ImageFragment;
 import com.datnt.remitextart.fragment.ShareFragment;
+import com.datnt.remitextart.fragment.vip.VipOneFragment;
 import com.datnt.remitextart.model.BlendModel;
 import com.datnt.remitextart.model.ColorModel;
 import com.datnt.remitextart.model.DecorModel;
@@ -200,6 +200,7 @@ public class EditActivity extends BaseActivity {
     private FilterImageAdapter filterImageAdapter;
     private BlendImageAdapter blendImageAdapter;
     private ImageFragment imageFragment;
+    private ArrayList<String> lstDelImage = new ArrayList<>();
     private boolean isReplaceImage;
 
     //emoji
@@ -243,12 +244,13 @@ public class EditActivity extends BaseActivity {
     private TextView tvWaterMarkMain, tvWaterMarkColor;
     private ViewPagerAddFragmentsAdapter addFragmentsAdapter;
     private ShareFragment shareFragment;
+    private VipOneFragment vipOneFragment;
     private Animation animation;
     private BackgroundModel backgroundModel;
     private ArrayList<FilterModel> lstFilter;
     private ArrayList<BlendModel> lstBlend;
     private ArrayList<ColorModel> lstColor;
-    private boolean isColor, isBackground, isReplaceBackground;
+    private boolean isProject, isColor, isBackground, isReplaceBackground;
     private String strPicUserOld = "old", strPicAppOld = "old";
     private ColorModel colorModelOld = null;
     private TemplateModel templatelOld = new TemplateModel();
@@ -454,7 +456,7 @@ public class EditActivity extends BaseActivity {
 
         rlMain.setOnClickListener(v -> {
             if (!checkLoading())
-                if (vCrop.getVisibility() == View.GONE) {
+                if (ivTick.getVisibility() == View.GONE) {
                     vSticker.setCurrentSticker(null);
                     seekAndHideOperation(indexDefault);
                 }
@@ -628,12 +630,18 @@ public class EditActivity extends BaseActivity {
         });
         rlDelBackground.setOnClickListener(v -> {
             if (!checkLoading()) {
-                getData(3, "", new ColorModel(Color.WHITE, Color.WHITE, 0, false), null, false);
+                ColorModel color = new ColorModel(Color.WHITE, Color.WHITE, 0, false);
+                backgroundModel.setColorModel(color);
+                seekAndHideViewMain(positionColor, null, color, false);
                 Utils.showToast(this, getResources().getString(R.string.del));
             }
         });
         rlReplaceBackground.setOnClickListener(v -> {
-            if (!checkLoading()) replaceBackground();
+            if (!checkLoading()) {
+                if (isColor) tvWaterMarkColor.setVisibility(View.GONE);
+                else tvWaterMarkMain.setVisibility(View.GONE);
+                replaceBackground();
+            }
         });
         rlAdjustBackground.setOnClickListener(v -> {
             if (!checkLoading()) adjustBackground();
@@ -659,7 +667,7 @@ public class EditActivity extends BaseActivity {
             }
         });
         rlDelOverlay.setOnClickListener(v -> {
-            if (!checkLoading()) delOverlay();
+            if (!checkLoading()) dellOverlay();
         });
         rlReplaceOverlay.setOnClickListener(v -> {
             if (!checkLoading()) pickOverlay();
@@ -817,15 +825,18 @@ public class EditActivity extends BaseActivity {
             new Thread(() -> {
                 Bitmap bitmap;
                 if (!isColor) {
-                    Bitmap bm = UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(vMain, false),
+                    Bitmap bm = UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(this, vMain, false),
                             vSticker.saveImage(EditActivity.this));
-                    bitmap = UtilsBitmap.overlay(bm, UtilsBitmap.loadBitmapFromView(tvWaterMarkMain, false));
+                    bitmap = UtilsBitmap.overlay(bm, UtilsBitmap.loadBitmapFromView(this, tvWaterMarkMain, false));
+                } else if (isProject) {
+                    Bitmap bm = UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(this, vColor, false),
+                            vSticker.saveImage(EditActivity.this));
+                    bitmap = UtilsBitmap.overlay(bm, UtilsBitmap.loadBitmapFromView(this, tvWaterMarkColor, false));
                 } else {
-                    vColor.getLayoutParams().width = (int) vColor.getW();
-                    vColor.getLayoutParams().height = (int) vColor.getH();
-                    Bitmap bm = UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(vColor, true),
+                    Log.d("2tdp", "edit: w: " + vColor.getW() + ".... h: " + vColor.getH());
+                    Bitmap bm = UtilsBitmap.overlay(UtilsBitmap.loadBitmapFromView(this, vColor, true),
                             vSticker.saveImage(EditActivity.this));
-                    bitmap = UtilsBitmap.overlay(bm, UtilsBitmap.loadBitmapFromView(tvWaterMarkColor, false));
+                    bitmap = UtilsBitmap.overlay(bm, UtilsBitmap.loadBitmapFromView(this, tvWaterMarkColor, false));
                 }
 
                 Utils.saveImage(EditActivity.this, bitmap, "remiTextArt");
@@ -837,8 +848,9 @@ public class EditActivity extends BaseActivity {
             }).start();
         });
         llRemove.setOnClickListener(vRemove -> {
+            vipOneFragment = VipOneFragment.newInstance();
+            Utils.replaceFragment(getSupportFragmentManager(), vipOneFragment, false, true);
             dialog.cancel();
-            Utils.showToast(this, "Remove");
         });
     }
 
@@ -873,7 +885,6 @@ public class EditActivity extends BaseActivity {
             vMain.getLayoutParams().height = bmMain.getHeight();
             tvWaterMarkMain.getLayoutParams().height = bmMain.getHeight();
 
-
             vMain.setAlpha(backgroundModel.getOpacity() / 100f);
 
             if (templatelOld.getBackground().equals(""))
@@ -888,12 +899,10 @@ public class EditActivity extends BaseActivity {
             tvWaterMarkColor.getLayoutParams().width = (int) vColor.getW();
             tvWaterMarkColor.getLayoutParams().height = (int) vColor.getH();
 
-            Log.d("2tdp", "clickTick: w: " + tvWaterMarkColor.getLayoutParams().width
-                    + "... h: " + tvWaterMarkColor.getLayoutParams().height);
-
             backgroundModel.setSizeViewColor(vColor.getSize());
 
-            vMain.setAlpha(backgroundModel.getOpacity() * 255 / 100f);
+            vColor.setAlpha(backgroundModel.getOpacity() * 255 / 100f);
+            vCrop.setSize(vColor.getSize());
             seekAndHideViewMain(positionColor, null, backgroundModel.getColorModel(), false);
 
             tvWaterMarkColor.setVisibility(View.VISIBLE);
@@ -960,6 +969,7 @@ public class EditActivity extends BaseActivity {
                     vSticker.addSticker(drawableSticker.getEmojiModel().duplicate(this, getId()));
                     break;
                 case Utils.IMAGE:
+                    drawableSticker.getImageModel().setQuantity(drawableSticker.getImageModel().getQuantity() + 1);
                     vSticker.addSticker(drawableSticker.getImageModel().duplicate(this, getId()));
                     break;
                 case Utils.DECOR:
@@ -1378,8 +1388,6 @@ public class EditActivity extends BaseActivity {
             }
         }));
         touchHelper.attachToRecyclerView(rcvLayer);
-
-
     }
 
     //lock
@@ -1387,12 +1395,36 @@ public class EditActivity extends BaseActivity {
         if (sticker != null) {
             if (sticker.isLock()) {
                 sticker.setLock(false);
+                setLockSticker(sticker, false);
                 setUpLayoutLockLayer(1);
             } else {
                 sticker.setLock(true);
+                setLockSticker(sticker, true);
                 setUpLayoutLockLayer(0);
             }
             layerAdapter.changeNotify();
+        }
+    }
+
+    public void setLockSticker(Sticker sticker, boolean isLock) {
+        if (sticker instanceof TextStickerCustom)
+            ((TextStickerCustom) sticker).getTextModel().setLock(isLock);
+        else {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    drawableSticker.getEmojiModel().setLock(isLock);
+                    break;
+                case Utils.IMAGE:
+                    drawableSticker.getImageModel().setLock(isLock);
+                    break;
+                case Utils.DECOR:
+                    drawableSticker.getDecorModel().setLock(isLock);
+                    break;
+                case Utils.TEMPLATE:
+                    drawableSticker.getTemplateModel().setLock(isLock);
+                    break;
+            }
         }
     }
 
@@ -1412,13 +1444,37 @@ public class EditActivity extends BaseActivity {
         if (sticker != null) {
             if (sticker.isLook()) {
                 sticker.setLook(false);
+                setLookSticker(sticker, false);
                 setUpLayoutLookLayer(1);
             } else {
                 sticker.setLook(true);
+                setLookSticker(sticker, true);
                 setUpLayoutLookLayer(0);
             }
             layerAdapter.changeNotify();
             vSticker.invalidate();
+        }
+    }
+
+    public void setLookSticker(Sticker sticker, boolean isLook) {
+        if (sticker instanceof TextStickerCustom)
+            ((TextStickerCustom) sticker).getTextModel().setLook(isLook);
+        else {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    drawableSticker.getEmojiModel().setLook(isLook);
+                    break;
+                case Utils.IMAGE:
+                    drawableSticker.getImageModel().setLook(isLook);
+                    break;
+                case Utils.DECOR:
+                    drawableSticker.getDecorModel().setLook(isLook);
+                    break;
+                case Utils.TEMPLATE:
+                    drawableSticker.getTemplateModel().setLook(isLook);
+                    break;
+            }
         }
     }
 
@@ -1811,7 +1867,7 @@ public class EditActivity extends BaseActivity {
                     break;
                 case 1:
                     Bitmap bm = (Bitmap) msg.obj;
-                    shareFragment = ShareFragment.newInstance((ICheckTouch) isTouch -> {
+                    shareFragment = ShareFragment.newInstance(isTouch -> {
                         if (isTouch) finish();
                     });
                     Utils.replaceFragment(getSupportFragmentManager(), shareFragment, false, true);
@@ -1881,7 +1937,8 @@ public class EditActivity extends BaseActivity {
     }
 
     //Delete Overlay
-    private void delOverlay() {
+    private void dellOverlay() {
+
         Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
         vMain.setImageBitmap(bitmap);
 
@@ -1894,6 +1951,7 @@ public class EditActivity extends BaseActivity {
         backgroundModel.setUriOverlayRoot("");
         backgroundModel.setUriOverlay("");
         backgroundModel.setOverlayModel(null);
+
 
         seekAndHideOperation(indexDefault);
     }
@@ -2132,7 +2190,7 @@ public class EditActivity extends BaseActivity {
 
             if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
             new Thread(() -> {
-                Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
+                Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, "@adjust lut " + filter.getParameterFilter(), 0.5f);
 
                 backgroundModel.setPositionFilterBackground(pos);
 
@@ -2790,35 +2848,36 @@ public class EditActivity extends BaseActivity {
         @Override
         public boolean handleMessage(@NonNull Message message) {
             Sticker sticker = vSticker.getCurrentSticker();
+            Bitmap bitmap;
+            if (ivLoading.getVisibility() == View.VISIBLE) ivLoading.setVisibility(View.GONE);
+            if (ivLoadingFilterBackground.getVisibility() == View.VISIBLE)
+                ivLoadingFilterBackground.setVisibility(View.GONE);
             switch (message.what) {
                 case 0:
                     PicModel picModel = (PicModel) message.obj;
                     try {
                         Uri uri = Uri.parse(picModel.getUri());
-                        Bitmap bitmap = UtilsBitmap.getBitmapFromUri(EditActivity.this, uri);
+                        bitmap = UtilsBitmap.getBitmapFromUri(EditActivity.this, uri);
                         if (bitmap != null) {
                             bitmap = Bitmap.createBitmap(UtilsBitmap.modifyOrientation(EditActivity.this,
                                     Bitmap.createScaledBitmap(bitmap, 512,
                                             512 * bitmap.getHeight() / bitmap.getWidth(), false), uri));
 
-                            UtilsBitmap.saveBitmapToApp(EditActivity.this, bitmap,
+                            String pathRoot = UtilsBitmap.saveBitmapToApp(EditActivity.this, bitmap,
                                     nameFolderImage, Utils.IMAGE_ROOT + "_" + picModel.getId());
                             String path = UtilsBitmap.saveBitmapToApp(EditActivity.this, bitmap,
                                     nameFolderImage, Utils.IMAGE + "_" + picModel.getId());
 
-                            setUpDataFilter(bitmap);
-                            setUpDataBlend(bitmap);
-
                             if (!isReplaceImage) {
-                                ImageModel imageModel = new ImageModel(path, path, "", 0,
-                                        null, 255, 0, null);
+                                ImageModel imageModel = new ImageModel(picModel.getId(), path, pathRoot, "", 1, 0,
+                                        null, 255, 0, false, true, null);
 
                                 DrawableStickerCustom drawableSticker =
                                         new DrawableStickerCustom(EditActivity.this, imageModel, getId(), Utils.IMAGE);
 
                                 vSticker.addSticker(drawableSticker);
                                 seekAndHideOperation(positionImage);
-                            } else replaceImage(path);
+                            } else replaceImage(path, picModel);
                         } else
                             Utils.showToast(getBaseContext(), getString(R.string.cant_get_image));
                     } catch (IOException e) {
@@ -2826,8 +2885,6 @@ public class EditActivity extends BaseActivity {
                     }
                     break;
                 case 1:
-                    if (ivLoadingFilterBackground.getVisibility() == View.VISIBLE)
-                        ivLoadingFilterBackground.setVisibility(View.GONE);
                     if (checkCurrentSticker(sticker)) {
                         if (sticker instanceof DrawableStickerCustom) {
                             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
@@ -2860,6 +2917,18 @@ public class EditActivity extends BaseActivity {
                         }
                     }
                     break;
+                case 3:
+                    bitmap = (Bitmap) message.obj;
+                    if (bitmap != null)
+                        seekAndHideViewMain(positionCrop, bitmap, null, true);
+                    break;
+                case 4:
+                    ColorModel color = (ColorModel) message.obj;
+                    if (color != null) {
+                        backgroundModel.setColorModel(color);
+                        seekAndHideViewMain(positionColor, null, color, true);
+                    }
+                    break;
             }
             return true;
         }
@@ -2881,6 +2950,8 @@ public class EditActivity extends BaseActivity {
     private void setUpDataBlend(Bitmap bitmap) {
         if (bitmap == null) return;
         lstBlend = new ArrayList<>();
+        if (ivLoadingFilterBackground.getVisibility() == View.GONE)
+            ivLoadingFilterBackground.setVisibility(View.VISIBLE);
         new Thread(() -> {
             lstBlend = BlendImage.getDataBlend(
                     Bitmap.createScaledBitmap(bitmap, 400, 400 * bitmap.getHeight() / bitmap.getWidth(), false));
@@ -2902,11 +2973,12 @@ public class EditActivity extends BaseActivity {
     }
 
     //ReplaceImage
-    private void replaceImage(String path) {
+    private void replaceImage(String path, PicModel picModel) {
         DrawableStickerCustom drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
         if (drawableSticker != null && drawableSticker.getTypeSticker().equals(Utils.IMAGE)) {
             drawableSticker.getImageModel().setUri(path);
             drawableSticker.getImageModel().setUriRoot(path);
+            drawableSticker.getImageModel().setIdImage(picModel.getId());
 
             drawableSticker.replaceImage();
         }
@@ -2942,7 +3014,8 @@ public class EditActivity extends BaseActivity {
     private void afterCropImage(DrawableStickerCustom drawableSticker) {
         seekAndHideOperation(positionImage);
 
-        drawableSticker.getImageModel().setUri(pathCrop.getBitmapCreate(this, nameFolderImage));
+        drawableSticker.getImageModel().setUri(pathCrop.getBitmapCreate(this, nameFolderImage,
+                Utils.IMAGE + "_" + drawableSticker.getImageModel().getIdImage()));
         drawableSticker.replaceImage();
         vSticker.invalidate();
     }
@@ -2956,6 +3029,7 @@ public class EditActivity extends BaseActivity {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
             if (drawableSticker.getTypeSticker().equals(Utils.IMAGE)) {
                 Bitmap bitmap = BitmapFactory.decodeFile(drawableSticker.getImageModel().getUri());
+                setUpDataFilter(bitmap);
 
                 filterImageAdapter = new FilterImageAdapter(this, (o, pos) -> {
                     FilterModel filter = (FilterModel) o;
@@ -2963,7 +3037,8 @@ public class EditActivity extends BaseActivity {
                     filterImageAdapter.setCurrent(pos);
                     filterImageAdapter.changeNotify();
 
-                    Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, filter.getParameterFilter(), 0.8f);
+                    Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap,
+                            "@adjust lut " + filter.getParameterFilter(), 0.5f);
 
                     drawableSticker.getImageModel().setPosFilter(pos);
                     drawableSticker.getImageModel().setUri(UtilsBitmap.saveBitmapToApp(EditActivity.this,
@@ -3150,6 +3225,7 @@ public class EditActivity extends BaseActivity {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
             if (drawableSticker.getTypeSticker().equals(Utils.IMAGE)) {
                 Bitmap bitmap = BitmapFactory.decodeFile(drawableSticker.getImageModel().getUri());
+                setUpDataBlend(bitmap);
 
                 blendImageAdapter = new BlendImageAdapter(this, (o, pos) -> {
                     BlendModel blendModel = (BlendModel) o;
@@ -3157,14 +3233,15 @@ public class EditActivity extends BaseActivity {
                     blendImageAdapter.setCurrent(pos);
                     blendImageAdapter.changeNotify();
 
-                    Bitmap bm = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    new Blend(1f, blendModel.getModeBlend()).adjustBitmap(bm);
+                    Bitmap bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, "@adjust lut " + blendModel.getParameter(), 0.5f);
 
                     drawableSticker.getImageModel().setPosBlend(pos);
                     drawableSticker.getImageModel().setUri(UtilsBitmap.saveBitmapToApp(EditActivity.this,
                             bm, nameFolderImage, Utils.IMAGE));
-                    if (pos != 0) drawableSticker.getImageModel().setOpacity(134);
+
+                    if (pos != 0) drawableSticker.getImageModel().setOpacity(184);
                     else drawableSticker.getImageModel().setOpacity(255);
+
                     drawableSticker.replaceImage();
                     vSticker.invalidate();
                 });
@@ -3416,6 +3493,7 @@ public class EditActivity extends BaseActivity {
         DrawableStickerCustom drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
         if (drawableSticker != null && drawableSticker.getTypeSticker().equals(Utils.EMOJI)) {
             drawableSticker.getEmojiModel().setNameEmoji(emoji.getNameEmoji());
+            drawableSticker.getEmojiModel().setFolder(emoji.getFolder());
             drawableSticker.replaceEmoji();
         }
 
@@ -4043,34 +4121,46 @@ public class EditActivity extends BaseActivity {
         });
     }
 
-    public void getData(int position, String strPic, ColorModel color, TemplateModel template, boolean isNewData) {
-        Bitmap bmRoot;
-        switch (position) {
-            case 0:
-                try {
-                    bmRoot = UtilsBitmap.modifyOrientation(this, UtilsBitmap.getBitmapFromUri(this, Uri.parse(strPic)), Uri.parse(strPic));
-                    Bitmap bm = Bitmap.createScaledBitmap(bmRoot, 1080, 1080 * bmRoot.getHeight() / bmRoot.getWidth(), false);
-                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bm, nameFolderBackground, Utils.BACKGROUND_ROOT));
-                    seekAndHideViewMain(positionCrop, bm, color, isNewData);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case 1:
-                bmRoot = UtilsBitmap.getBitmapFromAsset(this, "offline_myapp", strPic, false, false);
-                backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
-                seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
-                break;
-            case 2:
-                bmRoot = UtilsBitmap.getBitmapFromAsset(this, "template/template_background", template.getBackground(), false, false);
-                backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
-                seekAndHideViewMain(positionCrop, bmRoot, color, isNewData);
-                break;
-            case 3:
-                backgroundModel.setColorModel(color);
-                seekAndHideViewMain(positionColor, null, color, isNewData);
-                break;
-        }
+    public void getData(int position, String strPic, ColorModel color, TemplateModel template) {
+        if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            Bitmap bmRoot;
+            Message message = new Message();
+            switch (position) {
+                case 0:
+                    try {
+                        bmRoot = UtilsBitmap.modifyOrientation(this, UtilsBitmap.getBitmapFromUri(this, Uri.parse(strPic)), Uri.parse(strPic));
+                        Bitmap bm = Bitmap.createScaledBitmap(bmRoot, 1080, 1080 * bmRoot.getHeight() / bmRoot.getWidth(), false);
+                        backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bm, nameFolderBackground, Utils.BACKGROUND_ROOT));
+
+                        message.obj = bm;
+                        message.what = 3;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 1:
+                    bmRoot = UtilsBitmap.getBitmapFromAsset(this, "offline_myapp", strPic, false, false);
+                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
+
+                    message.obj = bmRoot;
+                    message.what = 3;
+                    break;
+                case 2:
+                    bmRoot = UtilsBitmap.getBitmapFromAsset(this, "template/template_background", template.getBackground(), false, false);
+                    backgroundModel.setUriRoot(UtilsBitmap.saveBitmapToApp(this, bmRoot, nameFolderBackground, Utils.BACKGROUND_ROOT));
+
+                    message.obj = bmRoot;
+                    message.what = 3;
+                    break;
+                case 3:
+                    message.obj = color;
+                    message.what = 4;
+                    break;
+            }
+
+            handler.sendMessage(message);
+        }).start();
     }
 
     private void seekAndHideOperation(int position) {
@@ -4996,7 +5086,11 @@ public class EditActivity extends BaseActivity {
             case positionColor:
                 isColor = true;
                 if (vColor.getVisibility() == View.GONE) vColor.setVisibility(View.VISIBLE);
-                if (colorModel != null) vColor.setData(colorModel);
+                if (colorModel != null) {
+                    if (vCrop.getSize() != -1) checkSize(vCrop.getSize());
+                    else checkSize(0);
+                    vColor.setData(colorModel);
+                }
 
                 if (vMain.getVisibility() == View.VISIBLE) vMain.setVisibility(View.GONE);
                 if (vCrop.getVisibility() == View.VISIBLE) vCrop.setVisibility(View.GONE);
@@ -5415,10 +5509,12 @@ public class EditActivity extends BaseActivity {
 
         backgroundModel = new BackgroundModel();
         new Thread(() -> lstColor = DataColor.getListColor(this)).start();
+
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.loading)
                 .into(ivLoading);
+
         Glide.with(this)
                 .asGif()
                 .load(R.drawable.loading)
@@ -5437,6 +5533,19 @@ public class EditActivity extends BaseActivity {
         if (!checkCurrentSticker(sticker)) return;
 
         vSticker.remove(sticker);
+
+        if (sticker instanceof DrawableStickerCustom) {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            if (drawableSticker.getTypeSticker().equals(Utils.IMAGE)) {
+
+                if (drawableSticker.getImageModel().getQuantity() > 1)
+                    drawableSticker.getImageModel().setQuantity(drawableSticker.getImageModel().getQuantity() - 1);
+                else {
+                    lstDelImage.add(drawableSticker.getImageModel().getUriRoot());
+                    lstDelImage.add(drawableSticker.getImageModel().getUri());
+                }
+            }
+        }
 
         if (!isDelLayer) seekAndHideOperation(indexDefault);
         else layerAdapter.setData(vSticker.getListLayer());
@@ -5493,10 +5602,10 @@ public class EditActivity extends BaseActivity {
         Project project = new Project();
         if (!isColor)
             project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
-                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(vMain, false)), nameFolder, Utils.THUMB));
+                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(this, vMain, false)), nameFolder, Utils.THUMB));
         else
             project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
-                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(vColor, true)), nameFolder, Utils.THUMB));
+                    vSticker.getThumb(UtilsBitmap.loadBitmapFromView(this, vColor, true)), nameFolder, Utils.THUMB));
         project.setBackgroundModel(backgroundModel);
         for (Sticker sticker : lstSticker) {
             if (sticker instanceof DrawableStickerCustom) {
@@ -5667,19 +5776,23 @@ public class EditActivity extends BaseActivity {
                 vSticker.setCurrentSticker(null);
                 seekAndHideOperation(indexDefault);
             }
-        } else if (imageFragment != null || shareFragment != null) {
+        } else if (imageFragment != null || shareFragment != null || vipOneFragment != null) {
             if (imageFragment != null) {
                 if (imageFragment.getBack()) {
                     seekAndHideOperation(indexDefault);
                     Utils.clearBackStack(getSupportFragmentManager());
                     imageFragment = null;
                 }
-            } else {
+            } else if (shareFragment != null) {
                 if (shareFragment.getBack()) {
                     seekAndHideOperation(indexDefault);
                     Utils.clearBackStack(getSupportFragmentManager());
                     shareFragment = null;
                 }
+            } else {
+                seekAndHideOperation(indexDefault);
+                Utils.clearBackStack(getSupportFragmentManager());
+                vipOneFragment = null;
             }
         } else showDialogBack();
 
@@ -5705,10 +5818,18 @@ public class EditActivity extends BaseActivity {
         tvDiscard.setOnClickListener(vDiscard -> {
             super.onBackPressed();
             Utils.setAnimExit(this);
-            new Thread(() -> Utils.delFileInFolder(this, nameFolder, "")).start();
+            new Thread(() -> {
+                if (!isProject) Utils.delFileInFolder(this, nameFolder, "");
+            }).start();
             dialog.cancel();
         });
         tvSave.setOnClickListener(vSave -> {
+            if (isProject && !lstDelImage.isEmpty()) {
+                for (String uri : lstDelImage) {
+                    File file = new File(uri);
+                    if (file.exists()) file.delete();
+                }
+            }
             saveProject();
             super.onBackPressed();
             Utils.setAnimExit(this);
@@ -5729,13 +5850,13 @@ public class EditActivity extends BaseActivity {
             TemplateModel templateModel = DataLocalManager.getTemp("temp");
 
             if (!strPicUser.equals("") && !strPicUser.equals(strPicUserOld)) {
-                getData(0, strPicUser, null, null, true);
+                getData(0, strPicUser, null, null);
             } else if (!strPicApp.equals("") && !strPicApp.equals(strPicAppOld)) {
-                getData(1, strPicApp, null, null, true);
+                getData(1, strPicApp, null, null);
             } else if (templateModel != null && !templateModel.getBackground().equals(templatelOld.getBackground())) {
-                getData(2, "", null, templateModel, true);
-            } else if (colorModel != null && colorModel != colorModelOld) {
-                getData(3, "", colorModel, null, true);
+                getData(2, "", null, templateModel);
+            } else if (colorModel != null && !checkColor(colorModel)) {
+                getData(3, "", colorModel, null);
             }
             strPicUserOld = strPicUser;
             strPicAppOld = strPicApp;
@@ -5745,6 +5866,7 @@ public class EditActivity extends BaseActivity {
             indexProject = DataLocalManager.getInt("indexProject");
             backgroundModel = project.getBackgroundModel();
             backgroundModel.setOverlayModel(project.getOverlayModel());
+            isProject = true;
 
             if (backgroundModel.getColorModel() == null) {
                 Bitmap bmMain;
@@ -5754,28 +5876,47 @@ public class EditActivity extends BaseActivity {
 
                 vSticker.getLayoutParams().width = bmMain.getWidth();
                 vMain.getLayoutParams().width = bmMain.getWidth();
+                tvWaterMarkMain.getLayoutParams().width = bmMain.getWidth();
                 vSticker.getLayoutParams().height = bmMain.getHeight();
                 vMain.getLayoutParams().height = bmMain.getHeight();
+                tvWaterMarkMain.getLayoutParams().height = bmMain.getHeight();
 
                 seekAndHideViewMain(positionMain, bmMain, null, false);
+
+                tvWaterMarkMain.setVisibility(View.VISIBLE);
             } else {
                 colorModelOld = backgroundModel.getColorModel();
 
-                vColor.setSize(backgroundModel.getSizeViewColor());
+//                vColor.setSize(backgroundModel.getSizeViewColor());
+
+                vColor.setData(backgroundModel.getColorModel());
 
                 int w = (int) calculatorSizeColor(backgroundModel.getSizeViewColor())[0];
                 int h = (int) calculatorSizeColor(backgroundModel.getSizeViewColor())[1];
                 vSticker.getLayoutParams().height = h;
                 vSticker.getLayoutParams().width = w;
+
                 vColor.getLayoutParams().width = w;
                 vColor.getLayoutParams().height = h;
 
+                tvWaterMarkColor.getLayoutParams().width = w;
+                tvWaterMarkColor.getLayoutParams().height = h;
+
                 seekAndHideViewMain(positionColor, null, colorModelOld, false);
+
+                tvWaterMarkColor.setVisibility(View.VISIBLE);
             }
             addDataProject();
 
             DataLocalManager.setProject(null, Utils.PROJECT);
         }
+    }
+
+    private boolean checkColor(ColorModel color) {
+        if (colorModelOld != null)
+            return color.getColorStart() == colorModelOld.getColorStart()
+                    && color.getColorEnd() == colorModelOld.getColorEnd() && color.getDirec() == color.getDirec();
+        else return false;
     }
 
     private float[] calculatorSizeColor(int position) {

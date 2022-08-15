@@ -15,15 +15,55 @@ public class FilterImage {
 
         int i = 0;
         Bitmap bm;
-        for (String s : EFFECT_CONFIGS) {
-            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, s, 0.8f);
+        for (String s : FILTER_NAMES) {
+            bm = CGENativeLibrary.cgeFilterImage_MultipleEffects(bitmap, "@adjust lut " + s, 0.5f);
             if (bm != null) {
-                lstFilter.add(new FilterModel(bm, "filter" + i, s, false));
+                lstFilter.add(new FilterModel(bm, "filter_blend" + i, s, false));
                 i++;
             }
         }
         return lstFilter;
     }
+
+    public static final String[] FILTER_NAMES = {
+            "",
+            "Autumn_1.png",
+            "Autumn_2.png",
+            "Autumn_3.png",
+            "B&W.png",
+            "edgy_amber.png",
+            "filmstock.png",
+            "late_sunset.png",
+            "soft_warming.png",
+            "camera_filter.png",
+            "camera_filter_2.png",
+            "camera_filter_3.png",
+            "color_1.png",
+            "color_2.png",
+            "color_3.png",
+            "color_4.png",
+            "color_5.png",
+            "fall.png",
+            "film_1.png",
+            "film_2.png",
+            "film_3.png",
+            "film_4.png",
+            "light_1.png",
+            "nature_1.png",
+            "nature_2.png",
+            "nature_3.png",
+            "nature_4.png",
+            "night_1.png",
+            "night_2.png",
+            "night_3.png",
+            "night_4.png",
+            "night_5.png",
+            "travel_1.png",
+            "travel_2.png",
+            "travel_3.png",
+            "warm_1.png",
+            "warm_2.png",
+    };
 
     public static final String[] EFFECT_CONFIGS = {
             "",
@@ -34,7 +74,6 @@ public class FilterImage {
             "@adjust lut foggy_night.png",
             "@adjust lut late_sunset.png",
             "@adjust lut soft_warming.png",
-            "@adjust lut wildbird.png",
             "#unpack @blur lerp 0.75", //can adjust blur intensity
             "@blur lerp 1", //can adjust blur mix
             "#unpack @dynamic wave 1", //can adjust speed

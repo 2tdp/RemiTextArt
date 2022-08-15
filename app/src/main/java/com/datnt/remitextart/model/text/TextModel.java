@@ -23,14 +23,16 @@ public class TextModel extends EditSticker implements Serializable {
     private int typeAlign;
     private boolean flipX, flipY;
     private int opacity;
+    private boolean isLock;
+    private boolean isLook;
     private float[] matrix;
 
     public TextModel() {
     }
 
-    public TextModel(String content, FontModel fontModel, ColorModel colorModel,
-                     ShadowModel shadowModel, ShearTextModel shearTextModel,
-                     int typeAlign, boolean flipX, boolean flipY, int opacity, float[] matrix) {
+    public TextModel(String content, FontModel fontModel, ColorModel colorModel, ShadowModel shadowModel,
+                     ShearTextModel shearTextModel, int typeAlign, boolean flipX, boolean flipY, int opacity,
+                     boolean isLock, boolean isLook, float[] matrix) {
         this.content = content;
         this.fontModel = fontModel;
         this.colorModel = colorModel;
@@ -40,6 +42,8 @@ public class TextModel extends EditSticker implements Serializable {
         this.flipX = flipX;
         this.flipY = flipY;
         this.opacity = opacity;
+        this.isLock = isLock;
+        this.isLook = isLook;
         this.matrix = matrix;
     }
 
@@ -115,6 +119,22 @@ public class TextModel extends EditSticker implements Serializable {
         this.opacity = opacity;
     }
 
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public void setLock(boolean lock) {
+        isLock = lock;
+    }
+
+    public boolean isLook() {
+        return isLook;
+    }
+
+    public void setLook(boolean look) {
+        isLook = look;
+    }
+
     public float[] getMatrix() {
         return matrix;
     }
@@ -130,7 +150,7 @@ public class TextModel extends EditSticker implements Serializable {
             shadow = new ShadowModel(shadowModel);
 
         TextModel textModel = new TextModel(content, fontModel, colorModel, shadow, null,
-                typeAlign, flipX, flipY, opacity, matrix);
+                typeAlign, flipX, flipY, opacity, isLock, isLook, matrix);
 
         return new TextStickerCustom(context, textModel, id);
     }

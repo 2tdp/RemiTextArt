@@ -9,13 +9,13 @@ import java.io.Serializable;
 public class BlendModel implements Serializable {
     private Bitmap bitmap;
     private String nameBlend;
-    private Blend.Mode modeBlend;
+    private String parameter;
     private boolean isCheck;
 
-    public BlendModel(Bitmap bitmap, String nameBlend, Blend.Mode modeBlend, boolean isCheck) {
+    public BlendModel(Bitmap bitmap, String nameBlend, String parameter, boolean isCheck) {
         this.bitmap = bitmap;
         this.nameBlend = nameBlend;
-        this.modeBlend = modeBlend;
+        this.parameter = parameter;
         this.isCheck = isCheck;
     }
 
@@ -35,12 +35,12 @@ public class BlendModel implements Serializable {
         this.nameBlend = nameBlend;
     }
 
-    public Blend.Mode getModeBlend() {
-        return modeBlend;
+    public String getParameter() {
+        return parameter;
     }
 
-    public void setModeBlend(Blend.Mode modeBlend) {
-        this.modeBlend = modeBlend;
+    public void setParameter(String parameter) {
+        this.parameter = parameter;
     }
 
     public boolean isCheck() {

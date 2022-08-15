@@ -23,6 +23,8 @@ public class TemplateModel extends EditSticker implements Serializable {
     private int opacity;
     private boolean flipX;
     private boolean flipY;
+    private boolean isLock;
+    private boolean isLook;
     private float[] matrix;
 
     public TemplateModel() {
@@ -41,7 +43,8 @@ public class TemplateModel extends EditSticker implements Serializable {
     }
 
     public TemplateModel(String text, String background, ArrayList<String> lstPathDataText,
-                         ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX, boolean flipY, float[] matrix) {
+                         ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX,
+                         boolean flipY, boolean isLock, boolean isLook, float[] matrix) {
         this.text = text;
         this.background = background;
         this.lstPathDataText = lstPathDataText;
@@ -50,6 +53,8 @@ public class TemplateModel extends EditSticker implements Serializable {
         this.opacity = opacity;
         this.flipX = flipX;
         this.flipY = flipY;
+        this.isLock = isLock;
+        this.isLook = isLook;
         this.matrix = matrix;
     }
 
@@ -117,6 +122,22 @@ public class TemplateModel extends EditSticker implements Serializable {
         this.flipY = flipY;
     }
 
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public void setLock(boolean lock) {
+        isLock = lock;
+    }
+
+    public boolean isLook() {
+        return isLook;
+    }
+
+    public void setLook(boolean look) {
+        isLook = look;
+    }
+
     public float[] getMatrix() {
         return matrix;
     }
@@ -132,7 +153,7 @@ public class TemplateModel extends EditSticker implements Serializable {
             shadow = new ShadowModel(shadowModel);
 
         TemplateModel templateModel = new TemplateModel(text, background, lstPathDataText, colorModel, shadow,
-                opacity, flipX, flipY, matrix);
+                opacity, flipX, flipY, isLock, isLook, matrix);
 
         return new DrawableStickerCustom(context, templateModel, id, Utils.TEMPLATE);
     }

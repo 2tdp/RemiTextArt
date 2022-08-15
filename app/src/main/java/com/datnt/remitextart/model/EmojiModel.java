@@ -21,6 +21,8 @@ public class EmojiModel extends EditSticker implements Serializable {
     private boolean flipX;
     private boolean flipY;
     private boolean isSelected;
+    private boolean isLock;
+    private boolean isLook;
     private float[] matrix;
 
     public EmojiModel(EmojiModel emojiModel) {
@@ -30,17 +32,21 @@ public class EmojiModel extends EditSticker implements Serializable {
         this.flipX = emojiModel.isFlipX();
         this.flipY = emojiModel.isFlipY();
         this.isSelected = emojiModel.isSelected;
+        this.isLock = emojiModel.isLock;
+        this.isLook = emojiModel.isLook;
         this.matrix = emojiModel.getMatrix();
     }
 
-    public EmojiModel(String nameEmoji, String folder, int opacity,
-                      boolean flipX, boolean flipY, boolean isSelected, float[] matrix) {
+    public EmojiModel(String nameEmoji, String folder, int opacity, boolean flipX, boolean flipY,
+                      boolean isSelected, boolean isLock, boolean isLook, float[] matrix) {
         this.nameEmoji = nameEmoji;
         this.folder = folder;
         this.opacity = opacity;
         this.flipX = flipX;
         this.flipY = flipY;
         this.isSelected = isSelected;
+        this.isLock = isLock;
+        this.isLook = isLook;
         this.matrix = matrix;
     }
 
@@ -92,6 +98,22 @@ public class EmojiModel extends EditSticker implements Serializable {
         isSelected = selected;
     }
 
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public void setLock(boolean lock) {
+        isLock = lock;
+    }
+
+    public boolean isLook() {
+        return isLook;
+    }
+
+    public void setLook(boolean look) {
+        isLook = look;
+    }
+
     public float[] getMatrix() {
         return matrix;
     }
@@ -102,7 +124,7 @@ public class EmojiModel extends EditSticker implements Serializable {
 
     @Override
     public Sticker duplicate(Context context, @NonNull int id) {
-        EmojiModel emojiModel = new EmojiModel(nameEmoji, folder, opacity, flipX, flipY, isSelected, matrix);
+        EmojiModel emojiModel = new EmojiModel(nameEmoji, folder, opacity, flipX, flipY, isSelected, isLock, isLook, matrix);
 
         return new DrawableStickerCustom(context, emojiModel, id, Utils.EMOJI);
     }

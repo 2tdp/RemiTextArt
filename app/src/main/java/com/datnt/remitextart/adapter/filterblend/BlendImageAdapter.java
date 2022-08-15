@@ -21,7 +21,7 @@ public class BlendImageAdapter extends RecyclerView.Adapter<BlendImageAdapter.Fi
 
     private Context context;
     private ArrayList<BlendModel> lstBlend;
-    private ICallBackItem callBack;
+    private final ICallBackItem callBack;
 
     public BlendImageAdapter(Context context, ICallBackItem callBack) {
         this.context = context;

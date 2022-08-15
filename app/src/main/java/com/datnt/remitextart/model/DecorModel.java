@@ -26,6 +26,8 @@ public class DecorModel extends EditSticker implements Serializable {
     private boolean flipX;
     private boolean flipY;
     private boolean isSelected;
+    private boolean isLock;
+    private boolean isLook;
     private float[] matrix;
 
     public DecorModel(DecorModel decorModel) {
@@ -38,12 +40,14 @@ public class DecorModel extends EditSticker implements Serializable {
         this.flipX = decorModel.isFlipX();
         this.flipY = decorModel.isFlipY();
         this.isSelected = decorModel.isSelected();
+        this.isLock = decorModel.isLock();
+        this.isLook = decorModel.isLook();
         this.matrix = decorModel.getMatrix();
     }
 
     public DecorModel(String nameDecor, String nameFolder, ArrayList<String> lstPathData,
                       ColorModel colorModel, ShadowModel shadowModel, int opacity, boolean flipX,
-                      boolean flipY, boolean isSelected, float[] matrix) {
+                      boolean flipY, boolean isSelected, boolean isLock, boolean isLook, float[] matrix) {
         this.nameDecor = nameDecor;
         this.nameFolder = nameFolder;
         this.lstPathData = lstPathData;
@@ -53,6 +57,8 @@ public class DecorModel extends EditSticker implements Serializable {
         this.flipX = flipX;
         this.flipY = flipY;
         this.isSelected = isSelected;
+        this.isLock = isLock;
+        this.isLook = isLook;
         this.matrix = matrix;
     }
 
@@ -128,6 +134,22 @@ public class DecorModel extends EditSticker implements Serializable {
         isSelected = selected;
     }
 
+    public boolean isLock() {
+        return isLock;
+    }
+
+    public void setLock(boolean lock) {
+        isLock = lock;
+    }
+
+    public boolean isLook() {
+        return isLook;
+    }
+
+    public void setLook(boolean look) {
+        isLook = look;
+    }
+
     public float[] getMatrix() {
         return matrix;
     }
@@ -143,7 +165,7 @@ public class DecorModel extends EditSticker implements Serializable {
             shadow = new ShadowModel(shadowModel);
 
         DecorModel decorModel = new DecorModel(nameDecor, nameFolder, lstPathData, colorModel, shadow,
-                opacity, flipX, flipY, isSelected, matrix);
+                opacity, flipX, flipY, isSelected, isLock, isLook, matrix);
 
         return new DrawableStickerCustom(context, decorModel, id, Utils.DECOR);
     }

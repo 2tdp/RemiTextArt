@@ -893,8 +893,36 @@ public class StickerView extends FrameLayout {
         invalidate();
     }
 
+    public void checkLockNLookSticker(Sticker sticker) {
+        if (sticker instanceof TextStickerCustom) {
+            sticker.setLock(((TextStickerCustom) sticker).getTextModel().isLock());
+            sticker.setLook(((TextStickerCustom) sticker).getTextModel().isLook());
+        } else {
+            DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
+            switch (drawableSticker.getTypeSticker()) {
+                case Utils.EMOJI:
+                    sticker.setLock(drawableSticker.getEmojiModel().isLock());
+                    sticker.setLook(drawableSticker.getEmojiModel().isLook());
+                    break;
+                case Utils.IMAGE:
+                    sticker.setLock(drawableSticker.getImageModel().isLock());
+                    sticker.setLook(drawableSticker.getImageModel().isLook());
+                    break;
+                case Utils.DECOR:
+                    sticker.setLock(drawableSticker.getDecorModel().isLock());
+                    sticker.setLook(drawableSticker.getDecorModel().isLook());
+                    break;
+                case Utils.TEMPLATE:
+                    sticker.setLock(drawableSticker.getTemplateModel().isLock());
+                    sticker.setLook(drawableSticker.getTemplateModel().isLook());
+                    break;
+            }
+        }
+    }
+
     @NonNull
     public StickerView addSticker(@NonNull Sticker sticker) {
+        checkLockNLookSticker(sticker);
         return addSticker(sticker, Sticker.Position.CENTER);
     }
 

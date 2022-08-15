@@ -21,7 +21,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentHold
 
     private Context context;
     private ArrayList<PicModel> lstPic;
-    private ICallBackItem callBack;
+    private final ICallBackItem callBack;
 
     public RecentAdapter(Context context, ICallBackItem callBack) {
         this.context = context;

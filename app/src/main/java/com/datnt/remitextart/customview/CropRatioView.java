@@ -9,6 +9,7 @@ import com.edmodo.cropper.CropImageView;
 public class CropRatioView extends CropImageView {
 
     private Bitmap bmRoot;
+    private int size = -1;
 
     public CropRatioView(Context context) {
         super(context);
@@ -19,6 +20,7 @@ public class CropRatioView extends CropImageView {
     }
 
     public void setSize(int pos) {
+        this.size = pos;
         switch (pos) {
             case 0:
                 setAspectRatio(bmRoot.getWidth(), bmRoot.getHeight());
@@ -47,6 +49,10 @@ public class CropRatioView extends CropImageView {
             this.bmRoot = bitmap;
             setImageBitmap(bitmap);
         }
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public Bitmap getBitmap() {

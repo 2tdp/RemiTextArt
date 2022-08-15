@@ -21,6 +21,7 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 import androidx.exifinterface.media.ExifInterface;
 
+import com.datnt.remitextart.customview.ColorView;
 import com.datnt.remitextart.model.ColorModel;
 
 import java.io.File;
@@ -130,17 +131,11 @@ public class UtilsBitmap {
     }
 
     public static String saveBitmapToApp(Context context, Bitmap bitmap, String nameFolder, String nameFile) {
-//        ContextWrapper cw = new ContextWrapper(context);
-//        File directory = cw.getDir("remiTextArt", Context.MODE_APPEND);
-//        if (!directory.exists()) {
-//            directory.mkdir();
-//        }
         String directory = Utils.getStore(context) + "/" + nameFolder + "/";
         File myPath = new File(directory, nameFile + ".png");
 
-        FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(myPath);
+            FileOutputStream fos = new FileOutputStream(myPath);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
             return myPath.getPath();
@@ -178,14 +173,34 @@ public class UtilsBitmap {
         return bitmap;
     }
 
-    public static Bitmap loadBitmapFromView(View view, boolean isColor) {
-        Bitmap b = Bitmap.createBitmap(view.getLayoutParams().width, view.getLayoutParams().height, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        if (isColor)
-            view.layout(view.getLeft(), view.getTop(), view.getLayoutParams().width, view.getLayoutParams().height);
-        else view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
-        c.rotate(view.getRotation(), (float) view.getWidth() / 2, (float) view.getHeight() / 2);
-        view.draw(c);
+    public static Bitmap loadBitmapFromView(Context context, View view, boolean isColor) {
+        Bitmap b = null;
+        if (!isColor) {
+            b = Bitmap.createBitmap(view.getLayoutParams().width, view.getLayoutParams().height, Bitmap.Config.ARGB_8888);
+            view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+
+            Canvas c = new Canvas(b);
+
+            c.rotate(view.getRotation(), (float) view.getWidth() / 2, (float) view.getHeight() / 2);
+            view.draw(c);
+            Log.d("2tdp", "view: w" + view.getLayoutParams().width + ".... h: " + view.getLayoutParams().height);
+        } else {
+            if (view instanceof ColorView) {
+                ColorView color = new ColorView(context);
+                ColorView v = (ColorView) view;
+                b = Bitmap.createBitmap((int) v.getW(), (int) v.getH(), Bitmap.Config.ARGB_8888);
+                color.setData(v.getData());
+                color.setSize(0);
+                color.layout(v.getLeft(), v.getTop(), (int) v.getW(), (int) v.getH());
+                Log.d("2tdp", "color: w: " + color.getW() + ".... h: " + color.getH());
+                Log.d("2tdp", "color: w: " + v.getW() + ".... h: " + v.getH());
+
+                Canvas c = new Canvas(b);
+
+//                c.rotate(color.getRotation(), (float) color.getWidth() / 2, (float) color.getHeight() / 2);
+                color.draw(c);
+            }
+        }
         return b;
     }
 
