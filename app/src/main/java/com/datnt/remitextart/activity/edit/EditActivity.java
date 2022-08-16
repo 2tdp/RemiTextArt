@@ -183,6 +183,7 @@ public class EditActivity extends BaseActivity {
     private RecyclerView rcvFilterBackground;
     private Bitmap bmAdjust, bitmap;
     private HorizontalScrollView vEditBackground;
+    private boolean isAdjust;
 
     //image
     private RelativeLayout rlExpandEditImage, rlDelImage, rlReplaceImage, rlDuplicateImage, rlCropImage,
@@ -1855,8 +1856,6 @@ public class EditActivity extends BaseActivity {
     private final Handler handlerLoading = new Handler(Looper.getMainLooper(), new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
-            if (ivLoading.getVisibility() == View.VISIBLE)
-                ivLoading.setVisibility(View.GONE);
             switch (msg.what) {
                 case 0:
                     Bitmap bitmap;
@@ -1878,6 +1877,8 @@ public class EditActivity extends BaseActivity {
                     break;
             }
 
+            if (ivLoading.getVisibility() == View.VISIBLE) ivLoading.setVisibility(View.GONE);
+
             return true;
         }
     });
@@ -1895,11 +1896,17 @@ public class EditActivity extends BaseActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
 
             Bitmap bm;
-            if (backgroundModel.getOverlayModel() != null)
-                bm = UtilsBitmap.setOpacityBitmap(UtilsBitmap.getBitmapFromAsset(EditActivity.this,
-                        overlay.getNameFolder(), overlay.getNameOverlay(), false, false), backgroundModel.getOverlayModel().getOpacity());
-            else
+            if (backgroundModel.getOverlayModel() != null) {
                 bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
+                if (backgroundModel.getOverlayModel().isFlipX())
+                    bm = UtilsBitmap.createFlippedBitmap(bm, true, false);
+                if (backgroundModel.getOverlayModel().isFlipY())
+                    bm = UtilsBitmap.createFlippedBitmap(bm, false, true);
+
+                bm = UtilsBitmap.setOpacityBitmap(bm, backgroundModel.getOverlayModel().getOpacity());
+            } else {
+                bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
+            }
 
             bm = Bitmap.createScaledBitmap(bm, bitmap.getWidth(), bitmap.getWidth() * bm.getHeight() / bm.getWidth(), false);
 
@@ -2027,6 +2034,8 @@ public class EditActivity extends BaseActivity {
         new Thread(() -> {
             Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
             Bitmap bm = UtilsBitmap.createFlippedBitmap(BitmapFactory.decodeFile(backgroundModel.getUriOverlayRoot()), flipX, !flipX);
+            backgroundModel.getOverlayModel().setFlipX(flipX);
+            backgroundModel.getOverlayModel().setFlipY(!flipX);
 
             backgroundModel.setUriOverlayRoot(UtilsBitmap.saveBitmapToApp(EditActivity.this, bm, nameFolderBackground, Utils.OVERLAY_ROOT));
 
@@ -2124,15 +2133,10 @@ public class EditActivity extends BaseActivity {
 
                 backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(EditActivity.this, bitmap,
                         nameFolderBackground, Utils.BACKGROUND));
-
                 if (backgroundModel.getOverlayModel() != null)
                     addOverlay(backgroundModel.getOverlayModel());
-                else {
-                    Message message = new Message();
-                    message.what = 0;
-                    message.obj = bitmap;
-                    handlerLoading.sendMessage(message);
-                }
+                else handlerLoading.sendEmptyMessage(0);
+
             }).start();
         }
     }
@@ -2199,9 +2203,8 @@ public class EditActivity extends BaseActivity {
 
                 if (backgroundModel.getOverlayModel() != null)
                     addOverlay(backgroundModel.getOverlayModel());
-                else {
-                    handlerLoading.sendEmptyMessage(0);
-                }
+                else handlerLoading.sendEmptyMessage(0);
+
             }).start();
         });
 
@@ -2220,8 +2223,11 @@ public class EditActivity extends BaseActivity {
     private void adjustBackground() {
         seekAndHideViewBackground(0);
         setUpOptionAdjustBackground(0);
+        isAdjust = true;
+
         bmAdjust = BitmapFactory.decodeFile(backgroundModel.getUriCache());
-        vMain.setImageBitmap(bmAdjust);
+        bitmap = bmAdjust;
+        vMain.setImageBitmap(bitmap);
 
         tvResetBackground.setOnClickListener(v -> {
             if (!checkLoading()) {
@@ -2774,16 +2780,13 @@ public class EditActivity extends BaseActivity {
     }
 
     private void adjust(AdjustModel adjust, boolean fulReset) {
-        if (!fulReset) {
-            bitmap = UtilsAdjust.adjust(bmAdjust, adjust);
-
-            if (bitmap != null) vMain.setImageBitmap(bitmap);
-        } else {
-            bitmap = null;
-            backgroundModel.setAdjustModel(new AdjustModel(0f, 0f, 0f,
-                    0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f));
-            vMain.setImageBitmap(bmAdjust);
+        if (!fulReset) bitmap = UtilsAdjust.adjust(bmAdjust, adjust);
+        else {
+            bitmap = bmAdjust;
+            backgroundModel.setAdjustModel(new AdjustModel(0f, 0f, 0f, 0f,
+                    0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f));
         }
+        vMain.setImageBitmap(bitmap);
     }
 
     private void seekAndHideViewBackground(int position) {
@@ -3629,10 +3632,10 @@ public class EditActivity extends BaseActivity {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                     vSticker.hideBorderAndIcon(0);
+                    if (textSticker.getTextModel() != null) textSticker.getTextModel().setSize(i);
                     textSticker.setTextSize(i);
                     tvFontText.setText(String.valueOf(i));
                     vSticker.invalidate();
-
                 }
 
                 @Override
@@ -4171,6 +4174,22 @@ public class EditActivity extends BaseActivity {
         if (vSticker.getCurrentSticker() instanceof DrawableStickerCustom)
             drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
 
+        if (isAdjust) {
+            if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
+
+            new Thread(() -> {
+                backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(this, bitmap,
+                        nameFolderBackground, Utils.BACKGROUND));
+
+                if (backgroundModel.getOverlayModel() != null)
+                    addOverlay(backgroundModel.getOverlayModel());
+                else handlerLoading.sendEmptyMessage(0);
+
+                isAdjust = false;
+                Log.d("2tdp", "seekAndHideOperation: aaaaa");
+            }).start();
+        }
+
         switch (position) {
             case positionLayer:
                 animation = AnimationUtils.loadAnimation(this, R.anim.slide_down_out);
@@ -4569,25 +4588,6 @@ public class EditActivity extends BaseActivity {
                     rlAdjustBackground.setVisibility(View.VISIBLE);
                     rlFlipYBackground.setVisibility(View.VISIBLE);
                     rlFlipXBackground.setVisibility(View.VISIBLE);
-                }
-
-                if (bitmap != null) {
-                    if (ivLoading.getVisibility() == View.GONE)
-                        ivLoading.setVisibility(View.VISIBLE);
-
-                    new Thread(() -> {
-                        backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(this, bitmap,
-                                nameFolderBackground, Utils.BACKGROUND));
-
-                        if (backgroundModel.getOverlayModel() != null)
-                            addOverlay(backgroundModel.getOverlayModel());
-                        else {
-                            Message message = new Message();
-                            message.what = 0;
-                            message.obj = bitmap;
-                            handlerLoading.sendMessage(message);
-                        }
-                    }).start();
                 }
 
                 if (tvResetBackground.getVisibility() == View.VISIBLE)

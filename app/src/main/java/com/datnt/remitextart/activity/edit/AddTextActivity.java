@@ -112,7 +112,7 @@ public class AddTextActivity extends BaseActivity {
         } else {
             Intent returnIntent = new Intent();
             if (!isEditText) {
-                textModel = new TextModel(text, font, null, null, null,
+                textModel = new TextModel(text, font, null, null, null, 24,
                         posGravity, false, false, 255, false, true, null);
                 returnIntent.putExtra("isAdd", true);
             } else {

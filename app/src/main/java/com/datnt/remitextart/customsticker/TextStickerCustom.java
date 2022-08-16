@@ -117,6 +117,8 @@ public class TextStickerCustom extends Sticker {
                 break;
         }
         resizeText();
+
+        setTextSize(textModel.getSize());
     }
 
     @Override
@@ -193,7 +195,7 @@ public class TextStickerCustom extends Sticker {
     public TextStickerCustom setTextSize(@Dimension(unit = Dimension.SP) float size) {
 //        createDrawableText();
         textPaint.setTextSize(convertSpToPx(size));
-        shadowPaint.setTextSize(convertSpToPx(size));
+        shadowPaint.setTextSize(convertSpToPx(textModel.getSize()));
         maxTextSizePixels = textPaint.getTextSize();
         return this;
     }
@@ -228,8 +230,7 @@ public class TextStickerCustom extends Sticker {
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.TRANSPARENT);
                 this.shadowPaint.setColor(Color.TRANSPARENT);
-            }
-            if (shadow.getColorBlur() != 0f) {
+            } else if (shadow.getColorBlur() != 0f) {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(),
                         shadow.getColorBlur());
                 this.shadowPaint.setColor(shadow.getColorBlur());
@@ -237,6 +238,7 @@ public class TextStickerCustom extends Sticker {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.BLACK);
                 this.shadowPaint.setColor(Color.BLACK);
             }
+
         }
 
         staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,

@@ -2,8 +2,6 @@ package com.datnt.remitextart.model;
 
 import android.graphics.Bitmap;
 
-import com.datnt.remitextart.customsticker.imgpro.actions.Blend;
-
 import java.io.Serializable;
 
 public class BlendModel implements Serializable {

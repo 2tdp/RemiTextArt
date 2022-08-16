@@ -29,6 +29,8 @@ import com.datnt.remitextart.R;
 import com.datnt.remitextart.customsticker.DrawableStickerCustom;
 import com.datnt.remitextart.customsticker.TextStickerCustom;
 import com.datnt.remitextart.model.LayerModel;
+import com.datnt.remitextart.model.text.ShearTextModel;
+import com.datnt.remitextart.model.text.TextModel;
 import com.datnt.remitextart.utils.Utils;
 import com.datnt.remitextart.utils.UtilsBitmap;
 
@@ -702,21 +704,33 @@ public class StickerView extends FrameLayout {
             return;
         }
 
+        TextModel textModel = new TextModel();
+        if (((TextStickerCustom) sticker).getTextModel() != null)
+            textModel = ((TextStickerCustom) sticker).getTextModel();
+
         shearMatrix.reset();
 
         if (!isChange) {
-            moveMatrix.set(handlingSticker.getMatrix());
+            moveMatrix.set(sticker.getMatrix());
             isChange = true;
         }
 
-        //step2
-        shearMatrix.setSkew(shearX, shearY, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+        shearMatrix.setSkew(shearX, shearY, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
 
-        if (stretch != 0f)
+        if (textModel.getShearTextModel().getStretch() != 0f) {
+            float value, stretch = textModel.getShearTextModel().getStretch();
+            if (stretch > 0) {
+                if (stretch > 0.5f) value = 0.5f;
+                else value = 1 - stretch;
+            } else {
+                if (stretch < -0.5f) value = -0.5f;
+                else value = -(1 + stretch);
+            }
             if (stretch < 0)
-                shearMatrix.postScale(-stretch, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+                shearMatrix.postScale(-value, 1, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
             else
-                shearMatrix.postScale(1, stretch, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+                shearMatrix.postScale(1, value, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
+        }
 
         shearMatrix.postConcat(moveMatrix);
 
@@ -754,21 +768,26 @@ public class StickerView extends FrameLayout {
             return;
         }
 
+        TextModel textModel = new TextModel();
+        if (((TextStickerCustom) sticker).getTextModel() != null)
+            textModel = ((TextStickerCustom) sticker).getTextModel();
+
         stretchMatrix.reset();
 
         if (!isChange) {
-            moveMatrix.set(handlingSticker.getMatrix());
+            moveMatrix.set(sticker.getMatrix());
             isChange = true;
         }
 
         //step2
         if (stretch < 0)
-            stretchMatrix.setScale(-stretch, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+            stretchMatrix.setScale(-stretch, 1, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
         else
-            stretchMatrix.setScale(1, stretch, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+            stretchMatrix.setScale(1, stretch, sticker.getWidth() / 2f, sticker.getHeight() / 2f);
 
-        if (shearX != 0f || shearY != 0f)
-            stretchMatrix.postSkew(shearX, shearY, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+        if (textModel.getShearTextModel().getShearX() != 0f || textModel.getShearTextModel().getShearY() != 0f)
+            stretchMatrix.postSkew(textModel.getShearTextModel().getShearX(),
+                    textModel.getShearTextModel().getShearY(), sticker.getWidth() / 2f, sticker.getHeight() / 2f);
 
         stretchMatrix.postConcat(moveMatrix);
 
@@ -952,7 +971,16 @@ public class StickerView extends FrameLayout {
         if (onStickerOperationListener != null) {
             onStickerOperationListener.onStickerAdded(sticker);
         }
-        invalidate();
+
+        if (sticker instanceof TextStickerCustom) {
+            TextStickerCustom textSticker = (TextStickerCustom) sticker;
+            if (textSticker.getTextModel().getShearTextModel() != null) {
+                ShearTextModel shearTextModel = textSticker.getTextModel().getShearTextModel();
+                shearSticker(shearTextModel.getShearX(), true);
+                shearSticker(shearTextModel.getShearY(), false);
+                stretchSticker(shearTextModel.getStretch());
+            }
+        } else invalidate();
     }
 
     protected void setStickerPosition(@NonNull Sticker sticker, @Sticker.Position int position) {
