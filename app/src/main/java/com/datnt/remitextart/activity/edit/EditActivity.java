@@ -290,8 +290,7 @@ public class EditActivity extends BaseActivity {
                 stickerOld = sticker;
                 vSticker.hideBorderAndIcon(1);
 
-                if (project != null)
-                    checkMatrixStickerProject(sticker);
+                if (project != null) checkMatrixStickerProject(sticker);
 
                 setMatrixToModel(sticker);
             }
@@ -373,11 +372,23 @@ public class EditActivity extends BaseActivity {
         Matrix matrix = new Matrix();
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            matrix.setValues(textSticker.getTextModel().getMatrix());
-            sticker.setMatrix(matrix);
 
-            indexMatrix++;
-            setMatrixText(indexMatrix);
+            if (textSticker.getTextModel().getShearTextModel() != null) {
+
+                if (textSticker.getTextModel().getShearTextModel() != null)
+                    vSticker.setTransformProject(textSticker.getTextModel());
+
+
+                indexMatrix++;
+                setMatrixText(indexMatrix);
+            } else {
+                matrix.setValues(textSticker.getTextModel().getMatrix());
+                sticker.setMatrix(matrix);
+
+                indexMatrix++;
+                setMatrixText(indexMatrix);
+                vSticker.invalidate();
+            }
         } else {
             DrawableStickerCustom drawableSticker = (DrawableStickerCustom) sticker;
             switch (drawableSticker.getTypeSticker()) {
@@ -410,8 +421,8 @@ public class EditActivity extends BaseActivity {
                     setMatrixTemp(indexMatrix);
                     break;
             }
+            vSticker.invalidate();
         }
-        vSticker.invalidate();
     }
 
     private void setMatrixToModel(Sticker sticker) {

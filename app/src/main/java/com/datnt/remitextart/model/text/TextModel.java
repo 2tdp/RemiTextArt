@@ -170,8 +170,7 @@ public class TextModel extends EditSticker implements Serializable {
     public Sticker shadow(Context context, @NonNull Sticker sticker) {
         if (sticker instanceof TextStickerCustom) {
             TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            textSticker.setShadow(shadowModel);
-            return sticker;
+            return textSticker.setShadow(shadowModel);
         }
         return null;
     }

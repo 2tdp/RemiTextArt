@@ -13,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.IntRange;
@@ -34,7 +35,7 @@ public class TextStickerCustom extends Sticker {
 
     private static final String mEllipsis = "\u2026";
 
-    private Context context;
+    private final Context context;
     private TextModel textModel;
     private int id;
 
@@ -103,7 +104,8 @@ public class TextStickerCustom extends Sticker {
 
         setAlpha((int) (textModel.getOpacity() * 255 / 100f));
 
-        if (textModel.getShadowModel() != null) setShadow(textModel.getShadowModel());
+        if (textModel.getShadowModel() != null)
+            setShadow(textModel.getShadowModel());
 
         switch (textModel.getTypeAlign()) {
             case 0:
@@ -146,6 +148,8 @@ public class TextStickerCustom extends Sticker {
             int dy = textRect.top + textRect.height() / 2 - staticLayoutShadow.getHeight() / 2;
             canvas.translate(dx, dy);
         }
+
+        Log.d("2tdp", "draw: w: " + staticLayoutShadow.getWidth() + "... h: " + staticLayoutShadow.getHeight());
         staticLayoutShadow.draw(canvas);
         canvas.restore();
 
@@ -195,8 +199,8 @@ public class TextStickerCustom extends Sticker {
     public TextStickerCustom setTextSize(@Dimension(unit = Dimension.SP) float size) {
 //        createDrawableText();
         textPaint.setTextSize(convertSpToPx(size));
-        shadowPaint.setTextSize(convertSpToPx(textModel.getSize()));
-        maxTextSizePixels = textPaint.getTextSize();
+        shadowPaint.setTextSize(convertSpToPx(size));
+        maxTextSizePixels = convertSpToPx(size);
         return this;
     }
 
@@ -224,7 +228,7 @@ public class TextStickerCustom extends Sticker {
         return this;
     }
 
-    public void setShadow(ShadowModel shadow) {
+    public TextStickerCustom setShadow(ShadowModel shadow) {
         if (shadow != null) {
             if (shadow.getColorBlur() == 0f && shadow.getBlur() == 0f
                     && shadow.getXPos() == 0f && shadow.getYPos() == 0f) {
@@ -238,11 +242,14 @@ public class TextStickerCustom extends Sticker {
                 shadowPaint.setShadowLayer(shadow.getBlur(), shadow.getXPos(), shadow.getYPos(), Color.BLACK);
                 this.shadowPaint.setColor(Color.BLACK);
             }
-
         }
 
         staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
                 lineSpacingExtra, true);
+
+        resizeText();
+        setTextSize(textModel.getSize());
+        return this;
     }
 
     public ShadowModel getShadowModel() {
@@ -315,6 +322,7 @@ public class TextStickerCustom extends Sticker {
         shadowPaint.setTextSize(targetTextSizePixels);
         staticLayout = new StaticLayout(this.textModel.getContent(), textPaint, textRect.width(), alignment, lineSpacingMultiplier,
                 lineSpacingExtra, true);
+
         staticLayoutShadow = new StaticLayout(this.textModel.getContent(), shadowPaint, textRect.width(), alignment, lineSpacingMultiplier,
                 lineSpacingExtra, true);
         return this;

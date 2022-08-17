@@ -1,0 +1,48 @@
+package com.textonphoto.texttophoto.quotecreator.pro.data.blend.imgpro.actions;
+
+import android.graphics.Color;
+
+import com.textonphoto.texttophoto.quotecreator.pro.data.blend.imgpro.Action;
+
+public class Colorize extends Action {
+
+	private int colorMask;
+	private float factor;
+
+	public Colorize(float factor, int colorMask) {
+		this.colorMask = colorMask;
+		this.factor = factor;
+	}
+
+	@Override
+	protected void adjustPixels(int[] colors) {
+
+		int r, g, b;
+		int tR, tG, tB;
+		r = Color.red(this.colorMask);
+		g = Color.green(this.colorMask);
+		b = Color.blue(this.colorMask);
+
+		Blend.Mode mode = Blend.Mode.LIGHTEN;
+		int[][] cache = new int[256][256];
+		for (int i = 0; i < cache.length; i++) {
+			for (int j = 0; j < cache[i].length; j++) {
+				cache[i][j] = clamp(mode.apply(i, j) * factor);
+			}
+		}
+
+		for (int i = 0; i < colors.length; i++) {
+			tR = Color.red(colors[i]);
+			tG = Color.green(colors[i]);
+			tB = Color.blue(colors[i]);
+			tR = tG = tB = (tR + tG + tB) / 3;
+
+			tR = cache[tR][r];
+			tG = cache[tG][g];
+			tB = cache[tB][b];
+
+			colors[i] = Color.rgb(tR, tG, tB);
+		}
+	}
+
+}

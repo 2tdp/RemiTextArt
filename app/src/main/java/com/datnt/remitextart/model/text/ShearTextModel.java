@@ -8,6 +8,9 @@ public class ShearTextModel implements Serializable {
     private float shearY;
     private float stretch;
 
+    public ShearTextModel() {
+    }
+
     public ShearTextModel(float shearX, float shearY, float stretch) {
         this.shearX = shearX;
         this.shearY = shearY;

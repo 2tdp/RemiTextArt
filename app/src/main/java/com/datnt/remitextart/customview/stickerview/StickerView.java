@@ -692,6 +692,72 @@ public class StickerView extends FrameLayout {
         invalidate();
     }
 
+    public void setTransformProject(TextModel textModel) {
+
+        this.shearX = textModel.getShearTextModel().getShearX();
+        this.shearY = textModel.getShearTextModel().getShearY();
+        if (textModel.getShearTextModel().getStretch() != 0f)
+            this.stretch = textModel.getShearTextModel().getStretch();
+        else this.stretch = 0f;
+
+        shearProject(textModel);
+        stretchProject(textModel);
+    }
+
+    private void shearProject(TextModel textModel) {
+        Matrix matrix = new Matrix();
+        shearMatrix.reset();
+
+        shearMatrix.setSkew(shearX, shearY, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+
+        if (stretch != 0f) {
+            float value;
+            if (stretch > 0) {
+                if (stretch > 0.5f) value = 0.5f;
+                else value = 1 - stretch;
+            } else {
+                if (stretch < -0.5f) value = -0.5f;
+                else value = -(1 + stretch);
+            }
+            if (stretch < 0)
+                shearMatrix.postScale(-value, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+            else
+                shearMatrix.postScale(1, value, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+        }
+
+        matrix.setValues(textModel.getMatrix());
+        shearMatrix.postConcat(matrix);
+
+        handlingSticker.getMatrix().reset();
+        handlingSticker.setMatrix(shearMatrix);
+
+        invalidate();
+    }
+
+    private void stretchProject(TextModel textModel) {
+        Matrix matrix = new Matrix();
+        stretchMatrix.reset();
+
+        //step2
+        if (stretch != 0f)
+            if (stretch < 0)
+                stretchMatrix.setScale(-stretch, 1, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+            else
+                stretchMatrix.setScale(1, stretch, handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+
+        if (textModel.getShearTextModel().getShearX() != 0f || textModel.getShearTextModel().getShearY() != 0f)
+            stretchMatrix.postSkew(textModel.getShearTextModel().getShearX(),
+                    textModel.getShearTextModel().getShearY(), handlingSticker.getWidth() / 2f, handlingSticker.getHeight() / 2f);
+
+        matrix.setValues(textModel.getMatrix());
+        stretchMatrix.postConcat(matrix);
+
+        handlingSticker.getMatrix().reset();
+        handlingSticker.setMatrix(stretchMatrix);
+
+        invalidate();
+    }
+
     public void shearSticker(float value, boolean isShearX) {
         if (isShearX) this.shearX = value;
         else this.shearY = value;
@@ -972,15 +1038,7 @@ public class StickerView extends FrameLayout {
             onStickerOperationListener.onStickerAdded(sticker);
         }
 
-        if (sticker instanceof TextStickerCustom) {
-            TextStickerCustom textSticker = (TextStickerCustom) sticker;
-            if (textSticker.getTextModel().getShearTextModel() != null) {
-                ShearTextModel shearTextModel = textSticker.getTextModel().getShearTextModel();
-                shearSticker(shearTextModel.getShearX(), true);
-                shearSticker(shearTextModel.getShearY(), false);
-                stretchSticker(shearTextModel.getStretch());
-            }
-        } else invalidate();
+        invalidate();
     }
 
     protected void setStickerPosition(@NonNull Sticker sticker, @Sticker.Position int position) {
