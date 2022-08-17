@@ -281,11 +281,11 @@
             android:id="@+id/tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:fontFamily="@font/poppins_regular"
             android:text="@string/des_vip_1"
             android:textColor="@color/gray"
-            android:textSize="@dimen/_10ssp" />
+            android:textSize="@dimen/_8ssp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -293,7 +293,7 @@
             android:fontFamily="@font/poppins_regular"
             android:text="@string/des_vip_2"
             android:textColor="@color/gray"
-            android:textSize="@dimen/_10ssp" />
+            android:textSize="@dimen/_8ssp" />
     </LinearLayout>
 
 </RelativeLayout>

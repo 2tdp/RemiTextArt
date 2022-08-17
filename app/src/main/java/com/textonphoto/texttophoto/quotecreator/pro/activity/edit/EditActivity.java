@@ -882,7 +882,7 @@ public class EditActivity extends BaseActivity {
             backgroundModel.setUriCache(UtilsBitmap.saveBitmapToApp(this, bmMain,
                     nameFolderBackground, Utils.BACKGROUND));
 
-            if (!backgroundModel.getUriOverlayRoot().equals("")) {
+            if (backgroundModel.getOverlayModel() != null) {
                 if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
                 addOverlay(backgroundModel.getOverlayModel());
             }
@@ -1364,11 +1364,16 @@ public class EditActivity extends BaseActivity {
             else setUpLayoutLookLayer(1);
         });
 
-
         layerAdapter.setData(lstLayer);
         if (!vSticker.getListLayer().isEmpty()) {
+            Sticker sticker = vSticker.getSticker(0);
             layerAdapter.setCurrent(0);
-            vSticker.setCurrentSticker(lstLayer.get(0).getSticker());
+            vSticker.setCurrentSticker(sticker);
+            if (sticker.isLook()) setUpLayoutLookLayer(0);
+            else setUpLayoutLookLayer(1);
+
+            if (sticker.isLock()) setUpLayoutLockLayer(0);
+            else setUpLayoutLockLayer(1);
         }
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -1382,10 +1387,9 @@ public class EditActivity extends BaseActivity {
                     for (int i = fromPosition; i < toPosition; i++) {
                         Collections.swap(lstLayer, i, i + 1);
                     }
-                else
-                    for (int i = fromPosition; i > toPosition; i--) {
-                        Collections.swap(lstLayer, i, i - 1);
-                    }
+                else for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(lstLayer, i, i - 1);
+                }
 
                 vSticker.swapLayers(fromPosition, toPosition);
 
@@ -1904,18 +1908,13 @@ public class EditActivity extends BaseActivity {
         new Thread(() -> {
             Bitmap bitmap = BitmapFactory.decodeFile(backgroundModel.getUriCache());
 
-            Bitmap bm;
-            if (backgroundModel.getOverlayModel() != null) {
-                bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
-                if (backgroundModel.getOverlayModel().isFlipX())
-                    bm = UtilsBitmap.createFlippedBitmap(bm, true, false);
-                if (backgroundModel.getOverlayModel().isFlipY())
-                    bm = UtilsBitmap.createFlippedBitmap(bm, false, true);
+            Bitmap bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
+            if (overlay.isFlipX())
+                bm = UtilsBitmap.createFlippedBitmap(bm, true, false);
+            if (overlay.isFlipY())
+                bm = UtilsBitmap.createFlippedBitmap(bm, false, true);
 
-                bm = UtilsBitmap.setOpacityBitmap(bm, backgroundModel.getOverlayModel().getOpacity());
-            } else {
-                bm = UtilsBitmap.getBitmapFromAsset(EditActivity.this, overlay.getNameFolder(), overlay.getNameOverlay(), false, false);
-            }
+            bm = UtilsBitmap.setOpacityBitmap(bm, overlay.getOpacity());
 
             bm = Bitmap.createScaledBitmap(bm, bitmap.getWidth(), bitmap.getWidth() * bm.getHeight() / bm.getWidth(), false);
 
@@ -4179,6 +4178,7 @@ public class EditActivity extends BaseActivity {
         if (vSticker.getStickerCount() == 0)
             ivLayer.setImageResource(R.drawable.ic_layer_uncheck);
         else ivLayer.setImageResource(R.drawable.ic_layer);
+
         DrawableStickerCustom drawableSticker = null;
         if (vSticker.getCurrentSticker() instanceof DrawableStickerCustom)
             drawableSticker = (DrawableStickerCustom) vSticker.getCurrentSticker();
@@ -5609,12 +5609,14 @@ public class EditActivity extends BaseActivity {
         if (ivLoading.getVisibility() == View.GONE) ivLoading.setVisibility(View.VISIBLE);
         ArrayList<Sticker> lstSticker = vSticker.getListStickers();
         Project project = new Project();
+
         if (!isColor)
             project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
                     vSticker.getThumb(UtilsBitmap.loadBitmapFromView(this, vMain, false)), nameFolder, Utils.THUMB));
         else
             project.setUriThumb(UtilsBitmap.saveBitmapToApp(this,
                     vSticker.getThumb(UtilsBitmap.loadBitmapFromView(this, vColor, true)), nameFolder, Utils.THUMB));
+
         project.setBackgroundModel(backgroundModel);
         for (Sticker sticker : lstSticker) {
             if (sticker instanceof DrawableStickerCustom) {
@@ -5874,7 +5876,6 @@ public class EditActivity extends BaseActivity {
         } else {
             indexProject = DataLocalManager.getInt("indexProject");
             backgroundModel = project.getBackgroundModel();
-            backgroundModel.setOverlayModel(project.getOverlayModel());
             isProject = true;
 
             if (backgroundModel.getColorModel() == null) {

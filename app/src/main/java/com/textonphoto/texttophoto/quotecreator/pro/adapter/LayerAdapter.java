@@ -42,18 +42,10 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
     private final Paint paintText;
     private final Rect rectText;
 
-    private Path path;
-    private RectF rectF;
-    private Canvas canvas;
-
     public LayerAdapter(Context context, ICallBackItem callBack) {
         this.context = context;
         this.callBack = callBack;
         lstLayer = new ArrayList<>();
-
-        path = new Path();
-        rectF = new RectF();
-        canvas = new Canvas();
 
         paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
         paintText.setStrokeJoin(Paint.Join.ROUND);
@@ -102,8 +94,6 @@ public class LayerAdapter extends RecyclerView.Adapter<LayerAdapter.LayerHolder>
         public void onBind(int position) {
             LayerModel layer = lstLayer.get(position);
             if (layer == null) return;
-
-            itemView.setTag(String.valueOf(position));
 
             if (layer.isSelected())
                 itemView.setBackgroundResource(R.drawable.border_item_layer_selected);

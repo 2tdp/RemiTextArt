@@ -7,7 +7,7 @@
     android:layout_marginTop="@dimen/_5sdp"
     android:background="@color/trans">
 
-    <com.datnt.remitextart.customview.CustomViewPathData
+    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomViewPathData
         android:id="@+id/ivTempText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_105sdp" />

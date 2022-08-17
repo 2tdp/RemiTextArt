@@ -13,7 +13,7 @@ public class DataOverlay {
         ArrayList<OverlayModel> lstOverlay = new ArrayList<>();
         try {
             String[] f = context.getAssets().list(name);
-            for (String s : f) lstOverlay.add(new OverlayModel(s, name, 255, false, false, false, null));
+            for (String s : f) lstOverlay.add(new OverlayModel(s, name, 255, false, false, false));
         } catch (IOException e) {
             e.printStackTrace();
         }

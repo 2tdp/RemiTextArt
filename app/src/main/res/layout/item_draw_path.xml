@@ -6,7 +6,7 @@
     android:layout_margin="@dimen/_5sdp"
     android:background="@color/trans">
 
-    <com.datnt.remitextart.customview.CustomViewPathData
+    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomViewPathData
         android:id="@+id/ivPath"
         android:layout_width="@dimen/_84sdp"
         android:layout_height="@dimen/_84sdp"

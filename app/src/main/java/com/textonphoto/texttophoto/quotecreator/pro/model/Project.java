@@ -11,7 +11,6 @@ public class Project implements Serializable {
 
     private String uriThumb;
     private BackgroundModel backgroundModel;
-    private OverlayModel overlayModel;
 
     private ArrayList<TextModel> lstTextModel = new ArrayList<>();
     private ArrayList<EmojiModel> lstEmojiModel = new ArrayList<>();
@@ -25,7 +24,6 @@ public class Project implements Serializable {
     public Project(Project project) {
         this.uriThumb = project.getUriThumb();
         this.backgroundModel = project.getBackgroundModel();
-        this.overlayModel = project.getOverlayModel();
         this.lstTextModel = project.getLstTextModel();
         this.lstEmojiModel = project.getLstEmojiModel();
         this.lstImageModel = project.getLstImageModel();
@@ -33,12 +31,11 @@ public class Project implements Serializable {
         this.lstTempModel = project.getLstTempModel();
     }
 
-    public Project(String uriThumb, BackgroundModel backgroundModel, OverlayModel overlayModel, ArrayList<TextModel> lstTextModel,
+    public Project(String uriThumb, BackgroundModel backgroundModel, ArrayList<TextModel> lstTextModel,
                    ArrayList<EmojiModel> lstEmojiModel, ArrayList<ImageModel> lstImageModel,
                    ArrayList<DecorModel> lstDecorModel, ArrayList<TemplateModel> lstTempModel) {
         this.uriThumb = uriThumb;
         this.backgroundModel = backgroundModel;
-        this.overlayModel = overlayModel;
         this.lstTextModel = lstTextModel;
         this.lstEmojiModel = lstEmojiModel;
         this.lstImageModel = lstImageModel;
@@ -60,14 +57,6 @@ public class Project implements Serializable {
 
     public void setBackgroundModel(BackgroundModel backgroundModel) {
         this.backgroundModel = backgroundModel;
-    }
-
-    public OverlayModel getOverlayModel() {
-        return overlayModel;
-    }
-
-    public void setOverlayModel(OverlayModel overlayModel) {
-        this.overlayModel = overlayModel;
     }
 
     public ArrayList<TextModel> getLstTextModel() {

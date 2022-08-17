@@ -7,7 +7,7 @@
     android:background="@color/white"
     tools:context=".activity.splash.SplashActivity">
 
-    <com.datnt.remitextart.customview.CustomBeatSplash
+    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomBeatSplash
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

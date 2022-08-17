@@ -114,7 +114,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true">
 
-            <com.datnt.remitextart.customview.CropRatioView
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CropRatioView
                 android:id="@+id/vCrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -128,7 +128,7 @@
                 android:layout_centerInParent="true"
                 android:scaleType="centerInside" />
 
-            <com.datnt.remitextart.customview.ColorView
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.ColorView
                 android:id="@+id/vColor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -167,7 +167,7 @@
 
         </RelativeLayout>
 
-        <com.datnt.remitextart.customview.stickerview.StickerView
+        <com.textonphoto.texttophoto.quotecreator.pro.customview.stickerview.StickerView
             android:id="@+id/stickerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -469,7 +469,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityTemp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -526,7 +526,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbXPosTemp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -562,7 +562,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbYPosTemp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -606,7 +606,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbBlurTemp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -992,7 +992,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityDecor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1048,7 +1048,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbXPosDecor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -1084,7 +1084,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbYPosDecor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -1128,7 +1128,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbBlurDecor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -1509,7 +1509,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityOverlay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1723,7 +1723,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -1780,7 +1780,7 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10ssp" />
 
-                <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                     android:id="@+id/sbAdjust"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -2416,7 +2416,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityImage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -2473,7 +2473,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbXPosImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -2509,7 +2509,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbYPosImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -2553,7 +2553,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbBlurImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -2863,7 +2863,7 @@
                 android:src="@drawable/ic_tick" />
         </RelativeLayout>
 
-        <com.datnt.remitextart.customview.CropImage
+        <com.textonphoto.texttophoto.quotecreator.pro.customview.CropImage
             android:id="@+id/pathCrop"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_234sdp"
@@ -3013,7 +3013,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityEmoji"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -3217,7 +3217,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:visibility="gone">
 
-            <com.datnt.remitextart.customview.CustomSeekbarRunText
+            <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarRunText
                 android:id="@+id/sbOpacityText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -3273,7 +3273,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbXPos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -3309,7 +3309,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbYPos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -3353,7 +3353,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbBlur"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -3416,7 +3416,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbShearX"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -3452,7 +3452,7 @@
                             android:textSize="@dimen/_10ssp" />
                     </RelativeLayout>
 
-                    <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                    <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                         android:id="@+id/sbShearY"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -3488,7 +3488,7 @@
                         android:textSize="@dimen/_10ssp" />
                 </RelativeLayout>
 
-                <com.datnt.remitextart.customview.CustomSeekbarTwoWay
+                <com.textonphoto.texttophoto.quotecreator.pro.customview.CustomSeekbarTwoWay
                     android:id="@+id/sbStretch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
